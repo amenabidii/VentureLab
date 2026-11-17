@@ -14,10 +14,12 @@ import pytest
 
 import os
 import tempfile
+from pathlib import Path
 
 # Tests never touch a running application's run records, approvals or audit log:
 # any code path that builds the default services uses a throwaway directory.
-_TEST_STATE = tempfile.mkdtemp(prefix="venturelab-tests-")
+# Expand Windows short-name aliases in test-owned paths; production path checks remain strict.
+_TEST_STATE = str(Path(tempfile.mkdtemp(prefix="venturelab-tests-")).resolve())
 os.environ["VENTURELAB_STATE_DIR"] = os.path.join(_TEST_STATE, "state")
 os.environ["VENTURELAB_OUTPUT_DIR"] = os.path.join(_TEST_STATE, "outputs")
 os.environ["VENTURELAB_DECISION_LOG"] = os.path.join(_TEST_STATE, "decision_log.json")
