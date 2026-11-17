@@ -16,12 +16,14 @@ written only after the founder approves the exact artifact.
 
 | Phase | Core step (case brief) | What VentureLab does | Status |
 |---|---|---|---|
-| 1 Discover | Sharpen the idea, score it against alternatives, define the market | Investigator retrieves and verifies quotes; Challenger; opportunity scorecard; deterministic gate + Counterfactual Challenge | **Working** (live `qwen3:4b`, Hacker News retrieval); interviews themselves are manual |
-| 2 Validate | Lean Canvas, landing page to test demand | Lean Canvas with every entry sourced or labelled; validation kit; landing page after GO | **Working**; collecting real sign-ups **STUBBED** |
-| 3 Build | Tested MVP with user docs | MVP scope, draft user guide, executed acceptance checks | **Working** for these artifacts; MVP code generation **STUBBED** |
-| 4 Commercial setup | Price and policies, no payments | Price hypotheses (ASSUMPTION), price set only by founder approval, DRAFT terms/privacy/refund | **Working** |
-| 5 Launch | Store page, posts, automatic delivery | Store page and post drafts; signed payment events, idempotent delivery, refunds, reconciliation | Drafts **Working**; publishing and sale to cash **MOCKED** (no payments of any kind) |
-| 6 Operate & learn | Support, metrics, persevere-or-pivot memo | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
+| 1 Discover | **Find opportunities**: sharpen the idea, score it against alternatives, define the market, Mom Test customer interviews | Investigator retrieves and verifies quotes; Challenger; opportunity scorecard; past-behaviour interview questions and recruiting post; deterministic gate + Counterfactual Challenge | **Working** (live `qwen3:4b`, Hacker News retrieval); holding the interviews is manual (**STUBBED**) |
+| 2 Validate | **Design the business**: Lean Canvas, landing-page demand test, waitlist-threshold gate | Lean Canvas with every entry sourced or labelled; validation kit; landing page after GO; fixed gate on a target set in advance (100 sign-ups in 14 days, 12 arrive → STOP or pivot) | **Working**; collecting real sign-ups **STUBBED** |
+| 3 Build | **Build the product**: tested MVP and user docs | MVP scope, draft user guide, executed acceptance checks | **Working** for these artifacts; MVP application code **STUBBED** |
+| 4 Commercial setup | **Set the price and policies** | Price hypotheses (ASSUMPTION), price set only by founder approval, DRAFT terms/privacy/refund | **Working** (no payments of any kind) |
+| 5 Launch | **Open the store; deliver automatically** | Store page and post drafts; signed payment events, idempotent delivery, refunds, reconciliation | Drafts **Working**; publishing and sale to cash **MOCKED** |
+| 6 Operate & learn | **Operate & learn**: support, metrics, persevere-or-pivot memo | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
+
+Each core step, with its code file and output file: [ARCHITECTURE.md → Phases](ARCHITECTURE.md#phases).
 
 Founder control is enforced in code: nothing is written, published or delivered without
 an approval bound to the exact file's SHA-256, and STOP blocks everything downstream.

@@ -38,6 +38,32 @@ founder's machine except inside a decision the founder submits.
 
 ## Phases
 
+### Core steps of the case brief, mapped to code and outputs
+
+Outputs are from the genuine run `run-a9f21cd634924cca` (Discover decided REPEAT, so phases 2–6
+ran as a founder-approved REHEARSAL). Run files are in `outputs/runs/run-a9f21cd634924cca/`
+(written `runs/…` below); phase 2–6 files are in `outputs/`.
+
+| Core step | Part of the step | Code | Output | Status |
+|---|---|---|---|---|
+| **Find opportunities** | Sharpen the idea: validated brief, numbered founder assumptions questioned by the Challenger | [`brief.py`](brief.py), [`agents/challenger.py`](agents/challenger.py) | [`runs/…/phase1_step1_founder_brief.json`](outputs/runs/run-a9f21cd634924cca/phase1_step1_founder_brief.json), [`runs/…/phase1_step3_challenge.md`](outputs/runs/run-a9f21cd634924cca/phase1_step3_challenge.md) | **Working** |
+| | Score it against alternatives: founder's idea vs. Challenger hypotheses, alternative problems and the status quo, with a fixed rubric | [`agents/strategist.py`](agents/strategist.py) `score_opportunities` | [`phase1_step4_opportunity-scorecard.md`](outputs/phase1_step4_opportunity-scorecard.md) | **Working** |
+| | Define the market: customer, market, size (UNKNOWN unless sourced), verified public evidence of the problem | [`agents/investigator.py`](agents/investigator.py), [`evidence.py`](evidence.py), [`agents/strategist.py`](agents/strategist.py) | [`runs/…/phase1_step2_investigation.md`](outputs/runs/run-a9f21cd634924cca/phase1_step2_investigation.md), scorecard "Market definition" | **Working** |
+| | Mom Test customer interviews: past-behaviour questions with leading wording removed by code, problem-only recruiting post | [`agents/advisor.py`](agents/advisor.py), [`agents/builder.py`](agents/builder.py), [`agents/launcher.py`](agents/launcher.py) | [`phase2_step3_advisor-proposals.md`](outputs/phase2_step3_advisor-proposals.md), [`phase5_step1_launch-posts.md`](outputs/phase5_step1_launch-posts.md) | Questions and post **Working**; holding the interviews is manual (**STUBBED**) |
+| | Evidence gate: GO / REPEAT / PIVOT / STOP with a Counterfactual Challenge | [`gates.py`](gates.py), [`counterfactual.py`](counterfactual.py) | [`runs/…/phase1_gate_decision.md`](outputs/runs/run-a9f21cd634924cca/phase1_gate_decision.md) (REPEAT) | **Working** |
+| **Design the business** | Lean Canvas: nine boxes, each FOUNDER-STATED, EVIDENCE or ASSUMPTION | [`agents/strategist.py`](agents/strategist.py) `build_lean_canvas`, [`lean_canvas.py`](lean_canvas.py) | [`phase2_step2_lean-canvas.md`](outputs/phase2_step2_lean-canvas.md), [`phase2_gate_lean-canvas.json`](outputs/phase2_gate_lean-canvas.json) | **Working** |
+| | Landing-page demand test: local page (after GO only) with no form or tracking | [`landing_page.py`](landing_page.py) | none for this run (REPEAT: no landing page) | Page **Working**; collecting real sign-ups **STUBBED** |
+| | Waitlist-threshold gate: a target fixed before testing, e.g. 100 sign-ups in 14 days; 12 arrive → STOP (stop or pivot back to Discover), never a lowered target | [`validation.py`](validation.py), test [`test_validation_results.py`](tests/test_validation_results.py) | none: no real results recorded yet (results are FOUNDER-REPORTED) | **Working** (rule tested); real sign-up data **STUBBED** |
+| **Build the product** | MVP scope and acceptance criteria, DRAFT user guide, checks that actually execute | [`agents/product.py`](agents/product.py) | [`phase3_step2_mvp-scope.json`](outputs/phase3_step2_mvp-scope.json), [`phase3_step3_user-guide-draft.md`](outputs/phase3_step3_user-guide-draft.md), [`phase3_step4_acceptance-checks.json`](outputs/phase3_step4_acceptance-checks.json), [`phase3_gate_build.json`](outputs/phase3_gate_build.json) | **Working**; MVP application code **STUBBED** |
+| **Set the price and policies** | Test prices (ASSUMPTION), price chosen only by founder approval; DRAFT terms, privacy and refund policies (not legal advice) | [`agents/commercial.py`](agents/commercial.py) | [`phase4_step1_pricing-decision.md`](outputs/phase4_step1_pricing-decision.md), [`phase4_step2_terms-policy-draft.md`](outputs/phase4_step2_terms-policy-draft.md), [`phase4_step2_privacy-policy-draft.md`](outputs/phase4_step2_privacy-policy-draft.md), [`phase4_step2_refund-policy-draft.md`](outputs/phase4_step2_refund-policy-draft.md), [`phase4_gate_commercial.json`](outputs/phase4_gate_commercial.json) | **Working** (no payments of any kind) |
+| **Open the store; deliver automatically** | Store page and launch posts; publishing needs approval of the exact page | [`agents/launcher.py`](agents/launcher.py) | [`phase5_step1_store-page.html`](outputs/phase5_step1_store-page.html), [`phase5_step1_launch-posts.md`](outputs/phase5_step1_launch-posts.md) | Drafts **Working**; publishing **MOCKED** |
+| | Automatic delivery after payment, refunds revoke access, idempotency, reconciliation | [`payments.py`](payments.py), [`delivery.py`](delivery.py), [`refunds.py`](refunds.py), [`reconcile.py`](reconcile.py) | [`payment_test_log.md`](outputs/payment_test_log.md), [`phase5_step3_reconciliation.json`](outputs/phase5_step3_reconciliation.json), [`phase5_gate_launch.json`](outputs/phase5_gate_launch.json) | **MOCKED** (simulated test orders, no payments) |
+| **Operate & learn** | Support triage of real requests only | [`agents/operator.py`](agents/operator.py) | [`phase6_step1_support.json`](outputs/phase6_step1_support.json) | **Working** (no real requests exist yet) |
+| | Metrics | [`agents/operator.py`](agents/operator.py) | [`phase6_step2_metrics.json`](outputs/phase6_step2_metrics.json) | **MOCKED** (from test orders; never evidence) |
+| | Persevere-or-pivot memo by fixed rules | [`agents/operator.py`](agents/operator.py) | [`phase6_step3_persevere-or-pivot-memo.md`](outputs/phase6_step3_persevere-or-pivot-memo.md), [`phase6_gate_persevere-or-pivot.json`](outputs/phase6_gate_persevere-or-pivot.json) (REPEAT) | **Working** |
+
+### Phases, agents and founder approvals
+
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
