@@ -25,6 +25,7 @@ from pydantic import ValidationError
 
 from brief import FounderBrief
 from builder_models import BuilderInput, EvidenceReference, GateContext, LandingPageSpec
+from gates import RULESET_VERSION
 
 EVIDENCE_STANDINGS = ("established", "needs_review", "partial_evidence", "contradicted", "unsupported")
 MAX_QUOTE = 600
@@ -59,6 +60,12 @@ def adapt(run_id: str, outputs: dict[str, Any]) -> Adapted:
     outcome, rule = gate["decision"], gate["rule"]
     if outcome == "STOP":
         raise BuilderBlocked(f"The gate decided STOP ({rule}); the Builder is blocked for this run")
+    version = gate.get("ruleset_version")
+    if version != RULESET_VERSION:
+        raise BuilderBlocked(
+            f"This run's {outcome} decision was made by superseded gate rules (version {version or 1}; "
+            f"current version {RULESET_VERSION}). The recorded decision is kept as history, but the Builder "
+            "cannot use it: run the analysis again to get a decision under the current rules")
     brief = FounderBrief.model_validate(outputs["brief"]["brief"])
     notes: list[str] = []
 

@@ -43,6 +43,6 @@ only: Discover runs took 103–182 s with `qwen3:4b`; the benchmarks are in
 
 **8. Honest limits and next steps (4:30–5:00).** Not yet integrated (UI, workflow
 and Builder are separate branches). Evidence quality limits: keyword relevance,
-attribution errors, conservative standing. No real run has reached GO yet. Next:
+attribution errors, conservative standing. No run reaches GO under the current gate rules (two earlier GO results were withdrawn as superseded after review). Next:
 integrate, add a human review queue for NEEDS_REVIEW findings, and feed real experiment
 results back into the pass marks.

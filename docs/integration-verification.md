@@ -187,8 +187,9 @@ survived an application restart.
 ## Known limitations
 
 - A REPEAT or PIVOT run produces the experiment kit but no landing page (Milestone 3's rule);
-  the landing page is exercised only by MOCKED integration tests, since no live run has
-  reached GO.
+  no live run reaches GO under the current gate rules. Two accessible-PDF runs reached GO
+  under an earlier rule that was later found to count the wrong evidence; those decisions
+  are superseded and the Builder refuses them ([evaluation-runs.md](evaluation-runs.md)).
 - The job queue is in memory; interrupted runs are reported, not resumed.
 - One founder, one machine: the founder key is a local capability, not an account system.
 - Bind mounts were verified on Docker Desktop for Windows and with Linux bind-mount

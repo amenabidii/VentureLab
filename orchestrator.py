@@ -38,7 +38,7 @@ from audit import AuditLog, utc_now
 from brief import FounderBrief, load_brief, screen_brief
 from config import get_settings
 from counterfactual import explain
-from gates import GateResult, decide, pre_research_stop
+from gates import RULESET_VERSION, GateResult, decide, pre_research_stop
 from llm import LLMError, OllamaClient
 from sources import SourceFetcher
 
@@ -267,7 +267,7 @@ def render_challenge(chal: Challenge) -> str:
 
 def render_gate(gate: GateResult, cf: dict[str, Any], timings: dict[str, float], n_calls: int = 0) -> str:
     L = ["# Phase 1 gate decision", "",
-         f"**Decision: {gate.decision.value}** (rule `{gate.rule.id}`)", "",
+         f"**Decision: {gate.decision.value}** (rule `{gate.rule.id}`, gate rule set version {RULESET_VERSION})", "",
          gate.rule.meaning, "",
          "This decision is made by fixed rules in `gates.py`, not by a model. GO means only: go on to further "
          "validation with customers. It is never proof of demand, of a market or of future sales.", "",

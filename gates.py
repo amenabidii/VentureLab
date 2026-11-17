@@ -43,6 +43,12 @@ from agents.investigator import Investigation
 from brief import CategoryScreen, FounderBrief
 
 # Predefined thresholds. Changing one changes every future decision, so they live here.
+# Version of the gate rules. Raise it whenever a change could alter a past decision: a run
+# decided under another version is superseded and can no longer reach the Builder
+# (builder_adapter.adapt, enforced again at approval and execution in app/api.py).
+# 2: corroboration counts only a commenter's own first-person words, each person once.
+RULESET_VERSION = 2
+
 MIN_SUPPORTING_FINDINGS = 2
 MIN_SUPPORTING_SOURCES = 2  # distinct comment or page URLs
 MIN_CONTRADICTING_SOURCES_FOR_STOP = 2
@@ -200,6 +206,7 @@ class GateResult:
     def to_dict(self) -> dict[str, Any]:
         return {
             "gate": self.gate,
+            "ruleset_version": RULESET_VERSION,
             "decision": self.decision.value,
             "rule": self.rule.id,
             "rule_meaning": self.rule.meaning,

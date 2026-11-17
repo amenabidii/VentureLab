@@ -148,7 +148,11 @@ evidence does not guarantee GO.
 
 The gate also decides what the Builder may do: STOP blocks it (in the adapter, the API
 and the artifact bundle itself); REPEAT and PIVOT allow the experiment kit only; GO adds
-the landing page. Builder actions then pass the founder approval gate, enforced in the
+the landing page. Every decision records the gate rule set version; a decision made
+under an earlier version is superseded. The backend refuses to prepare, approve or execute
+Builder work for a superseded decision, checking the recorded run again on every request
+(so a restart changes nothing). Files already written stay as they are, and recorded
+decisions are never rewritten. Builder actions then pass the founder approval gate, enforced in the
 backend: the founder's local key, the exact action, run and SHA-256 fingerprint, a
 two-hour expiry, and single use. The workspace cannot change any of these results.
 

@@ -329,9 +329,26 @@ def _request_for(svc: Services, action_id: str, run_id: str):
     return request, bundle
 
 
+def _refuse_if_run_superseded(svc: Services, run_id: str, action_id: str, action: str) -> None:
+    """Re-check the run's gate decision under the current rules before approving or executing.
+
+    Nothing about this is stored: it is computed from the recorded run every time, so a
+    restart cannot restore a permission the current rules deny.
+    """
+    try:
+        adapt(run_id, _outputs(svc, run_id))
+    except BuilderBlocked as exc:
+        svc.approvals.record_failure(action, ApprovalError("gate decision superseded or blocked"), action_id)
+        mirror_builder_events(svc, run_id)
+        raise HTTPException(409, f"{exc}. This request cannot be approved or executed; it can still be "
+                                 "rejected.") from exc
+
+
 @router.post("/approvals/{action_id}/decision")
 def decide(action_id: str, body: DecisionIn, svc: Services = Depends(services)):
     request, _ = _request_for(svc, action_id, body.run_id)
+    if body.decision == "approve":
+        _refuse_if_run_superseded(svc, request.run_id, action_id, "approval_decision")
     try:
         decision = ApprovalDecision(action_id=action_id, artifact_sha256=body.fingerprint, decision=body.decision,
                                     actor="founder", reason=body.reason)
@@ -354,6 +371,7 @@ def execute(action_id: str, body: ExecuteIn, svc: Services = Depends(services)):
         svc.approvals.record_failure("execute_artifacts", ApprovalError("founder capability required"), action_id)
         mirror_builder_events(svc, request.run_id)
         raise HTTPException(403, "Founder capability required; execution was not attempted")
+    _refuse_if_run_superseded(svc, request.run_id, action_id, "execute_artifacts")
     try:
         result = svc.approvals.execute(action_id)
     except ApprovalError as exc:

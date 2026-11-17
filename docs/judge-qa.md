@@ -36,8 +36,10 @@ because it never acts externally.
 Discover end to end on a real brief (also available from the CLI), shows the evidence,
 Challenger analysis, gate decision and counterfactual, and prepares a Builder request
 whose files are written only after the founder approves it with the local founder key.
-A real run ended in REPEAT and its validation kit was approved and written. No real run
-has reached GO, so the landing page has only been produced in tests.
+A real run ended in REPEAT and its validation kit was approved and written. No run
+reaches GO under the current gate rules: two earlier accessible-PDF GO results were
+withdrawn as superseded after review ([evaluation-runs.md](evaluation-runs.md)), and the
+Builder refuses them. The landing page was prepared for one of them but never approved.
 
 **Which phases are STUBBED?** Commercial Setup, Launch, Operate & Learn and payments.
 

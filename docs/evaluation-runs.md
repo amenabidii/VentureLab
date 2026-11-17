@@ -81,9 +81,14 @@ unaffected, because tightening the rule cannot turn REPEAT into GO.
 
 Command-line outputs are in `outputs/audit-live/` (file suffix = brief name); the web run
 is in `outputs/runs/run-4209f27582724d6f/`. After the web GO, the Builder prepared a
-request that includes the local landing page. That request was never approved: no files
-were written, the workspace labels it "Proposed — not written", and it expires two hours
-after it was created. Because it rests on the superseded GO, it should not be approved.
+request that includes the local landing page. That request was never approved and no
+files were written. The backend now refuses to approve or execute it: every gate decision
+records the gate rule set version (`ruleset_version`, currently 2), and a run recorded
+without the current version, like both GO runs above, is superseded. Such a run cannot
+reach the Builder, either to prepare a request or to approve or execute one (rejecting
+stays possible). The superseded output files and their `decision_log.json` entries are kept
+unchanged as history. They can be identified by the missing `ruleset_version` field and by
+this page.
 
 Limits: one live sample per brief; search results change over time; "two people
 describe the problem" justifies interviews, not a market. No recorded live run currently
