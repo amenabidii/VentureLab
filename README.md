@@ -143,7 +143,10 @@ one download for `qwen3:4b`, and a little bandwidth for retrieval.
 
 ## Demo video
 
-Not yet recorded. It will be linked here ([docs/demo-runbook.md](docs/demo-runbook.md)).
+[Watch the 3-minute demo (Google Drive)](https://drive.google.com/file/d/1D2DdEu9gWMbQyLhkSkQIUfdP_0CiDbu3/view?usp=sharing)
+(2:54, no audio, captioned). A recording of the running app: the "write 50 five-star reviews" trick prompt ending
+in a policy STOP, verified evidence and the REPEAT gate with its counterfactual, phases 1–6 with every gate saying
+DO NOT LAUNCH, the clickable prototype, the MOCKED store page and sale-to-cash log, and founder approval.
 
 ## What our system will NOT do
 
