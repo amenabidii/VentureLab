@@ -314,14 +314,14 @@ Application tests in this repository test VentureLab, not an automatically built
 
 Every phase ends in a gate: a founder approval, a threshold set in advance, or passing tests.
 Each phase gate file records an `outcome` (GO, REPEAT, PIVOT or STOP; none while it waits
-for the founder) and a `launch_recommendation`. Anything short of a real GO, and every
-REHEARSAL after a Discover REPEAT or PIVOT, says **DO NOT LAUNCH**.
+for the founder) and a `launch_recommendation`. Normal progression to phases 3–6 needs Discover GO **and** a passed Phase 2 validation gate;
+anything less runs only as a founder-approved REHEARSAL, and every rehearsal gate says **DO NOT LAUNCH**.
 
 | Phase | Gate | Kind | What it checks | Outcomes | Output |
 |---|---|---|---|---|---|
 | Before 1 | Policy screen (`brief.py`) | fixed rules | prohibited category or deceptive practice (fake reviews, sign-ups, urgency, impersonation, promised income) | STOP (policy), or continue | `phase1_gate_decision.*` |
 | 1 Discover | Evidence gate (`gates.py`) | evidence threshold | at least 2 independent supporting sources; contradictions; readable sources | GO / REPEAT / PIVOT / STOP, with a Counterfactual Challenge | `runs/<run>/phase1_gate_decision.*` |
-| 1 → 2 | Rehearsal approval (`workflow.py`) | founder approval | after REPEAT or PIVOT only, bound to the gate file's SHA-256 | continue as a REHEARSAL (DO NOT LAUNCH), or stop | `decision_log.json` |
+| 1 → 3 | Rehearsal approval (`workflow.py`) | founder approval | after REPEAT or PIVOT (`rehearse_after_<decision>`), or after GO without a passed Phase 2 validation gate (`rehearse_without_validation`); bound to the gate file's SHA-256; never after STOP or a validation STOP | continue as a REHEARSAL (DO NOT LAUNCH), or stop | `decision_log.json` |
 | 2 Validate | Kit approval, validation gate (`validation.py`), Lean Canvas gate | founder approval + threshold set in advance | threshold and sample fixed before any result; founder-reported counts; revenue counts as evidenced only with an ESTABLISHED finding | GO / REPEAT / STOP (below threshold: stop or pivot back to Discover) | `phase2_gate_lean-canvas.json`, `runs/<run>/phase2_gate_validation.json` |
 | 3 Build | Acceptance checks (`agents/product.py`) | passing tests | user-journey walk through the prototype; guide, policies and store page | GO / REPEAT; launch is refused unless all pass | `phase3_gate_build.json` |
 | 4 Commercial setup | Price approval | founder approval | `set_price:<option>` bound to the pricing file's SHA-256 | GO, or waiting for the founder | `phase4_gate_commercial.json` |
