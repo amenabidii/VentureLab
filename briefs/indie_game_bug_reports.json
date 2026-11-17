@@ -1,0 +1,10 @@
+{
+  "idea": "A web app that collects player bug reports posted in a game's Discord server and turns them into a de-duplicated, triaged list for the developer.",
+  "problem_statement": "Indie game developers lose track of player bug reports scattered across Discord messages.",
+  "target_customer": "solo and small-team indie game developers with an active Discord community",
+  "market": "online, English-speaking indie game developers",
+  "founder_skills": ["Python", "Discord bot development", "web development"],
+  "hours_per_week": 8,
+  "budget_eur": 150,
+  "values_and_constraints": ["no dark patterns", "player messages are only read in servers that installed the bot"]
+}

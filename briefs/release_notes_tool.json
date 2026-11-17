@@ -1,0 +1,13 @@
+{
+  "idea": "A web app that drafts customer-facing release notes from a small software team's merged pull requests, for a person to edit and publish.",
+  "problem_statement": "Small software teams spend too much time writing release notes and changelogs.",
+  "target_customer": "developers and product managers at small SaaS companies",
+  "market": "English-speaking small SaaS companies, online",
+  "founder_skills": ["Python and web development", "technical writing"],
+  "hours_per_week": 10,
+  "budget_eur": 300,
+  "values_and_constraints": ["no paid advertising", "no dark patterns", "free tier for open-source projects"],
+  "validation_conditions": [
+    {"id": "problem_interviews", "description": "Interviewees who describe writing release notes as a recurring chore", "metric": "interviewees_confirming_problem", "minimum": 5}
+  ]
+}

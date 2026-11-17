@@ -1,0 +1,295 @@
+{
+ "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "discord bug reports indie game",
+  "game discord player issues solo dev",
+  "indie game bug tracking discord"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=discord+bug+reports+indie+game&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"discord bug reports indie game\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T11:19:43Z",
+   "items": 1
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=game+discord+player+issues+solo+dev&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"game discord player issues solo dev\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T11:19:43Z",
+   "items": 2
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=indie+game+bug+tracking+discord&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"indie game bug tracking discord\"",
+   "status": "empty",
+   "error": "no comments matched the query",
+   "retrieved_at": "2026-11-17T11:19:43Z",
+   "items": 0
+  }
+ ],
+ "selection": {
+  "comments_seen": 3,
+  "off_topic_dropped": 1,
+  "relevant": 2,
+  "kept": 2,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=24827163",
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "topic_terms": [
+   "across",
+   "active",
+   "app",
+   "bug",
+   "collect",
+   "community",
+   "developer",
+   "discord",
+   "duplicated",
+   "game",
+   "indie",
+   "into",
+   "list",
+   "lose",
+   "message",
+   "player",
+   "posted",
+   "report",
+   "scattered",
+   "server",
+   "solo",
+   "team",
+   "track",
+   "triaged",
+   "turn",
+   "web"
+  ],
+  "problem_terms": [
+   "across",
+   "bug",
+   "lose",
+   "message",
+   "player",
+   "report",
+   "scattered",
+   "track"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says players lose time finding Game Masters for tabletop role-playing games",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "game",
+    "into"
+   ],
+   "quotes": [
+    {
+     "text": "The biggest issue I've been seeing with people getting into the hobby or trying new game systems is finding someone to run the game for them.",
+     "url": "https://news.ycombinator.com/item?id=24827163",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says indie game developers lose track of player bug reports scattered across Discord messages",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "game",
+    "indie",
+    "lose"
+   ],
+   "quotes": [
+    {
+     "text": "It's just too easy to lose time playing Factorio, KSP, Total War, or any of the myriad indie games that somehow always work on Linux.",
+     "url": "https://news.ycombinator.com/item?id=50529456",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "segment",
+   "model_type": "segment",
+   "claim": "Solo and small-team indie game developers with active Discord communities are the target users",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "game",
+    "indie",
+    "lose"
+   ],
+   "quotes": [
+    {
+     "text": "It's just too easy to lose time playing Factorio, KSP, Total War, or any of the myriad indie games that somehow always work on Linux.",
+     "url": "https://news.ycombinator.com/item?id=50529456",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "demand",
+   "model_type": "demand",
+   "claim": "One user says there is a need for a web app that collects player bug reports from Discord servers",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "game",
+    "indie",
+    "lose"
+   ],
+   "quotes": [
+    {
+     "text": "It's just too easy to lose time playing Factorio, KSP, Total War, or any of the myriad indie games that somehow always work on Linux.",
+     "url": "https://news.ycombinator.com/item?id=50529456",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "Indie game developers lose track of player bug reports scattered across Discord messages.",
+   "standing": "unsupported",
+   "relevance": "statement",
+   "shared_terms": [
+    "across",
+    "game",
+    "player"
+   ],
+   "quotes": [
+    {
+     "text": "I (Devon) have been a professional Game Master for over five years, running games for players all across the country.",
+     "url": "https://news.ycombinator.com/item?id=24827163",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "does_not_support",
+   "reason": "The quote describes Devon's experience as a Game Master but doesn't mention bug reports or player tracking in Discord.",
+   "limitations": "Only one person's experience with TTRPGs, not indie game developers or bug reports.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "indie",
+    "developers",
+    "lose",
+    "track",
+    "bug",
+    "scattered",
+    "discord",
+    "messages"
+   ],
+   "attributed": false,
+   "review": [
+    "wording goes beyond the quoted text: indie, developers, lose, track, bug, scattered, discord, messages",
+    "a claim about people must be attributed to one person (\"One host says ...\")"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 3,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 5.8,
+   "prompt_tokens": 165,
+   "output_tokens": 36
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 42.8,
+   "prompt_tokens": 864,
+   "output_tokens": 180
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 13.6,
+   "prompt_tokens": 507,
+   "output_tokens": 65
+  }
+ ],
+ "model_seconds": 62.2,
+ "elapsed_s": 63.8
+}

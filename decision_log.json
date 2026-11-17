@@ -1,0 +1,829 @@
+[
+ {
+  "timestamp": "2026-11-17T11:19:37Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "accepted",
+  "screen": "no prohibited category matched"
+ },
+ {
+  "timestamp": "2026-11-17T11:19:37Z",
+  "agent": "orchestrator",
+  "action": "load_model",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "ok"
+ },
+ {
+  "timestamp": "2026-11-17T11:19:42Z",
+  "agent": "investigator",
+  "action": "plan_searches",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "ok",
+  "queries": [
+   "discord bug reports indie game",
+   "game discord player issues solo dev",
+   "indie game bug tracking discord"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:19:44Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=discord+bug+reports+indie+game&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 1,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:19:44Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=game+discord+player+issues+solo+dev&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 2,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:19:44Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=indie+game+bug+tracking+discord&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "empty",
+  "kind": "hn_comments",
+  "items": 0,
+  "error": "no comments matched the query"
+ },
+ {
+  "timestamp": "2026-11-17T11:19:44Z",
+  "agent": "investigator",
+  "action": "select_relevant_comments",
+  "sources": [
+   "https://news.ycombinator.com/item?id=24827163",
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "ok",
+  "comments_seen": 3,
+  "off_topic_dropped": 1,
+  "relevant": 2,
+  "kept": 2,
+  "problem_terms": [
+   "across",
+   "bug",
+   "lose",
+   "message",
+   "player",
+   "report",
+   "scattered",
+   "track"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:20:27Z",
+  "agent": "investigator",
+  "action": "extract_claims",
+  "sources": [
+   "https://news.ycombinator.com/item?id=24827163",
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "ok",
+  "claims": 4
+ },
+ {
+  "timestamp": "2026-11-17T11:20:27Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=24827163"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "finding": "F1",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:20:27Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "finding": "F2",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:20:27Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "finding": "F3",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:20:27Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=50529456"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "finding": "F4",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:20:40Z",
+  "agent": "investigator",
+  "action": "check_founder_statement",
+  "sources": [
+   "https://news.ycombinator.com/item?id=24827163"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "finding": "H1",
+  "standing": "unsupported",
+  "relevance": "statement",
+  "verdict": "does_not_support",
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: indie, developers, lose, track, bug, scattered, discord, messages",
+   "a claim about people must be attributed to one person (\"One host says ...\")"
+  ],
+  "notes": []
+ },
+ {
+  "timestamp": "2026-11-17T11:22:03Z",
+  "agent": "challenger",
+  "action": "challenge_assumptions",
+  "sources": [
+   "https://news.ycombinator.com/item?id=24827163"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "ok",
+  "reviews": 6,
+  "grounded_reviews": 3,
+  "new_hypotheses": 1,
+  "risks": 1,
+  "experiments": 1,
+  "contradictions": 0,
+  "removed": [
+   "A1: model said 'supported' but cites no established finding; stance set to 'untested'",
+   "A2: model said 'supported' but cites no established finding; stance set to 'untested'"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:22:03Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE"
+ },
+ {
+  "timestamp": "2026-11-17T11:22:03Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing": 4,
+  "experiments": 3
+ },
+ {
+  "timestamp": "2026-11-17T11:22:04Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "accepted",
+  "screen": "no prohibited category matched"
+ },
+ {
+  "timestamp": "2026-11-17T11:22:04Z",
+  "agent": "orchestrator",
+  "action": "load_model",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "ok"
+ },
+ {
+  "timestamp": "2026-11-17T11:22:13Z",
+  "agent": "investigator",
+  "action": "plan_searches",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "ok",
+  "queries": [
+   "release notes automation",
+   "changelog writing time",
+   "small team release notes"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:22:14Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=release+notes+automation&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 10,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:22:14Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=changelog+writing+time&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 10,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:22:14Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=small+team+release+notes&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 7,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:22:15Z",
+  "agent": "investigator",
+  "action": "select_relevant_comments",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042",
+   "https://news.ycombinator.com/item?id=16518504",
+   "https://news.ycombinator.com/item?id=25124971",
+   "https://news.ycombinator.com/item?id=46597069",
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=29558588",
+   "https://news.ycombinator.com/item?id=31602126",
+   "https://news.ycombinator.com/item?id=32879542"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "ok",
+  "comments_seen": 27,
+  "off_topic_dropped": 1,
+  "relevant": 26,
+  "kept": 8,
+  "problem_terms": [
+   "changelog",
+   "note",
+   "release",
+   "software",
+   "team",
+   "writing"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:23:07Z",
+  "agent": "investigator",
+  "action": "extract_claims",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042",
+   "https://news.ycombinator.com/item?id=16518504",
+   "https://news.ycombinator.com/item?id=25124971",
+   "https://news.ycombinator.com/item?id=46597069",
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=29558588",
+   "https://news.ycombinator.com/item?id=31602126",
+   "https://news.ycombinator.com/item?id=32879542"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "ok",
+  "claims": 4
+ },
+ {
+  "timestamp": "2026-11-17T11:23:07Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "finding": "F1",
+  "standing": "needs_review",
+  "relevance": "statement",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: spend, time, writing, changel"
+  ],
+  "notes": [
+   "not sent to the model: the wording or attribution checks already rule out establishing it"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:23:07Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "finding": "F2",
+  "standing": "needs_review",
+  "relevance": "statement",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: spend, time, writing, changelogs"
+  ],
+  "notes": [
+   "not sent to the model: the wording or attribution checks already rule out establishing it"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:23:07Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "finding": "F3",
+  "standing": "needs_review",
+  "relevance": "statement",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: dev, team"
+  ],
+  "notes": [
+   "not sent to the model: the wording or attribution checks already rule out establishing it"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:23:24Z",
+  "agent": "investigator",
+  "action": "check_founder_statement",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "finding": "H1",
+  "standing": "partial_evidence",
+  "relevance": "statement",
+  "verdict": "partially_supports",
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: spend, too, much, time, writing, changelogs",
+   "a claim about people must be attributed to one person (\"One host says ...\")"
+  ],
+  "notes": []
+ },
+ {
+  "timestamp": "2026-11-17T11:24:43Z",
+  "agent": "challenger",
+  "action": "challenge_assumptions",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "ok",
+  "reviews": 6,
+  "grounded_reviews": 1,
+  "new_hypotheses": 1,
+  "risks": 2,
+  "experiments": 2,
+  "contradictions": 0,
+  "removed": []
+ },
+ {
+  "timestamp": "2026-11-17T11:24:43Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE"
+ },
+ {
+  "timestamp": "2026-11-17T11:24:43Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing": 4,
+  "experiments": 4
+ },
+ {
+  "timestamp": "2026-11-17T11:24:44Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "accepted",
+  "screen": "no prohibited category matched"
+ },
+ {
+  "timestamp": "2026-11-17T11:24:44Z",
+  "agent": "orchestrator",
+  "action": "load_model",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "ok"
+ },
+ {
+  "timestamp": "2026-11-17T11:24:47Z",
+  "agent": "investigator",
+  "action": "plan_searches",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "ok",
+  "queries": [
+   "release notes automation"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:24:48Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=release+notes+automation&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 10,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T11:24:48Z",
+  "agent": "investigator",
+  "action": "select_relevant_comments",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069",
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=11012066",
+   "https://news.ycombinator.com/item?id=31602126"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "ok",
+  "comments_seen": 10,
+  "off_topic_dropped": 1,
+  "relevant": 9,
+  "kept": 4,
+  "problem_terms": [
+   "changelog",
+   "note",
+   "release",
+   "software",
+   "team",
+   "writing"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T11:25:03Z",
+  "agent": "investigator",
+  "action": "extract_claims",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069",
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=11012066",
+   "https://news.ycombinator.com/item?id=31602126"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "ok",
+  "claims": 2
+ },
+ {
+  "timestamp": "2026-11-17T11:25:20Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "finding": "F1",
+  "standing": "established",
+  "relevance": "statement",
+  "verdict": "supports",
+  "second_check": true,
+  "review": [],
+  "notes": []
+ },
+ {
+  "timestamp": "2026-11-17T11:25:40Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "finding": "F2",
+  "standing": "established",
+  "relevance": "statement",
+  "verdict": "supports",
+  "second_check": true,
+  "review": [],
+  "notes": []
+ },
+ {
+  "timestamp": "2026-11-17T11:25:56Z",
+  "agent": "investigator",
+  "action": "check_founder_statement",
+  "sources": [
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=31602126"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "finding": "H1",
+  "standing": "partial_evidence",
+  "relevance": "statement",
+  "verdict": "partially_supports",
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: small, teams, spend, too, much, time, writing",
+   "a claim about people must be attributed to one person (\"One host says ...\")"
+  ],
+  "notes": []
+ },
+ {
+  "timestamp": "2026-11-17T11:26:27Z",
+  "agent": "challenger",
+  "action": "challenge_assumptions",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "ok",
+  "reviews": 6,
+  "grounded_reviews": 2,
+  "new_hypotheses": 0,
+  "risks": 0,
+  "experiments": 0,
+  "contradictions": 0,
+  "removed": []
+ },
+ {
+  "timestamp": "2026-11-17T11:26:27Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [
+   "https://news.ycombinator.com/item?id=46597069"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE"
+ },
+ {
+  "timestamp": "2026-11-17T11:26:27Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing": 3,
+  "experiments": 2
+ },
+ {
+  "timestamp": "2026-11-17T11:26:29Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:26:29Z-736e0a",
+  "outcome": "prohibited_category",
+  "screen": "financial_investment_or_crypto: crypto, cryptocurrency, trading signals"
+ },
+ {
+  "timestamp": "2026-11-17T11:26:29Z",
+  "agent": "orchestrator",
+  "action": "skip_research",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:26:29Z-736e0a",
+  "outcome": "skipped",
+  "reason": "a STOP rule applies before research; no model time spent"
+ },
+ {
+  "timestamp": "2026-11-17T11:26:29Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:26:29Z-736e0a",
+  "outcome": "stop",
+  "rule": "STOP_PROHIBITED_CATEGORY"
+ },
+ {
+  "timestamp": "2026-11-17T11:26:29Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T11:26:29Z-736e0a",
+  "outcome": "stop",
+  "rule": "STOP_PROHIBITED_CATEGORY",
+  "missing": 1,
+  "experiments": 0
+ }
+]

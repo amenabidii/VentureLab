@@ -1,0 +1,221 @@
+{
+ "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+ "model": "qwen3:4b",
+ "effort": "quick",
+ "queries": [
+  "release notes automation"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=release+notes+automation&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"release notes automation\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T11:24:47Z",
+   "items": 10
+  }
+ ],
+ "selection": {
+  "comments_seen": 10,
+  "off_topic_dropped": 1,
+  "relevant": 9,
+  "kept": 4,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=46597069",
+   "https://news.ycombinator.com/item?id=48417335",
+   "https://news.ycombinator.com/item?id=11012066",
+   "https://news.ycombinator.com/item?id=31602126"
+  ],
+  "topic_terms": [
+   "app",
+   "changelog",
+   "companie",
+   "customer",
+   "developer",
+   "draft",
+   "edit",
+   "facing",
+   "manager",
+   "merged",
+   "note",
+   "product",
+   "publish",
+   "pull",
+   "release",
+   "request",
+   "saa",
+   "software",
+   "team",
+   "web",
+   "writing"
+  ],
+  "problem_terms": [
+   "changelog",
+   "note",
+   "release",
+   "software",
+   "team",
+   "writing"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says release notes stop being a dev artifact and become a communication channel",
+   "standing": "established",
+   "relevance": "statement",
+   "shared_terms": [
+    "note",
+    "release"
+   ],
+   "quotes": [
+    {
+     "text": "If you're talking to users, Release notes stop being a dev artifact and become a communication channel.",
+     "url": "https://news.ycombinator.com/item?id=46597069",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote directly states that release notes become a communication channel when talking to users, matching the claim exactly.",
+   "limitations": "Only one user perspective is mentioned, not general applicability.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [],
+   "attributed": true,
+   "review": [],
+   "notes": []
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says it's tricky to fully automate release notes as a person needs to sense check the release note",
+   "standing": "established",
+   "relevance": "statement",
+   "shared_terms": [
+    "note",
+    "release"
+   ],
+   "quotes": [
+    {
+     "text": "Because of this it's tricky to fully automate the process as at some level you usually need a person casting an eye over the release note just to sense check.",
+     "url": "https://news.ycombinator.com/item?id=46597069",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote explains that automation requires human sense checking, directly matching the claim about it being tricky to fully automate release notes.",
+   "limitations": "Only addresses general process automation, not specific release notes.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [],
+   "attributed": true,
+   "review": [],
+   "notes": []
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "Small software teams spend too much time writing release notes and changelogs.",
+   "standing": "partial_evidence",
+   "relevance": "statement",
+   "shared_terms": [
+    "changelog",
+    "note",
+    "release",
+    "software"
+   ],
+   "quotes": [
+    {
+     "text": "I have never once considered conventional commits to be about human understanding, but more about automation (release notes, changelogs, and workflows).",
+     "url": "https://news.ycombinator.com/item?id=48417335",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Now she translates software engineering bug fix reports into customer-appropriate release notes for a big process-automation company.",
+     "url": "https://news.ycombinator.com/item?id=31602126",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "partially_supports",
+   "reason": "The quotes indicate that release notes/changelogs are automated, not human-focused, but the context shows a person translating bug reports into release notes for customers, suggesting they are human-focused.",
+   "limitations": "Limited to one person's experience, not generalizing to all small teams.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "small",
+    "teams",
+    "spend",
+    "too",
+    "much",
+    "time",
+    "writing"
+   ],
+   "attributed": false,
+   "review": [
+    "wording goes beyond the quoted text: small, teams, spend, too, much, time, writing",
+    "a claim about people must be attributed to one person (\"One host says ...\")"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 7,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 3.5,
+   "prompt_tokens": 160,
+   "output_tokens": 29
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 15.3,
+   "prompt_tokens": 605,
+   "output_tokens": 99
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 10.6,
+   "prompt_tokens": 477,
+   "output_tokens": 54
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 5.8,
+   "prompt_tokens": 321,
+   "output_tokens": 18
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 12.5,
+   "prompt_tokens": 527,
+   "output_tokens": 56
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 7.7,
+   "prompt_tokens": 371,
+   "output_tokens": 18
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 16.4,
+   "prompt_tokens": 557,
+   "output_tokens": 76
+  }
+ ],
+ "model_seconds": 71.8,
+ "elapsed_s": 72.6
+}

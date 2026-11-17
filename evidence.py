@@ -25,7 +25,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Literal
+from typing import Callable, Literal
 
 from pydantic import BaseModel, Field
 
@@ -145,12 +145,21 @@ def verify_span(source: str, start: int, end: int, source_url: str | None = None
 
 
 def quotes_from_passages(
-    source: str, passages: list[Passage], ids: list[int], source_url: str | None = None
+    source: str,
+    passages: list[Passage],
+    ids: list[int],
+    source_url: str | None = None,
+    *,
+    breaks: frozenset[int] = frozenset(),
+    url_at: Callable[[int], str] | None = None,
 ) -> list[Quote]:
     """Turn passage IDs chosen by the model into quotations copied from the source.
 
-    Each run of consecutive IDs becomes one verified quotation. Any unknown ID
-    makes the result a single unverified quote with empty text.
+    Each run of consecutive IDs becomes one verified quotation. A run never
+    continues into a passage listed in `breaks` (the first passage of another
+    comment or document), and `url_at(offset)` gives each quotation the URL of
+    the part of the source it comes from. Any unknown ID makes the result a
+    single unverified quote with empty text.
     """
     by_id = {p.id: p for p in passages}
     wanted = sorted(set(ids))
@@ -160,11 +169,16 @@ def quotes_from_passages(
         return [_unverified(source_url, "", f"unknown passage id in {ids}")]
     runs: list[list[int]] = [[wanted[0]]]
     for i in wanted[1:]:
-        if i == runs[-1][-1] + 1:
+        if i == runs[-1][-1] + 1 and i not in breaks:
             runs[-1].append(i)
         else:
             runs.append([i])
-    return [verify_span(source, by_id[r[0]].start, by_id[r[-1]].end, source_url) for r in runs]
+    quotes = []
+    for r in runs:
+        start = by_id[r[0]].start
+        url = url_at(start) if url_at else source_url
+        quotes.append(verify_span(source, start, by_id[r[-1]].end, url))
+    return quotes
 
 
 def _loose(text: str) -> tuple[str, list[int]]:
@@ -312,6 +326,8 @@ class EvidenceItem:
     # Why a person should look at this item (wording, a verdict that disagrees with its reason).
     review: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    # Set when economical mode skipped the model because the outcome could not change.
+    not_assessed: bool = False
 
     @property
     def verified(self) -> bool:
@@ -319,9 +335,22 @@ class EvidenceItem:
 
     @property
     def standing(self) -> Standing:
+        if self.verified and self.verdict is None and self.not_assessed:
+            # Deliberately not sent to the model because it can never be established:
+            # kept, with its verified quote, for a person to review.
+            return Standing.NEEDS_REVIEW
         return standing_for(self.verified, self.verdict, self.confirmed,
                             effective_claim_type(self.claim, self.claim_type),
-                            grounded=self.unsourced == [] and self.attributed is True)
+                            grounded=self.grounded)
+
+    @property
+    def grounded(self) -> bool:
+        return self.unsourced == [] and self.attributed is True
+
+    @property
+    def can_be_established(self) -> bool:
+        """False once the deterministic checks rule out ESTABLISHED, whatever the model says."""
+        return self.verified and self.grounded and effective_claim_type(self.claim, self.claim_type) != "demand"
 
 
 def standing_for(
@@ -398,6 +427,8 @@ def extract_claims(
     max_passages: int | None = None,
     max_claims: int = 5,
     num_predict: int = 400,
+    breaks: frozenset[int] = frozenset(),
+    url_at: Callable[[int], str] | None = None,
 ) -> tuple[list[EvidenceItem], LLMResult]:
     """Ask the model which passages carry claims; Python builds the quotes."""
     passages = split_passages(source)
@@ -413,7 +444,7 @@ def extract_claims(
         if not set(c.passages) <= shown_ids:
             quotes = [_unverified(source_url, "", f"passage not shown to the model: {c.passages}")]
         else:
-            quotes = quotes_from_passages(source, passages, c.passages, source_url)
+            quotes = quotes_from_passages(source, passages, c.passages, source_url, breaks=breaks, url_at=url_at)
         items.append(EvidenceItem(claim=c.claim, claim_type=c.type, quotes=quotes))
     return items, result
 
@@ -470,13 +501,13 @@ def confirm_support(
 
 
 def evaluate(
-    client: OllamaClient, model: str, claim: str, quotes: list[str], context: str
+    client: OllamaClient, model: str, claim: str, quotes: list[str], context: str, *, confirm: bool = True
 ) -> tuple[AssessmentOutput, ConfirmOutput | None, list[LLMResult]]:
-    """Assessment plus, for `supports` only, the confirmation check."""
+    """Assessment plus, for `supports` only (and if `confirm`), the confirmation check."""
     answer, res = assess(client, model, claim, quotes, context)
     results = [res]
     check = None
-    if answer.verdict == "supports":
+    if answer.verdict == "supports" and confirm:
         check, res2 = confirm_support(client, model, claim, quotes, context)
         results.append(res2)
     return answer, check, results
@@ -485,11 +516,21 @@ def evaluate(
 _CONTRADICTION_WORDING = re.compile(r"\bcontradict", re.IGNORECASE)
 
 
-def assess_item(client: OllamaClient, model: str, item: EvidenceItem, source: str) -> list[LLMResult]:
+def assess_item(
+    client: OllamaClient, model: str, item: EvidenceItem, source: str, *, economical: bool = False,
+    assess_unpromotable: bool = True,
+) -> list[LLMResult]:
     """Fill in an item's verdict. Items without verified quotes are not sent to the model.
 
     If the model fails (unreachable, or no valid JSON after a retry), the item
     stays unassessed, which keeps it an assumption, and the failure is noted.
+
+    Economical mode skips model calls whose answer cannot change the standing.
+    It never makes a claim easier to establish:
+    - the second check is skipped when the deterministic checks already rule
+      out ESTABLISHED (demand claims, wording beyond the quote, no attribution);
+    - with `assess_unpromotable=False`, such a claim is not assessed at all and
+      stays NEEDS_REVIEW with its verified quote.
     """
     if not item.verified:
         item.notes.append("not assessed: quotation not verified")
@@ -502,8 +543,14 @@ def assess_item(client: OllamaClient, model: str, item: EvidenceItem, source: st
     item.attributed = attributed_to_one_person(item.claim, item.claim_type)
     if not item.attributed:
         item.review.append("a claim about people must be attributed to one person (\"One host says ...\")")
+    if economical and not item.can_be_established and not assess_unpromotable:
+        item.not_assessed = True
+        item.notes.append("not sent to the model: the wording or attribution checks already rule out "
+                          "establishing it")
+        return []
+    confirm = not economical or item.can_be_established
     try:
-        answer, check, results = evaluate(client, model, item.claim, texts, context)
+        answer, check, results = evaluate(client, model, item.claim, texts, context, confirm=confirm)
     except LLMError as exc:
         item.notes.append(f"assessment failed: {exc}")
         return []
@@ -513,4 +560,6 @@ def assess_item(client: OllamaClient, model: str, item: EvidenceItem, source: st
         item.review.append(f"verdict is {answer.verdict} but the reason mentions a contradiction")
     if check is not None:
         item.confirmed, item.confirm_note = check.fully_supported, check.problems
+    elif answer.verdict == "supports" and not confirm:
+        item.notes.append("second check skipped: this claim cannot be established whatever it says")
     return results

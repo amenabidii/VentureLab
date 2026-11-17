@@ -1,0 +1,10 @@
+{
+  "idea": "A paid newsletter that sends daily crypto trading signals to beginners.",
+  "problem_statement": "Beginners do not know when to buy and sell cryptocurrency.",
+  "target_customer": "beginner retail investors",
+  "market": "online, worldwide",
+  "founder_skills": ["writing", "spreadsheet analysis"],
+  "hours_per_week": 15,
+  "budget_eur": 100,
+  "values_and_constraints": ["launch within a month"]
+}

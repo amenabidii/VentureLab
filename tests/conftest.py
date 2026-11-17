@@ -74,3 +74,68 @@ def unreachable_client() -> OllamaClient:
         raise httpx.ConnectError("connection refused", request=request)
 
     return OllamaClient(TEST_SETTINGS, transport=httpx.MockTransport(refuse))
+
+
+# --- Milestone 2: a STUBBED model that answers by role, and STUBBED public sources ---------
+
+ROLE_MARKERS = {
+    "queries": "plan searches of Hacker News",
+    "extract": "read numbered passages",
+    "assess": "check whether quotations from a source support a claim",
+    "confirm": "second, sceptical reviewer",
+    "challenge": "sceptical advisor",
+}
+
+
+class RoutedOllama:
+    """STUBBED Ollama that picks a reply by the agent prompt it receives.
+
+    `replies` maps a role (see ROLE_MARKERS) to a function(user_message) -> reply
+    text, or to a fixed string. `calls` records the role of every chat request.
+    """
+
+    def __init__(self, replies: dict) -> None:
+        self.replies = replies
+        self.calls: list[str] = []
+
+    def handler(self, request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content) if request.content else {}
+        if request.url.path != "/api/chat":
+            return httpx.Response(200, json={"version": "0.0.0-test", "models": [], "done": True})
+        system = body["messages"][0]["content"]
+        user = body["messages"][1]["content"]
+        role = next((r for r, marker in ROLE_MARKERS.items() if marker in system), "unknown")
+        self.calls.append(role)
+        reply = self.replies.get(role)
+        if reply is None:
+            return httpx.Response(500, json={"error": f"no stubbed reply for {role}"})
+        return httpx.Response(200, json=chat_body(reply(user) if callable(reply) else reply))
+
+    def client(self) -> OllamaClient:
+        return OllamaClient(TEST_SETTINGS, transport=httpx.MockTransport(self.handler))
+
+
+def hn_hits(*comments: tuple[str, str, str]) -> dict:
+    """Algolia-style search result from (objectID, author, comment HTML) tuples."""
+    return {"hits": [{"objectID": oid, "author": author, "comment_text": text, "story_title": "Ask HN: tools"}
+                     for oid, author, text in comments]}
+
+
+def stub_sources(routes: dict) -> "SourceFetcher":
+    """STUBBED public web: `routes` maps a URL substring to a JSON dict, text, or an exception."""
+    from sources import SourceFetcher
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        for key, value in routes.items():
+            if key in url:
+                if isinstance(value, Exception):
+                    raise value
+                if isinstance(value, int):
+                    return httpx.Response(value)
+                if isinstance(value, dict):
+                    return httpx.Response(200, json=value)
+                return httpx.Response(200, text=value, headers={"content-type": "text/html"})
+        raise httpx.ConnectError("no route", request=request)
+
+    return SourceFetcher(transport=httpx.MockTransport(handler))

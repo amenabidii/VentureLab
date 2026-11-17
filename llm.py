@@ -158,10 +158,17 @@ class OllamaClient:
         output_type: type[T],
         *,
         retries: int = 1,
+        parse_as: type[BaseModel] | None = None,
         **kwargs: Any,
     ) -> LLMResult:
-        """Ask for JSON matching `output_type`; retry with the error message if invalid."""
+        """Ask for JSON matching `output_type`; retry with the error message if invalid.
+
+        `parse_as` parses the reply with a more lenient model than the schema sent
+        to the server, so that the caller can check (and report) bad values one by
+        one instead of losing the whole reply.
+        """
         schema = output_type.model_json_schema()
+        output_type = parse_as or output_type
         history = list(messages)
         errors: list[str] = []
         for attempt in range(1, retries + 2):

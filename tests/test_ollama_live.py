@@ -120,3 +120,36 @@ def test_live_pipeline_promotes_only_grounded_attributed_claims(client):
     for item in items:
         if item.standing is ev.Standing.NEEDS_REVIEW:
             assert item.review  # the reason is kept for the person reviewing it
+
+
+def test_live_challenger_output_is_grounded(client, tmp_path):
+    """Real model: the Challenger's points are labelled by code, never by the model."""
+    import evidence as ev
+    from agents.challenger import BASIS_ASSUMPTION, challenge
+    from agents.investigator import Finding
+    from audit import AuditLog
+    from brief import FounderBrief
+
+    brief = FounderBrief.model_validate({
+        "idea": "A web app that drafts release notes from merged pull requests.",
+        "problem_statement": "Small software teams spend too much time writing release notes.",
+        "target_customer": "developers at small SaaS companies", "market": "online",
+        "founder_skills": ["Python"], "hours_per_week": 10, "budget_eur": 0,
+    })
+    text = "As a developer I spend two hours on the changelog for each release."
+    item = ev.EvidenceItem("One developer says I spend two hours on the changelog for each release.",
+                           "customer_problem", [ev.verify_span(text, 0, len(text), "https://example.test/c1")],
+                           "supports", confirmed=True, unsourced=[], attributed=True)
+    findings = [Finding("F1", "extracted", "hn_comments", item)]
+    result = challenge(brief, findings, client, client.settings.model, AuditLog(tmp_path / "log.json", "live"))
+    assert result.status == "ok", result.error
+    assert [r["assumption"] for r in result.reviews] == ["A1", "A2", "A3", "A4", "A5", "A6"]
+    for group in (result.reviews, result.new_hypotheses, result.risks):
+        for p in group:
+            assert set(p["evidence"]) <= {"F1"}  # constrained output: only IDs that exist
+            assert p["evidence"] or p["basis"] == BASIS_ASSUMPTION
+    for r in result.reviews:
+        if r["stance"] == "supported":
+            assert r["evidence"] == ["F1"]
+    for e in result.experiments:
+        assert e["assumption"] in {"A1", "A2", "A3", "A4", "A5", "A6"} and e["support_if"] and e["weaken_if"]

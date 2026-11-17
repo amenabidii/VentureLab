@@ -248,8 +248,9 @@ def test_extraction_builds_quotes_from_ids(fake_ollama):
     assert items[0].quotes[0].text == ev.split_passages(SOURCE)[2].text
     assert all("INVENTED" not in q.text for q in items[0].quotes)
     _, body = fake.requests[-1]
-    assert "Do not copy or quote passage text" in body["messages"][0]["content"]
-    assert "attributed to who says it" in body["messages"][0]["content"]
+    assert "exact quotation is retrieved separately" in body["messages"][0]["content"]
+    assert "Start with who says it" in body["messages"][0]["content"]
+    assert "Never write about a group" in body["messages"][0]["content"]
     assert "at most 5 claims" in body["messages"][0]["content"]
 
 

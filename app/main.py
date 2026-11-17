@@ -1,4 +1,4 @@
-"""VentureLab web app (Milestone 1: health and model connectivity only)."""
+"""VentureLab web app: health and model status. The Discover workflow runs from the CLI (orchestrator.py)."""
 
 from __future__ import annotations
 
@@ -118,8 +118,9 @@ def health_inference(client: OllamaClient = Depends(get_client)) -> JSONResponse
 # the README table can be checked against each other later.
 FEATURES = [
     ("Local model server (Ollama) and health checks", "Working"),
-    ("Investigator, Challenger, Builder and Judge agents", "STUBBED (not built yet)"),
-    ("Evidence and decision gates", "STUBBED (not built yet)"),
+    ("Discover workflow: founder brief, Investigator, Challenger (CLI: python orchestrator.py)", "Working"),
+    ("Evidence verification and deterministic phase 1 gate with counterfactual", "Working"),
+    ("Builder and Judge agents, later phases", "STUBBED (not built yet)"),
     ("Founder approval", "STUBBED (not built yet)"),
     ("Payments and sale-to-cash", "STUBBED (design only, never implemented)"),
 ]
