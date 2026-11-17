@@ -1,0 +1,120 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "discover_decision": "REPEAT",
+ "canvas": {
+  "problem": [
+   {
+    "text": "Remote workers waste time catching up on long Slack threads they missed.",
+    "label": "FOUNDER-PROVIDED",
+    "sources": [],
+    "test": "Ask 10 remote workers about Slack thread"
+   },
+   {
+    "text": "One user says Slack threads are too long to read and they miss important messages.",
+    "label": "SOURCED: NEEDS_REVIEW (not established)",
+    "sources": [
+     "https://news.ycombinator.com/item?id=36434999"
+    ],
+    "test": null
+   },
+   {
+    "text": "One user says Slack messages go unanswered more often than in Teams.",
+    "label": "SOURCED: PARTIAL_EVIDENCE (not established)",
+    "sources": [
+     "https://news.ycombinator.com/item?id=20896857"
+    ],
+    "test": null
+   },
+   {
+    "text": "Remote workers waste time catching up on long Slack threads they missed.",
+    "label": "SOURCED: PARTIAL_EVIDENCE (not established)",
+    "sources": [
+     "https://news.ycombinator.com/item?id=25056920",
+     "https://news.ycombinator.com/item?id=36434999"
+    ],
+    "test": null
+   }
+  ],
+  "customer_segments": [
+   {
+    "text": "remote engineers and product managers on distributed teams",
+    "label": "FOUNDER-PROVIDED",
+    "sources": [],
+    "test": "Recruit 5–10 people who match this segment for interviews"
+   }
+  ],
+  "unique_value_proposition": [
+   {
+    "text": "For remote engineers and product managers on distributed teams: A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+    "label": "ASSUMPTION",
+    "sources": [],
+    "test": "Ask interviewees how they handle the problem today before showing the concept"
+   }
+  ],
+  "solution": [
+   {
+    "text": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+    "label": "FOUNDER-PROVIDED",
+    "sources": [],
+    "test": null
+   }
+  ],
+  "channels": [
+   {
+    "text": "Reach customers in: Online, English-speaking remote software teams",
+    "label": "FOUNDER-PROVIDED",
+    "sources": [],
+    "test": "Count how many qualified people one channel yields per hour of effort"
+   }
+  ],
+  "revenue_streams": [
+   {
+    "text": "Willingness to pay is unknown. Desk research cannot establish it.",
+    "label": "UNKNOWN — needs evidence",
+    "sources": [],
+    "test": "Pricing questions in interviews, then a priced pre-order or waitlist test (Phase 4 hypotheses)"
+   }
+  ],
+  "cost_structure": [
+   {
+    "text": "Founder time: 8 hours a week; budget 5000 EGP; local open-weight model, $0 API cost.",
+    "label": "FOUNDER-PROVIDED",
+    "sources": [],
+    "test": null
+   }
+  ],
+  "key_metrics": [
+   {
+    "text": "Share of interviewees who describe a recent, specific occurrence of the problem; then waitlist sign-up rate from the landing page.",
+    "label": "ASSUMPTION",
+    "sources": [],
+    "test": "Set pass marks in the brief's validation_conditions before running"
+   }
+  ],
+  "unfair_advantage": [
+   {
+    "text": "Founder skills: TypeScript, browser extensions, Python. Not an advantage until compared with alternatives.",
+    "label": "ASSUMPTION",
+    "sources": [],
+    "test": "List existing alternatives interviewees already use"
+   }
+  ]
+ },
+ "summary": {
+  "boxes": 9,
+  "sourced_entries": 3,
+  "established_entries": 0,
+  "unknown_boxes": [
+   "revenue_streams"
+  ],
+  "founder_assumptions_under_test": [
+   "A1",
+   "A2",
+   "A3",
+   "A4",
+   "A5",
+   "A6"
+  ]
+ },
+ "note": "A Lean Canvas is a set of hypotheses. Labels show where each entry came from; nothing here is evidence of demand."
+}

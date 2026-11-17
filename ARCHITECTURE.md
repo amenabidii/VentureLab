@@ -41,11 +41,17 @@ founder's machine except inside a decision the founder submits.
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
-| 2 Validate | Design an experiment that could disprove the assumption | Builder (kit), Judge (rules) | Approve exact kit and proposed thresholds | **Working** (plan and kit); recording real results is **STUBBED** |
+| 2 Validate | Lean Canvas; design an experiment that could disprove the assumption | Strategist (canvas), Builder (kit), Judge (rules) | Approve exact kit and proposed thresholds | **Working** (canvas, plan and kit); recording real results is **STUBBED** |
 | 3 Build | Local landing-page prototype for the concept | Builder | Approve exact page fingerprint | **Working** after a GO decision; local files only |
-| 4 Commercial Setup | Pricing hypotheses, positioning, costs | (future) | Required for any commitment | **STUBBED** |
-| 5 Launch | Channel experiment, publishing | (future) | Separate approval per send or publish | **STUBBED** |
-| 6 Operate & Learn | Compare real results with pre-set criteria | Judge (future) | Required for any change in real world | **STUBBED** |
+| 4 Commercial Setup | Pricing hypotheses and draft policies | Commercial | Founder chooses the price (fingerprint-bound) | **Working** (drafts; no payments of any kind) |
+| 5 Launch | Store page, launch posts, automatic delivery | Launcher; `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py` | Publish page and enable delivery, each bound to the exact file | Drafts **Working**; publishing and sale to cash **MOCKED** |
+| 6 Operate & Learn | Support, metrics, persevere-or-pivot memo | Operator, Judge rules | Required for any real-world change | **Working** on real inputs; rehearsal metrics **MOCKED** and never evidence |
+
+Phases 2 (Lean Canvas) and 4–6 run through `workflow.py` (`plan`, `approve`, `prepare-launch`, `launch`).
+STOP from the Discover gate blocks them. After REPEAT or PIVOT they run only as a REHEARSAL
+that the founder approves explicitly (`rehearse_after_<decision>`, bound to the gate file's
+SHA-256); every rehearsal artifact says so. Each phase writes a `phase<N>_gate_*.json` with
+its checks, and every action is appended to `decision_log.json`.
 
 ### 1. Discover
 
@@ -93,9 +99,13 @@ questions or interpreting polite interest as demand.
 - **Gate**: founder approval of the exact kit; real results would later feed the
   `STOP_FAILED_VALIDATION_CONDITION` rule (results entry is STUBBED).
 
-**Remaining Validate design (STUBBED):** a versioned Lean Canvas would link problem,
-customer, value proposition, solution, channels, revenue, costs, key metrics and
-advantage to finding IDs or explicit assumptions. The Builder would propose a
+**Lean Canvas (Working, `agents/strategist.py`):** all nine boxes, each entry labelled
+FOUNDER-PROVIDED, SOURCED (verified quote URL plus its standing; only ESTABLISHED counts as
+established) or ASSUMPTION/UNKNOWN with the test that would resolve it. Revenue stays
+UNKNOWN until willingness to pay is measured. Outputs `phase2_step2_lean-canvas.*` and
+`phase2_gate_lean-canvas.json` (founder review; demand not evidenced).
+
+**Remaining Validate design (STUBBED):** the Builder would propose a
 landing-page demand experiment with a fixed audience, duration, denominator,
 conversion definition and pass/fail criteria. Founder approval binds the exact
 page, destinations and thresholds before launch. Traffic, sign-ups and interview
@@ -123,50 +133,48 @@ acceptance checks, explicit unresolved risks and founder review before release;
 failures return REPEAT. A static landing page is not a complete tested product.
 Application tests in this repository test VentureLab, not an automatically built MVP.
 
-### 4. Commercial Setup (STUBBED)
+### 4. Commercial Setup
 
-- **Agents/tools:** proposed Builder templates and deterministic completeness checks;
-  no account creation or payment provider integration.
-- **Inputs/method:** validated offer, founder constraints and observed costs. Draft
-  pricing alternatives with explicit assumptions about willingness to pay, marginal
-  cost and support time. Compare unit economics under low/base/high usage without
-  implying revenue or income is guaranteed.
-- **Outputs:** versioned pricing rationale, positioning, draft terms, privacy and
-  refund policies. Policies identify data collected, purpose, retention, deletion,
-  delivery limitations and support contact; they are drafts for founder review,
-  not legal advice. Missing jurisdiction-specific requirements are unresolved tasks.
-- **Gate:** founder accepts the exact offer and drafts; missing facts give REPEAT,
-  unacceptable privacy or ethical constraints give STOP. Approval does not permit
-  collecting payments, signing terms or publishing.
+- **Agent:** `agents/commercial.py` (deterministic; no model, no payment provider, no accounts).
+- **Method:** price *hypotheses*: a free core plus three monthly test prices, each labelled
+  ASSUMPTION with the test that would measure willingness to pay (pricing questions in
+  interviews, then a priced waitlist with no payment taken). Draft terms, privacy and refund
+  policies from the brief and the founder's values, each marked DRAFT and "not legal advice".
+- **Outputs:** `phase4_step1_pricing.*`, `phase4_step1_pricing-decision.md`,
+  `phase4_step2_{terms,privacy,refund}-policy-draft.md`, `phase4_gate_commercial.json`.
+- **Gate:** the price is set only by a founder approval `set_price:<option>` bound to the
+  pricing file's SHA-256; without it the Launch phase refuses to start. Approval never
+  permits collecting payments, signing terms or publishing.
+- **Still STUBBED:** unit economics from observed costs; jurisdiction-specific policy review.
 
-### 5. Launch (STUBBED)
+### 5. Launch
 
-- **Agents/tools:** proposed Builder copy templates and a local mock fulfillment
-  state machine; all payment and delivery events visibly MOCKED.
-- **Inputs/method:** approved product version, pricing hypothesis and policy drafts.
-  Prepare a store page and channel-specific posts with source/ASSUMPTION labels,
-  accurate capabilities and limitations, and no invented reviews, sign-ups or urgency.
-- **Outputs:** draft store page, posts, channel experiment plan and mock delivery
-  receipt. Every external publish/send would require a separate approval bound to
-  exact content, destination, expiry and action. No such external action is built.
-- **Gate:** check content, asset version, required policy links and explicit founder
-  approval. Failed checks give REPEAT; prohibited offers give STOP. Local mock
-  fulfillment demonstrates the intended flow without customers, charges or email.
+- **Agents/tools:** `agents/launcher.py` (store page, launch-post drafts) and the MOCKED
+  sale-to-cash modules `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`.
+- **Method:** the store page and posts use only the brief and the approved price, pass the
+  content rules (no reviews, counts, urgency, income claims), and show a disabled checkout.
+  "Publishing" is MOCKED (a local file marked published) and needs approval of the exact page
+  fingerprint; posts are drafts for the founder to post. Automatic delivery is enabled only
+  by approval of the exact product file, then exercised with SIMULATED test orders (below).
+- **Outputs:** `phase5_step1_store-page.html`, `phase5_step1_launch-posts.md`,
+  `phase5_step2_mock-product.md`, `phase5_step3_reconciliation.json`,
+  `outputs/payment_test_log.md`, `phase5_gate_launch.json` (every sale-to-cash check listed).
+- **Gate:** both approvals present and unchanged files; all sale-to-cash checks pass and
+  reconciliation balances, otherwise REPEAT. Editing the page after approval invalidates it.
+- **Still STUBBED:** real publishing, real posting, a real store or payment provider; these
+  stay out of scope by rule (no payments of any kind).
 
-### 6. Operate & Learn (STUBBED)
+### 6. Operate & Learn
 
-- **Agents/tools:** proposed support triage, deterministic metric aggregation and
-  Challenger/ Judge review; no automatic customer replies.
-- **Inputs/method:** consented support reports and actual experiment observations,
-  with timestamps, provenance, denominators and missing-data flags. Track activation,
-  successful deliveries, failures, support burden and retention by cohort; never
-  treat simulated events as observed demand. Draft replies require founder review.
-- **Outputs:** support summary, metric definitions and a persevere/pivot memo linking
-  each conclusion to observations, the pre-set thresholds and unresolved assumptions.
-- **Gate:** persevere only when the pre-set criteria hold; PIVOT for supported
-  alternatives, REPEAT for inadequate observations, STOP for failed conditions or
-  unacceptable harm. New assumptions return to Discover; changed product versions
-  invalidate prior launch approval. No results are synthesized.
+- **Agent:** `agents/operator.py` (fixed rules, no model).
+- **Method:** support triage only of real requests the founder supplies (none are ever
+  generated); metrics from the sale-to-cash rehearsal are labelled MOCKED and excluded from
+  evidence; the persevere-or-pivot memo applies fixed rules: STOP if Discover said STOP,
+  PIVOT OR STOP if real results failed pre-set pass marks, PIVOT after a Discover PIVOT,
+  PERSEVERE only after GO with every pass mark met by real results, otherwise REPEAT.
+- **Outputs:** `phase6_step1_support.json`, `phase6_step2_metrics.json`,
+  `phase6_step3_persevere-or-pivot-memo.*`, `phase6_gate_persevere-or-pivot.json`.
+- **Still STUBBED:** collecting real support requests and product metrics after a launch.
 
 ## Gates
 
@@ -220,29 +228,26 @@ two-hour expiry, and single use. The workspace cannot change any of these result
 
 ## Sale to cash
 
-Architecture only, **STUBBED**. All proposed events below are **MOCKED**:
-VentureLab processes no real or sandbox payments, stores no payment credentials,
-and spends nothing. The stricter no-payments constraint applies to this design.
+Implemented as a **MOCKED** local simulation (`workflow.py launch`); no real or sandbox
+payments, no payment provider, no card data, no money and no people. The latest run's
+results are in `outputs/payment_test_log.md`.
 
 ```text
-founder-approved local simulation -> mock order (product version + price assumption)
-  -> mock payment-confirmed event -> one local delivery receipt
-  -> mock refund event -> revoke simulated access
-  -> reconciliation report (mock orders, payments, fees and payouts)
+founder approves exact product file --> DeliveryService enabled
+mock order --> MockPaymentProvider event (HMAC-signed, unique event id)
+  payment.succeeded --> verify signature --> idempotency (event id, order id) --> grant access once
+  payment.failed    --> no delivery
+  charge.refunded   --> refunds.revoke_access --> access revoked (refund for undelivered order recorded)
+  forged signature  --> rejected
+payout report --> reconcile(): orders vs payment events vs fees vs refunds vs access grants vs payout
+              --> mismatches listed (double charge, missing or extra access, short payout)
 ```
 
-The mock order has a unique ID, explicit simulated status and approved product hash.
-A mock payment-confirmed event is the only delivery trigger; a pending or failed event
-cannot deliver. A unique event ID and order/product idempotency key prevent duplicate
-delivery on retry. Delivery writes a local receipt pointing to the approved local
-artifact, never sends email or grants real access. A mock refund revokes simulated
-access; duplicate refunds are no-ops. Out-of-order or unknown-order events are held
-for manual review, not guessed. Reconciliation compares recorded mock order totals,
-payment totals, fee assumptions and payouts and lists mismatches explicitly.
-
-These components and tests are not implemented; `outputs/payment_test_log.md` is
-intentionally absent. Any later test log must come from executing this mock flow,
-label every event MOCKED and never imply that money moved.
+The rehearsal exercises a paid order, the same webhook delivered twice (ignored), a
+second paid order then refunded (access revoked), a declined payment (no delivery), and a
+forged signature (rejected) followed by the genuine event (delivered). The fee schedule is
+an illustrative MOCKED constant, not any provider's pricing. Tests also prove reconciliation
+flags a missing delivery and a short payout (`tests/test_later_phases.py`).
 
 ## Data flow
 
@@ -262,6 +267,12 @@ workspace form --POST /api/runs--> FounderBrief + category screen --> run record
                                          |
   POST /api/approvals/<id>/decision  (founder key, fingerprint, run) --> approved / rejected
   POST /api/approvals/<id>/execute   (founder key)  --> outputs/builder/<run>/<id>/phase2_*, phase3_*
+
+workflow.py plan --run outputs/runs/<run> --> Lean Canvas (phase2_*) --> [STOP blocks | REPEAT/PIVOT needs
+  rehearsal approval] --> pricing + policy drafts (phase4_*) --> approve set_price --> prepare-launch
+  --> store page, posts, product file (phase5_*) --> approve publish + delivery --> launch
+  --> MOCKED sale to cash (payment_test_log.md, phase5_step3_*) --> support, metrics, memo (phase6_*)
+  founder approvals: HMAC-signed records in .venturelab/workflow_approvals.json, bound to file SHA-256
 
 every agent action --> {timestamp, agent, action, sources, model, cost, approved_by,
                         run_id, ...} --> decision_log.json
@@ -296,9 +307,13 @@ matching audit entries; review provenance before updating it.
 | Gate and counterfactual | Built, deterministic, tested |
 | Builder (kit; landing page after GO), adapter from the research run | Built, tested; kit live-run and founder-approved |
 | Founder approval: key, fingerprint, run, expiry, single use, audit | Built, tested, bypass attempts refused on the live server |
-| Validate-phase results entry | STUBBED |
-| Commercial Setup, Launch, Operate & Learn | STUBBED |
-| Payments | STUBBED by policy |
+| Lean Canvas (Phase 2) | Built, tested, run on a genuine run |
+| Pricing hypotheses and draft policies (Phase 4) | Built, tested; price set only by founder approval |
+| Store page and launch-post drafts (Phase 5) | Built, tested; publishing MOCKED |
+| Sale to cash: payment events, delivery, refunds, reconciliation (Phase 5) | MOCKED, built and tested; simulated test orders only |
+| Support, metrics, persevere-or-pivot memo (Phase 6) | Built, tested; rehearsal metrics MOCKED and excluded from evidence |
+| Validate-phase results entry; MVP generation beyond the landing page | STUBBED |
+| Real payments, publishing, posting | Not built, by rule |
 
 Known limits: relevance is a keyword and concept list, not semantic understanding; the
 extraction model sometimes generalises or misattributes claims (the checks hold those
@@ -317,4 +332,5 @@ key is a single-machine capability, not an account system.
    attribution checks, measured on the held-out benchmark set.
 3. Human review queue for NEEDS_REVIEW findings, recorded in the audit log.
 4. Durable job queue and multi-founder accounts, if the tool is used beyond one machine.
-5. Design-only phases one at a time, each with its own approval-gated actions.
+5. Real-world integrations for Launch (a store, a payment provider) only behind the same
+   fingerprint-bound approvals, and only where the competition rules no longer forbid them.

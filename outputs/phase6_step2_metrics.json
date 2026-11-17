@@ -1,0 +1,9 @@
+{
+ "label": "MOCKED — computed from simulated test orders, not customers. Not evidence of demand.",
+ "test_orders": 4,
+ "paid": 3,
+ "refunded": 1,
+ "failed": 1,
+ "active_access": 2,
+ "reconciliation_balanced": true
+}

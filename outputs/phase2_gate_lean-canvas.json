@@ -1,0 +1,19 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "phase": 2,
+ "decision": "REVIEW",
+ "checks": [
+  {
+   "check": "every box filled or marked UNKNOWN",
+   "passed": true
+  },
+  {
+   "check": "revenue streams evidenced",
+   "passed": false
+  }
+ ],
+ "founder_approvals": [],
+ "discover_decision": "REPEAT",
+ "rehearsal": true,
+ "decided_by": "fixed rules in workflow.py"
+}

@@ -1,0 +1,19 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "phase": 6,
+ "decision": "REPEAT",
+ "checks": [
+  {
+   "check": "real experiment results available",
+   "passed": false
+  },
+  {
+   "check": "mocked metrics excluded from evidence",
+   "passed": true
+  }
+ ],
+ "founder_approvals": [],
+ "discover_decision": "REPEAT",
+ "rehearsal": true,
+ "decided_by": "fixed rules in workflow.py"
+}

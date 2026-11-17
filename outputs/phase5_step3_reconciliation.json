@@ -1,0 +1,48 @@
+{
+ "rows": [
+  {
+   "order_id": "ord_test_1",
+   "amount_cents": 800,
+   "paid": true,
+   "fee_cents": 53,
+   "refunded": false,
+   "access": "active",
+   "expected_access": "active"
+  },
+  {
+   "order_id": "ord_test_2",
+   "amount_cents": 800,
+   "paid": true,
+   "fee_cents": 53,
+   "refunded": true,
+   "access": "revoked",
+   "expected_access": "revoked"
+  },
+  {
+   "order_id": "ord_test_3",
+   "amount_cents": 800,
+   "paid": false,
+   "fee_cents": 0,
+   "refunded": false,
+   "access": "none",
+   "expected_access": "none"
+  },
+  {
+   "order_id": "ord_test_4",
+   "amount_cents": 800,
+   "paid": true,
+   "fee_cents": 53,
+   "refunded": false,
+   "access": "active",
+   "expected_access": "active"
+  }
+ ],
+ "gross_cents": 2400,
+ "fees_cents": 159,
+ "refunds_cents": 800,
+ "expected_net_cents": 1441,
+ "payout_net_cents": 1441,
+ "mismatches": [],
+ "balanced": true,
+ "mocked": true
+}
