@@ -534,7 +534,7 @@ async function switchMode(mode) {
     ? "RECORDED EXECUTIONS · Read-only prior runs, not current research. Historical decisions may be superseded; no approval authority is restored."
     : state.demo
       ? "MOCKED · Synthetic UI preview. No research, execution, generated artifacts or approvals are real."
-      : "Live workspace · connected to the local backend. Phases 2–6 run through workflow.py (sale to cash MOCKED; MVP code generation STUBBED); see Phases 1–6.";
+      : "Live workspace · connected to the local backend. Phases 2–6 run from the Phases 1–6 page (sale to cash MOCKED; MVP production code STUBBED).";
   await load();
 }
 document

@@ -82,7 +82,7 @@ export const phases = [
     "Challenge the assumptions",
     "Critical analysis and a validation plan",
     "Observed problem and demand evidence",
-    "Working · plan only; results entry STUBBED",
+    "Working · canvas, kit, founder-reported results gate; real sign-ups STUBBED",
     "evidence",
   ],
   [
@@ -216,13 +216,13 @@ export function workflow(s) {
     ? s.data.agents
     : ["Investigator", "Challenger", "Builder", "Judge"].map((agent) => ({
         agent,
-        status: "STUBBED",
-        task: "Awaiting backend integration. No operation has started.",
+        status: "Not started",
+        task: "No run selected. Submit a brief, or open a recorded execution.",
       }));
   return (
     heading(
       "02 / FOLLOW THE WORK",
-      "Four roles. One transparent process.",
+      "Discover: four roles, one transparent process.",
       "Statuses reflect backend records. No animated or simulated execution.",
     ) +
     `<div class="workflow">${agents.map((a, i) => `<article class="card agent"><div class="agent-number">0${i + 1}</div><div><h2>${e(a.agent)}</h2><p>${e(a.task)}</p>${link({ Investigator: "evidence", Challenger: "challenger", Builder: "artifacts", Judge: "decision" }[a.agent], a.status === "Completed" ? "View output →" : "Open output view →", "text-link")}</div>${badge(a.status)}</article>`).join("")}</div><div class="notice">The Judge explains deterministic gate results. It cannot override them. ${s.service.capabilities.workflow ? "Status refreshes every 5 seconds while this view is open." : "Demo mode shows MOCKED statuses."}${s.runDetail?.error ? ` Run message: ${e(s.runDetail.error)}` : ""}</div>`
@@ -414,7 +414,7 @@ export function roadmap() {
     heading(
       "THE COMPLETE ARCHITECTURE",
       "Six phases. Evidence at every gate.",
-      "Discover and the Builder run here; phases 2–6 run through workflow.py behind founder approvals. Their gates and outputs are on the Phases 1–6 page.",
+      "Discover and the Builder run here; phases 2–6 run from the Phases 1–6 page (or workflow.py), each step behind founder approval. Their gates and outputs are on the Phases 1–6 page.",
     ) +
     `<div class="roadmap">${phases.map((p, i) => `<article class="card"><div class="section-title"><span class="phase-number">0${i + 1}</span>${badge(p[4])}</div><h2>${p[0]}</h2><p>${p[1]}</p><h3>Expected outputs</h3><p>${p[2]}</p><h3>Gate conditions</h3><p>${p[3]}</p>${p[5] ? link(p[5], i === 0 ? "Prepare a brief →" : "Inspect workspace →", "text-link") : '<p class="muted">Runs via <code>workflow.py</code> · <a class="text-link" href="/phases">Gates and outputs →</a></p>'}</article>`).join("")}</div><div class="notice">Discover is working end to end. Validate produces an experiment plan; entering experiment results is STUBBED. Build writes local files only after your approval; nothing is published. Commercial Setup, Launch and Operate &amp; Learn are STUBBED future capabilities. No payment operations are implemented.</div>`
   );
