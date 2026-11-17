@@ -107,7 +107,10 @@ RUBRIC = {
     "founder_fit": "2 = the founder's own idea built with the stated skills; 1 = plausible with the stated "
                    "skills but unconfirmed (ASSUMPTION); 0 = no product to build",
     "open_risks": "minus 1 for each unresolved Challenger market risk; market risks apply equally to every "
-                  "product option, not to the status quo (total not below 0)",
+                  "product option, not to the status quo or to what customers use today (total not below 0)",
+    "current_alternatives": "what the target customers use today, proposed by the advisor (ASSUMPTION): scored "
+                            "with the same rubric; founder fit 0 because the founder does not build it; evidence "
+                            "counts only if a verified finding cites it, otherwise 0",
 }
 
 
@@ -119,12 +122,15 @@ def _evidence_points(ids: list[str], findings: dict[str, dict]) -> tuple[int, li
     return (1 if cited else 0), urls
 
 
-def score_opportunities(brief: dict, gate: dict, investigation: dict | None, challenge: dict | None) -> dict:
-    """Phase 1 core step: score the founder's idea against alternatives found in the run.
+def score_opportunities(brief: dict, gate: dict, investigation: dict | None, challenge: dict | None,
+                        advice: dict | None = None) -> dict:
+    """Phase 1 core step: score the founder's idea against alternatives.
 
-    Alternatives come only from the run's own records: the Challenger's new hypotheses,
-    the gate's alternative problems (established findings about a different problem), and
-    the status quo. A score ranks what to test first; it is never evidence of demand.
+    Alternatives come from the run's own records: the Challenger's new hypotheses, the
+    gate's alternative problems (established findings about a different problem), the
+    alternatives the target customers use today as proposed by the advisor (labelled
+    ASSUMPTION with the model's name), and the status quo. A score ranks what to test
+    first; it is never evidence of demand.
     """
     findings = {f["id"]: f for f in (investigation or {}).get("findings", [])}
     problem_ids = [f["id"] for f in findings.values() if f.get("type") == "customer_problem"]
@@ -138,6 +144,12 @@ def score_opportunities(brief: dict, gate: dict, investigation: dict | None, cha
         text = alt.get("claim") or alt.get("text") or str(alt)
         options.append({"option": text, "origin": "alternative problem from an established finding",
                         "evidence_ids": alt.get("findings", alt.get("ids", [])), "fit": 1, "risk_count": len(risks)})
+    for text in (advice or {}).get("current_alternatives", []):
+        cited = [f["id"] for f in findings.values() if text.casefold() in (f.get("claim") or "").casefold()]
+        options.append({"option": f"Current alternative: {text}",
+                        "origin": f"what customers use today, {advice.get('label') or 'ASSUMPTION'}",
+                        "evidence_ids": cited, "fit": 0, "risk_count": 0,
+                        "to_check": "Ask interviewees whether they use this today, how often, and what it costs them"})
     options.append({"option": "Status quo: target customers keep their current workaround",
                     "origin": "baseline", "evidence_ids": [], "fit": 0, "risk_count": 0})
     rows = []
@@ -148,11 +160,18 @@ def score_opportunities(brief: dict, gate: dict, investigation: dict | None, cha
     rows.sort(key=lambda r: -r["score"])
     best = rows[0]
     any_established = any(r["problem_evidence"] == 2 for r in rows)
+    current = [r for r in rows if r["option"].startswith("Current alternative: ")]
+    idea = next(r for r in rows if r["origin"].startswith("founder's idea"))
     return {"run_id": gate.get("run_id"), "discover_decision": gate.get("decision"), "rubric": RUBRIC,
             "options": rows, "test_first": best["option"],
             "conclusion": ("No option has established evidence; the ranking only orders what to test first."
                            if not any_established else
                            "At least one option has established evidence; it is still not proof of demand."),
+            "versus_current_alternatives": (
+                f"The founder's idea scores {idea['score']}; the {len(current)} alternatives customers use today "
+                f"score {', '.join(str(r['score']) for r in current)}. They are ASSUMPTIONS from the advisor: the idea "
+                "is only worth building if interviewees describe real costs with these alternatives."
+                if current else "No current alternatives were proposed; ask interviewees what they use today."),
             "market": {"definition": brief["market"], "customer": brief["target_customer"], "label": FOUNDER,
                        "size": "UNKNOWN — no sourced market-size figure; none is estimated"}}
 
@@ -166,6 +185,8 @@ def scorecard_markdown(data: dict) -> str:
     return f"""# Phase 1, step 4: Opportunity scorecard
 
 Discover gate: **{data['discover_decision']}** (run `{data['run_id']}`). {data['conclusion']}
+
+Against what customers use today: {data.get('versus_current_alternatives', '—')}
 
 | # | Option | Origin | Evidence | Founder fit | Open risks | Score | Sources |
 |---|---|---|---|---|---|---|---|

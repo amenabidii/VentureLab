@@ -47,7 +47,7 @@ ran as a founder-approved REHEARSAL). Run files are in `outputs/runs/run-a9f21cd
 | Core step | Part of the step | Code | Output | Status |
 |---|---|---|---|---|
 | **Find opportunities** | Sharpen the idea: validated brief, numbered founder assumptions questioned by the Challenger | [`brief.py`](brief.py), [`agents/challenger.py`](agents/challenger.py) | [`runs/…/phase1_step1_founder_brief.json`](outputs/runs/run-a9f21cd634924cca/phase1_step1_founder_brief.json), [`runs/…/phase1_step3_challenge.md`](outputs/runs/run-a9f21cd634924cca/phase1_step3_challenge.md) | **Working** |
-| | Score it against alternatives: founder's idea vs. Challenger hypotheses, alternative problems and the status quo, with a fixed rubric | [`agents/strategist.py`](agents/strategist.py) `score_opportunities` | [`phase1_step4_opportunity-scorecard.md`](outputs/phase1_step4_opportunity-scorecard.md) | **Working** |
+| | Score it against alternatives: founder's idea vs. Challenger hypotheses, alternative problems, what customers use today (advisor, ASSUMPTION) and the status quo, with a fixed rubric | [`agents/strategist.py`](agents/strategist.py) `score_opportunities` | [`phase1_step4_opportunity-scorecard.md`](outputs/phase1_step4_opportunity-scorecard.md) | **Working** |
 | | Define the market: customer, market, size (UNKNOWN unless sourced), verified public evidence of the problem | [`agents/investigator.py`](agents/investigator.py), [`evidence.py`](evidence.py), [`agents/strategist.py`](agents/strategist.py) | [`runs/…/phase1_step2_investigation.md`](outputs/runs/run-a9f21cd634924cca/phase1_step2_investigation.md), scorecard "Market definition" | **Working** |
 | | Mom Test customer interviews: past-behaviour questions with leading wording removed by code, problem-only recruiting post | [`agents/advisor.py`](agents/advisor.py), [`agents/builder.py`](agents/builder.py), [`agents/launcher.py`](agents/launcher.py) | [`phase2_step3_advisor-proposals.md`](outputs/phase2_step3_advisor-proposals.md), [`phase5_step1_launch-posts.md`](outputs/phase5_step1_launch-posts.md) | Questions and post **Working**; holding the interviews is manual (**STUBBED**) |
 | | Evidence gate: GO / REPEAT / PIVOT / STOP with a Counterfactual Challenge | [`gates.py`](gates.py), [`counterfactual.py`](counterfactual.py) | [`runs/…/phase1_gate_decision.md`](outputs/runs/run-a9f21cd634924cca/phase1_gate_decision.md) (REPEAT) | **Working** |
@@ -115,7 +115,9 @@ posts and the Phase 6 memo (`phase2_step3_advisor-proposals.*`).
 
 **Opportunity scorecard (Working, `agents/strategist.py`, `phase1_step4_opportunity-scorecard.*`):**
 the founder's idea is scored against the alternatives the run itself produced (the
-Challenger's new hypotheses, alternative problems with established findings) and the
+Challenger's new hypotheses, alternative problems with established findings), the
+alternatives the target customers use today as proposed by the advisor (labelled ASSUMPTION
+with the model's name; founder fit 0, evidence only if a verified finding cites them) and the
 status quo, with a fixed published rubric (problem evidence, founder fit, market risks
 applied equally). Market size stays UNKNOWN unless sourced. The ranking orders what to
 test first; it is never evidence of demand.

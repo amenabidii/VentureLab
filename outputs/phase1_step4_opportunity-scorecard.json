@@ -4,7 +4,8 @@
  "rubric": {
   "problem_evidence": "2 = at least one ESTABLISHED finding cited; 1 = only NEEDS_REVIEW or partial findings with verified quotes; 0 = no sourced finding",
   "founder_fit": "2 = the founder's own idea built with the stated skills; 1 = plausible with the stated skills but unconfirmed (ASSUMPTION); 0 = no product to build",
-  "open_risks": "minus 1 for each unresolved Challenger market risk; market risks apply equally to every product option, not to the status quo (total not below 0)"
+  "open_risks": "minus 1 for each unresolved Challenger market risk; market risks apply equally to every product option, not to the status quo or to what customers use today (total not below 0)",
+  "current_alternatives": "what the target customers use today, proposed by the advisor (ASSUMPTION): scored with the same rubric; founder fit 0 because the founder does not build it; evidence counts only if a verified finding cites it, otherwise 0"
  },
  "options": [
   {
@@ -41,6 +42,39 @@
    "score": 0
   },
   {
+   "option": "Current alternative: Manually scanning Slack threads for missed messages",
+   "origin": "what customers use today, ASSUMPTION (proposed by qwen3:4b; not evidence)",
+   "evidence_ids": [],
+   "fit": 0,
+   "risk_count": 0,
+   "to_check": "Ask interviewees whether they use this today, how often, and what it costs them",
+   "problem_evidence": 0,
+   "sources": [],
+   "score": 0
+  },
+  {
+   "option": "Current alternative: Using Slack's built-in search to find messages",
+   "origin": "what customers use today, ASSUMPTION (proposed by qwen3:4b; not evidence)",
+   "evidence_ids": [],
+   "fit": 0,
+   "risk_count": 0,
+   "to_check": "Ask interviewees whether they use this today, how often, and what it costs them",
+   "problem_evidence": 0,
+   "sources": [],
+   "score": 0
+  },
+  {
+   "option": "Current alternative: Relying on teammates to share summaries",
+   "origin": "what customers use today, ASSUMPTION (proposed by qwen3:4b; not evidence)",
+   "evidence_ids": [],
+   "fit": 0,
+   "risk_count": 0,
+   "to_check": "Ask interviewees whether they use this today, how often, and what it costs them",
+   "problem_evidence": 0,
+   "sources": [],
+   "score": 0
+  },
+  {
    "option": "Status quo: target customers keep their current workaround",
    "origin": "baseline",
    "evidence_ids": [],
@@ -53,6 +87,7 @@
  ],
  "test_first": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
  "conclusion": "No option has established evidence; the ranking only orders what to test first.",
+ "versus_current_alternatives": "The founder's idea scores 1; the 3 alternatives customers use today score 0, 0, 0. They are ASSUMPTIONS from the advisor: the idea is only worth building if interviewees describe real costs with these alternatives.",
  "market": {
   "definition": "Online, English-speaking remote software teams",
   "customer": "remote engineers and product managers on distributed teams",

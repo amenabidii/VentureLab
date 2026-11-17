@@ -294,6 +294,27 @@ def test_scorecard_compares_alternatives_from_the_run_only(tmp_path):
     assert card["market"]["size"].startswith("UNKNOWN")
 
 
+def test_scorecard_scores_the_idea_against_what_customers_use_today(tmp_path):
+    from agents.strategist import score_opportunities, scorecard_markdown
+    run = make_run(tmp_path)
+    load = lambda n: json.loads((run / n).read_text())  # noqa: E731
+    advice = {"source": "model", "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+              "current_alternatives": ["Scrolling back through the thread", "Asking a teammate"]}
+    card = score_opportunities(BRIEF, load("phase1_gate_decision.json"), load("phase1_step2_investigation.json"),
+                               load("phase1_step3_challenge.json"), advice)
+    current = [r for r in card["options"] if r["option"].startswith("Current alternative: ")]
+    assert [r["option"] for r in current] == ["Current alternative: Scrolling back through the thread",
+                                              "Current alternative: Asking a teammate"]
+    assert all("ASSUMPTION" in r["origin"] and "qwen3:4b" in r["origin"] for r in current)
+    assert all(r["fit"] == 0 and r["problem_evidence"] == 0 and r["sources"] == [] for r in current)  # nothing cites them
+    assert "2 alternatives customers use today" in card["versus_current_alternatives"]
+    assert "Current alternative: Asking a teammate" in scorecard_markdown(card)
+    # Without advisor proposals, the scorecard says so instead of inventing alternatives.
+    bare = score_opportunities(BRIEF, load("phase1_gate_decision.json"), None, None)
+    assert not any(r["option"].startswith("Current alternative") for r in bare["options"])
+    assert "No current alternatives were proposed" in bare["versus_current_alternatives"]
+
+
 def test_phase3_checks_execute_and_mvp_code_is_labelled_stubbed(tmp_path, monkeypatch):
     cli = CLI(tmp_path, make_run(tmp_path))
     assert full_flow(cli, monkeypatch) == 0

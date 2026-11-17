@@ -249,12 +249,12 @@ or non-leading rules were dropped by code: {dropped}.
 def plan(ctx: Context) -> list[str]:
     """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
     ctx.require_current_rules()
-    card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
+    advice = get_advice(ctx)  # also proposes what customers use today, which the scorecard compares against
+    card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge, advice)
     ctx.write("phase1_step4_opportunity-scorecard.json", card)
     ctx.write("phase1_step4_opportunity-scorecard.md", scorecard_markdown(card))
     ctx.rec(1, "score_against_alternatives", f"{len(card['options'])} options; test first: {card['test_first'][:80]}",
             sources=sorted({u for r in card["options"] for u in r["sources"]}))
-    advice = get_advice(ctx)
     canvas = build_lean_canvas(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge, advice)
     sources = [s for box in canvas["canvas"].values() for e in box for s in e["sources"]]
     ctx.write("phase2_step2_lean-canvas.json", canvas)
