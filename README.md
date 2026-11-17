@@ -97,13 +97,15 @@ on the Slack-thread run as a founder-approved REHEARSAL (the gate said REPEAT): 
 
 ## Architecture
 
-Four logical agents work in sequence behind a FastAPI backend: the Investigator gathers
-and verifies public evidence, the Challenger questions the founder's assumptions using
-that evidence, the Judge applies fixed Python rules to produce a gate decision with a
-counterfactual, and the Builder prepares validation artifacts that are written only
-after founder approval bound to the artifact's SHA-256 fingerprint. Runs execute in a
-background worker and the web workspace polls their real progress. A model never
-decides a gate, never upgrades evidence and never approves anything. Everything runs
+Ten agents cover the six phases behind a FastAPI backend: the Investigator gathers
+and verifies public evidence, the Challenger questions the founder's assumptions, the
+Judge applies fixed Python rules to decide GO, REPEAT, PIVOT or STOP with a
+counterfactual, and the Strategist, Advisor, Builder, Product, Commercial, Launcher and
+Operator agents carry the idea through Validate, Build, Commercial setup, Launch and
+Operate and learn. Every phase ends in a gate (founder approval, a threshold set in
+advance, or passing tests), and anything short of a real GO says DO NOT LAUNCH. Founder
+approvals are bound to the exact file's SHA-256. A model never decides a gate, never
+upgrades evidence and never approves anything. Everything runs
 locally with an open-weight model through Ollama, and every agent action is appended to
 an audit log. The full six-phase design, gates, data flow and the built-versus-stubbed
 inventory are in [ARCHITECTURE.md](ARCHITECTURE.md); integration details are in
@@ -118,8 +120,9 @@ inventory are in [ARCHITECTURE.md](ARCHITECTURE.md); integration details are in
   Smaller models are faster but weaker (measurements in [docs/benchmarks.md](docs/benchmarks.md)).
 - **Free public sources**: the Hacker News Algolia search API (`hn.algolia.com`, no key)
   and pages the founder lists in the brief. No paid API, account or key is needed.
-- **Measured on a CPU-only laptop** with `qwen3:4b`: the integrated web run took 174 s
-  with 5 model calls; earlier command-line runs took 104 to 182 s. Timing varies with
+- **Measured on a CPU-only laptop** with `qwen3:4b`: Discover web runs took 174 s
+  (5 model calls) and 304 s (the demo run `run-a9f21cd634924cca`); a fresh-clone check
+  took 279 s; earlier command-line runs took 104 to 182 s. Timing varies with
   the brief, the network and the hardware.
 - **Offline**: the app, model and gate run offline, but retrieval needs internet; a
   failed source is recorded as unavailable and never filled in.

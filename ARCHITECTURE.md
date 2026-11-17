@@ -3,16 +3,71 @@
 ## Overview
 
 VentureLab is a FastAPI application with a local open-weight model (Qwen3 through
-Ollama) and four logical agents. The **Investigator** retrieves public sources and
+Ollama) and ten agents across the six phases, each phase ending in a gate whose outcome is
+GO, REPEAT, PIVOT or STOP. **Discover:** the **Investigator** retrieves public sources and
 extracts claims whose quotations Python checks against the retrieved text; the
 **Challenger** reviews the founder's numbered assumptions, and code decides what each
-review actually rests on; the **Judge** is a fixed, ordered set of Python rules
-(`gates.py`) that returns GO, REPEAT, PIVOT or STOP with a counterfactual explanation
-(`counterfactual.py`); the **Builder** prepares an experiment kit (and, after GO, a local
-landing page) that is written only after founder approval bound to the artifact's SHA-256
-fingerprint. The founder web workspace (`app/ui`) drives all of it through the API in
-`app/api.py`; runs execute in a background worker (`jobs.py`). Every agent action is
-appended to `decision_log.json`.
+review rests on; the **Judge** is a fixed, ordered set of Python rules (`gates.py`) that
+returns the decision with a counterfactual (`counterfactual.py`); the **Strategist**
+scores the idea against alternatives; the **Advisor** (local model) proposes
+idea-specific channels, prices, Mom Test questions and a stop rule, all labelled
+ASSUMPTION. **Validate:** the Strategist builds the Lean Canvas and the **Builder** an
+experiment kit (and, after GO, a landing page); a validation gate compares founder-reported
+results with a threshold fixed in advance. **Build:** the **Product** agent writes the MVP
+scope, a clickable prototype and a draft guide, then runs the acceptance checks.
+**Commercial setup:** the **Commercial** agent drafts test prices and policies. **Launch:**
+the **Launcher** drafts the store page and posts; payment, delivery, refunds and
+reconciliation are MOCKED modules. **Operate and learn:** the **Operator** triages real
+support requests, reports metrics and writes the persevere-or-pivot memo. Founder approvals
+are bound to the exact file's SHA-256, anything short of a real GO says DO NOT LAUNCH, and
+every agent action is appended to `decision_log.json`. The founder web workspace (`app/ui`)
+drives Discover and the Builder through `app/api.py` (background worker `jobs.py`);
+phases 2–6 run from `workflow.py` on the command line or from the web phase runner.
+
+```mermaid
+flowchart TB
+    BR["Founder brief: idea, skills, budget, time, market, values"] --> SCR{"Policy screen (brief.py)"}
+    SCR -- "prohibited or deceptive" --> STOP0["STOP: no research,<br/>everything downstream blocked"]
+    SCR -- allowed --> P1
+    subgraph P1 ["1 Discover: Find opportunities"]
+        INV["Investigator: verified quotes"] --> CHA["Challenger"] --> SCO["Strategist: scorecard vs alternatives, market"]
+        ADV["Advisor: Mom Test questions, channels (ASSUMPTION)"]
+    end
+    P1 --> G1{"Evidence gate (gates.py)<br/>GO / REPEAT / PIVOT / STOP<br/>+ Counterfactual Challenge"}
+    G1 -- STOP --> STOP0
+    G1 -- "REPEAT or PIVOT" --> RH["Founder may approve a labelled REHEARSAL;<br/>every later gate then says DO NOT LAUNCH"]
+    G1 -- GO --> P2
+    RH --> P2
+    subgraph P2 ["2 Validate: Design the business"]
+        LC["Strategist: Lean Canvas"] --> KIT["Builder: experiment kit, landing page after GO"]
+    end
+    P2 --> G2{"Validation gate: threshold set in advance<br/>e.g. 100 sign-ups in 14 days<br/>GO / REPEAT / STOP"}
+    G2 -- "below threshold" --> PIV["STOP, or PIVOT back to Discover"]
+    G2 -- "GO, or REHEARSAL" --> P3
+    subgraph P3 ["3 Build: Build the product"]
+        PRO["Product: scope, clickable prototype, guide"]
+    end
+    P3 --> G3{"Acceptance checks executed<br/>GO / REPEAT"}
+    G3 -- GO --> P4
+    subgraph P4 ["4 Commercial setup: Set the price and policies"]
+        COM["Commercial: test prices, DRAFT terms, privacy, refunds"]
+    end
+    P4 --> G4{"Founder chooses the price<br/>approval bound to the file's SHA-256"}
+    G4 -- GO --> P5
+    subgraph P5 ["5 Launch: Open the store; deliver automatically"]
+        LAU["Launcher: store page, posts"] --> PAY["MOCKED payment event"] --> DEL["Delivery once (idempotent);<br/>refund revokes access"] --> REC["Reconciliation"]
+    end
+    P5 --> G5{"Founder approves exact page and product file<br/>+ sale-to-cash checks: GO / REPEAT"}
+    G5 -- GO --> P6
+    subgraph P6 ["6 Operate and learn"]
+        OPE["Operator: support, metrics, memo"]
+    end
+    P6 --> G6{"Persevere-or-pivot memo, real evidence only<br/>GO / REPEAT / PIVOT / STOP"}
+    G6 -- "PIVOT or STOP" --> PIV
+    G1 & G2 & G3 & G4 & G5 & G6 --> LOG[("decision_log.json")]
+```
+
+Discover and the Builder in detail:
 
 ```mermaid
 flowchart LR
@@ -67,7 +122,7 @@ ran as a founder-approved REHEARSAL). Run files are in `outputs/runs/run-a9f21cd
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
-| 2 Validate | Lean Canvas; design an experiment that could disprove the assumption, then judge its results | Strategist (canvas), Builder (kit and its canvas), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (canvas, plan, kit, founder-reported results and validation gate); landing-page demand test **STUBBED** |
+| 2 Validate | Lean Canvas; design an experiment that could disprove the assumption, then judge its results | Strategist (canvas), Builder (kit and its canvas), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (canvas, plan, kit, founder-reported results and validation gate); landing page after GO **Working**; collecting real sign-ups for the demand test **STUBBED** |
 | 3 Build | Landing page; MVP scope, user guide and executed checks | Builder, Product | Approve exact page fingerprint | **Working** (landing page after GO; scope, guide, checks); MVP code **STUBBED** |
 | 4 Commercial Setup | Pricing hypotheses and draft policies | Commercial | Founder chooses the price (fingerprint-bound) | **Working** (drafts; no payments of any kind) |
 | 5 Launch | Store page, launch posts, automatic delivery | Launcher; `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py` | Publish page and enable delivery, each bound to the exact file | Drafts **Working**; publishing and sale to cash **MOCKED** |
@@ -122,15 +177,12 @@ status quo, with a fixed published rubric (problem evidence, founder fit, market
 applied equally). Market size stays UNKNOWN unless sourced. The ranking orders what to
 test first; it is never evidence of demand.
 
-**Remaining Discover design (STUBBED):** the Investigator would turn an ambiguous
-starting idea into candidate problem/customer pairs, compare them using
-explicit founder-weighted criteria (pain, reachable customers, feasibility, cost,
-and ethical fit), and preserve sources or ASSUMPTION labels for every score.
-The founder chooses the pair; a high score alone cannot satisfy the evidence gate.
-Market definition records the customer, geography, alternatives and reachable
-channels; unsupported market-size estimates remain assumptions. The existing
-Builder supplies past-behaviour interview questions; recruiting, interviewing and
-recording answers remain manual. Interviews must ask about actual recent behaviour,
+**Remaining Discover design (STUBBED):** turning an ambiguous starting idea into
+several candidate problem/customer pairs compared with founder-weighted criteria (pain,
+reachable customers, feasibility, cost, ethical fit), with sources or ASSUMPTION labels
+for every score; and holding and recording the customer interviews. The Advisor and the
+Builder already supply past-behaviour (Mom Test) interview questions and a problem-only
+recruiting post; recruiting, interviewing and recording answers remain manual. Interviews must ask about actual recent behaviour,
 existing workarounds and costs before proposing the product, without leading sales
 questions or interpreting polite interest as demand.
 
@@ -183,8 +235,8 @@ The current passive local page has no form or tracking and cannot measure demand
 
 ### 3. Build
 
-- **Method**: only after a GO decision, a fixed, escaped HTML/CSS template renders a
-  landing-page spec built from the founder's own words with a neutral product name: no
+- **Landing page for Validate's demand test (Builder)**: only after a GO decision, a
+  fixed, escaped HTML/CSS template renders a landing-page spec built from the founder's own words with a neutral product name: no
   forms, scripts, tracking or external assets, with ASSUMPTION labels and no
   testimonials, counts or urgency. Content rules reject common prohibited claims.
 - **Outputs**: `phase3_step1_landing-spec.json` and `phase3_step1_landing-page.html` in the
@@ -260,6 +312,31 @@ Application tests in this repository test VentureLab, not an automatically built
 
 ## Gates
 
+Every phase ends in a gate: a founder approval, a threshold set in advance, or passing tests.
+Each phase gate file records an `outcome` (GO, REPEAT, PIVOT or STOP; none while it waits
+for the founder) and a `launch_recommendation`. Anything short of a real GO, and every
+REHEARSAL after a Discover REPEAT or PIVOT, says **DO NOT LAUNCH**.
+
+| Phase | Gate | Kind | What it checks | Outcomes | Output |
+|---|---|---|---|---|---|
+| Before 1 | Policy screen (`brief.py`) | fixed rules | prohibited category or deceptive practice (fake reviews, sign-ups, urgency, impersonation, promised income) | STOP (policy), or continue | `phase1_gate_decision.*` |
+| 1 Discover | Evidence gate (`gates.py`) | evidence threshold | at least 2 independent supporting sources; contradictions; readable sources | GO / REPEAT / PIVOT / STOP, with a Counterfactual Challenge | `runs/<run>/phase1_gate_decision.*` |
+| 1 → 2 | Rehearsal approval (`workflow.py`) | founder approval | after REPEAT or PIVOT only, bound to the gate file's SHA-256 | continue as a REHEARSAL (DO NOT LAUNCH), or stop | `decision_log.json` |
+| 2 Validate | Kit approval, validation gate (`validation.py`), Lean Canvas gate | founder approval + threshold set in advance | threshold and sample fixed before any result; founder-reported counts; revenue counts as evidenced only with an ESTABLISHED finding | GO / REPEAT / STOP (below threshold: stop or pivot back to Discover) | `phase2_gate_lean-canvas.json`, `runs/<run>/phase2_gate_validation.json` |
+| 3 Build | Acceptance checks (`agents/product.py`) | passing tests | user-journey walk through the prototype; guide, policies and store page | GO / REPEAT; launch is refused unless all pass | `phase3_gate_build.json` |
+| 4 Commercial setup | Price approval | founder approval | `set_price:<option>` bound to the pricing file's SHA-256 | GO, or waiting for the founder | `phase4_gate_commercial.json` |
+| 5 Launch | Publish and delivery approvals, sale-to-cash checks | founder approval + passing tests | exact page and product file unchanged; 7 event checks and reconciliation | GO / REPEAT | `phase5_gate_launch.json`, `payment_test_log.md` |
+| 6 Operate and learn | Persevere-or-pivot memo (`agents/operator.py`) | evidence threshold | real results against pass marks set in advance; MOCKED metrics excluded | PERSEVERE (GO) / REPEAT / PIVOT / STOP | `phase6_gate_persevere-or-pivot.json` |
+
+**When the system recommends STOP:** a prohibited or deceptive brief (before any research);
+independent contradiction of the problem; or a real result below a threshold set in advance
+(for example 100 waitlist sign-ups in 14 days, 12 arrive: STOP or pivot back to Discover,
+never a lowered target). Weak or missing desk evidence gives REPEAT ("gather more"), and
+REPEAT always means do not launch. In the demo run every gate after Discover says DO NOT
+LAUNCH, and the Phase 6 memo recommends REPEAT.
+
+### Phase 1 evidence gate in detail
+
 The phase 1 gate (`gates.py`) contains no model. Rules are checked in a fixed order;
 the first that applies decides, and every check up to it is recorded in the output:
 
@@ -312,6 +389,14 @@ backend: the founder's local key, the exact action, run and SHA-256 fingerprint,
 two-hour expiry, and single use. The workspace cannot change any of these results.
 
 ## Sale to cash
+
+- **Payment triggers delivery:** a signed `payment.succeeded` event grants access to the
+  founder-approved product file (`delivery.py`); a failed payment delivers nothing.
+- **A refund revokes access:** `charge.refunded` calls `refunds.revoke_access` (`refunds.py`).
+- **Idempotency prevents double delivery:** each event ID and order is delivered at most
+  once; the same webhook delivered twice is ignored, and a forged signature is rejected.
+- **Reconciliation matches orders, payments, fees and payouts** (`reconcile.py`) and lists
+  every mismatch (double charge, missing or extra access, short payout).
 
 Implemented as a **MOCKED** local simulation (`workflow.py launch`); no real or sandbox
 payments, no payment provider, no card data, no money and no people. The latest run's
@@ -413,8 +498,9 @@ key is a single-machine capability, not an account system.
 
 ## Roadmap
 
-1. Use recorded validation results in Operate & Learn (persevere-or-pivot memo), and
-   add demand experiments with their own denominators (landing-page sign-ups).
+1. Demand experiments with their own denominators: collect real, consented
+   landing-page sign-ups and feed them to the validation gate (the gate and the memo
+   already use founder-reported results).
 2. Evidence quality: semantic relevance instead of keyword matching, stronger
    attribution checks, measured on the held-out benchmark set.
 3. Human review queue for NEEDS_REVIEW findings, recorded in the audit log.
