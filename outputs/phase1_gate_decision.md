@@ -17,7 +17,7 @@ This decision is made by fixed rules in `gates.py`, not by a model. GO means onl
 | `REPEAT_MIXED_EVIDENCE` | no | `{"supporting_findings": 0, "supporting_sources": 0, "contradicting_sources": 0, "alternatives": 0}` |
 | `REPEAT_NO_READABLE_SOURCES` | no | `{"sources_total": 3, "sources_readable": 2, "sources_analysed": 1}` |
 | `REPEAT_CLARIFY_AVAILABILITY` | no | `{"hours_per_week": 8.0}` |
-| `GO_TO_FURTHER_VALIDATION` | no | `{"supporting_findings": 0, "supporting_sources": 0, "contradicting_sources": 0, "alternatives": 0, "not_counted": {"needs_review": 0, "partial": 0, "off_topic": 4, "assumptions": 0}}` |
+| `GO_TO_FURTHER_VALIDATION` | no | `{"supporting_findings": 0, "supporting_sources": 0, "contradicting_sources": 0, "alternatives": 0, "not_counted": {"needs_review": 0, "partial": 0, "off_topic": 3, "assumptions": 0}}` |
 | `REPEAT_INSUFFICIENT_EVIDENCE` | **decided** | `{}` |
 
 ## Evidence counted
@@ -26,22 +26,22 @@ This decision is made by fixed rules in `gates.py`, not by a model. GO means onl
 - Established findings about the problem statement: 0 (none), from 0 sources
 - Established findings about a different problem (possible alternatives): 0
 - Sources contradicting the problem statement: 0
-- Not counted: 0 needs review, 0 partial, 4 off-topic, 0 assumptions, 1 demand signals
+- Not counted: 0 needs review, 0 partial, 3 off-topic, 0 assumptions, 0 demand signals
 
 ## Counterfactual challenge
 
 Missing evidence:
 
 - Established, relevant problem findings: 0 of 2 needed, from 0 of 2 sources needed.
-- 4 findings were off-topic for this brief and were not counted.
+- 3 findings were off-topic for this brief and were not counted.
 - Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.
 - Validation conditions: none set. Set pass marks before running any experiment.
 
 Experiments that could address it:
 
-- **Survey English-speaking indie game devs** (challenger, tests A4): Ask a small group of English-speaking indie game developers if they use Discord and would pay for a bug report tool.
-  - Would support the hypothesis if: At least 20% say they would pay for the tool.
-  - Would weaken it if: Less than 5% say they would pay for the tool.
+- **Test Discord bug tracking** (challenger, tests A1): Ask 10 indie game developers to share their current process for tracking Discord bug reports
+  - Would support the hypothesis if: They report using manual methods like spreadsheets or chat logs
+  - Would weaken it if: They use automated tools like Discord bots or dedicated bug trackers
 - **Problem interviews** (default, tests A1): Talk to people who match 'solo and small-team indie game developers with an active Discord community' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.
   - Would support the hypothesis if: Most interviewees describe a recent, specific occurrence without being prompted. Write down the pass mark before you start, as a validation condition in the brief.
   - Would weaken it if: Most cannot recall a recent occurrence, or say it is minor or already solved.
@@ -53,4 +53,4 @@ Reconsidered by: phase1_evidence_gate (run again with the new evidence).
 
 New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income.
 
-Run time: 147 s with 4 model calls (model load 0 s, investigator 64 s, challenger 83 s).
+Run time: 119 s with 4 model calls (model load 0 s, investigator 60 s, challenger 58 s).

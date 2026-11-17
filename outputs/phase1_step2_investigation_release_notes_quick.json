@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+ "run_id": "run-2026-11-17T12:03:11Z-9f2050",
  "model": "qwen3:4b",
  "effort": "quick",
  "queries": [
@@ -13,51 +13,46 @@
    "title": "Hacker News comments matching \"release notes automation\"",
    "status": "available",
    "error": "",
-   "retrieved_at": "2026-11-17T11:24:47Z",
+   "retrieved_at": "2026-11-17T12:03:14Z",
    "items": 10
   }
  ],
  "selection": {
   "comments_seen": 10,
-  "off_topic_dropped": 1,
-  "relevant": 9,
+  "off_topic_dropped": 3,
+  "relevant": 7,
   "kept": 4,
   "kept_urls": [
    "https://news.ycombinator.com/item?id=46597069",
-   "https://news.ycombinator.com/item?id=48417335",
-   "https://news.ycombinator.com/item?id=11012066",
-   "https://news.ycombinator.com/item?id=31602126"
+   "https://news.ycombinator.com/item?id=48009158",
+   "https://news.ycombinator.com/item?id=31602126",
+   "https://news.ycombinator.com/item?id=46473444"
   ],
   "topic_terms": [
    "app",
-   "changelog",
-   "companie",
+   "compani",
    "customer",
    "developer",
    "draft",
    "edit",
-   "facing",
+   "fac",
    "manager",
-   "merged",
-   "note",
+   "merg",
    "product",
    "publish",
-   "pull",
-   "release",
-   "request",
+   "pull_request",
+   "release_notes",
    "saa",
-   "software",
+   "softwar",
    "team",
    "web",
-   "writing"
+   "writ"
   ],
   "problem_terms": [
-   "changelog",
-   "note",
-   "release",
-   "software",
+   "release_notes",
+   "softwar",
    "team",
-   "writing"
+   "writ"
   ]
  },
  "findings": [
@@ -66,12 +61,12 @@
    "origin": "extracted",
    "type": "customer_problem",
    "model_type": "customer_problem",
-   "claim": "One commenter says release notes stop being a dev artifact and become a communication channel",
-   "standing": "established",
-   "relevance": "statement",
+   "claim": "One user says release notes stop being a dev artifact and become a communication channel",
+   "standing": "needs_review",
+   "relevance": "off_topic",
    "shared_terms": [
-    "note",
-    "release"
+    "developer",
+    "release_notes"
    ],
    "quotes": [
     {
@@ -81,41 +76,45 @@
      "note": ""
     }
    ],
-   "verdict": "supports",
-   "reason": "The quote directly states that release notes become a communication channel when talking to users, matching the claim exactly.",
-   "limitations": "Only one user perspective is mentioned, not general applicability.",
-   "second_check": true,
-   "second_check_note": "none",
-   "unsourced_words": [],
-   "attributed": true,
-   "review": [],
-   "notes": []
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
   },
   {
    "id": "F2",
    "origin": "extracted",
-   "type": "customer_problem",
-   "model_type": "customer_problem",
-   "claim": "One commenter says it's tricky to fully automate release notes as a person needs to sense check the release note",
-   "standing": "established",
-   "relevance": "statement",
+   "type": "competitor",
+   "model_type": "competitor",
+   "claim": "One user says an AI agent could spend a lot of time writing v1 code, having it fail and iterate to v2 and then to v3",
+   "standing": "partial_evidence",
+   "relevance": "topic",
    "shared_terms": [
-    "note",
-    "release"
+    "fac",
+    "writ"
    ],
    "quotes": [
     {
-     "text": "Because of this it's tricky to fully automate the process as at some level you usually need a person casting an eye over the release note just to sense check.",
-     "url": "https://news.ycombinator.com/item?id=46597069",
+     "text": "If anyone wants to use an AI agent to try out PyInfra - One issue I've faced is that PyInfra was rearchitected in v2 (and some more in v3?) but what belongs in v1 vs v2 vs v3 isn't very clear, so an AI agent could spend a lot of time writing v1 code, having it fail and iterate to v2 and then to v3.",
+     "url": "https://news.ycombinator.com/item?id=48009158",
      "status": "verified",
      "note": ""
     }
    ],
-   "verdict": "supports",
-   "reason": "The quote explains that automation requires human sense checking, directly matching the claim about it being tricky to fully automate release notes.",
-   "limitations": "Only addresses general process automation, not specific release notes.",
-   "second_check": true,
-   "second_check_note": "none",
+   "verdict": "partially_supports",
+   "reason": "The quote directly states that an AI agent could spend time writing v1 code, failing, and iterating to v2 and v3 due to unclear version boundaries.",
+   "limitations": "Single user experience, not generalizable to all AI agents or codebases.",
+   "second_check": null,
+   "second_check_note": "",
    "unsourced_words": [],
    "attributed": true,
    "review": [],
@@ -130,18 +129,10 @@
    "standing": "partial_evidence",
    "relevance": "statement",
    "shared_terms": [
-    "changelog",
-    "note",
-    "release",
-    "software"
+    "release_notes",
+    "softwar"
    ],
    "quotes": [
-    {
-     "text": "I have never once considered conventional commits to be about human understanding, but more about automation (release notes, changelogs, and workflows).",
-     "url": "https://news.ycombinator.com/item?id=48417335",
-     "status": "verified",
-     "note": ""
-    },
     {
      "text": "Now she translates software engineering bug fix reports into customer-appropriate release notes for a big process-automation company.",
      "url": "https://news.ycombinator.com/item?id=31602126",
@@ -150,8 +141,8 @@
     }
    ],
    "verdict": "partially_supports",
-   "reason": "The quotes indicate that release notes/changelogs are automated, not human-focused, but the context shows a person translating bug reports into release notes for customers, suggesting they are human-focused.",
-   "limitations": "Limited to one person's experience, not generalizing to all small teams.",
+   "reason": "The quote shows one person's experience with writing release notes, but the claim is about small software teams generally.",
+   "limitations": "One person's experience, not generalizing to small teams.",
    "second_check": null,
    "second_check_note": "",
    "unsourced_words": [
@@ -161,61 +152,44 @@
     "too",
     "much",
     "time",
-    "writing"
+    "writing",
+    "changelogs"
    ],
    "attributed": false,
    "review": [
-    "wording goes beyond the quoted text: small, teams, spend, too, much, time, writing",
+    "wording goes beyond the quoted text: small, teams, spend, too, much, time, writing, changelogs",
     "a claim about people must be attributed to one person (\"One host says ...\")"
    ],
    "notes": []
   }
  ],
- "model_calls": 7,
+ "model_calls": 4,
  "calls": [
   {
    "action": "plan_searches",
-   "wall_s": 3.5,
+   "wall_s": 3.2,
    "prompt_tokens": 160,
    "output_tokens": 29
   },
   {
    "action": "extract_claims",
-   "wall_s": 15.3,
-   "prompt_tokens": 605,
-   "output_tokens": 99
+   "wall_s": 20.4,
+   "prompt_tokens": 645,
+   "output_tokens": 108
   },
   {
    "action": "assess_claim",
-   "wall_s": 10.6,
-   "prompt_tokens": 477,
-   "output_tokens": 54
-  },
-  {
-   "action": "assess_claim",
-   "wall_s": 5.8,
-   "prompt_tokens": 321,
-   "output_tokens": 18
-  },
-  {
-   "action": "assess_claim",
-   "wall_s": 12.5,
-   "prompt_tokens": 527,
-   "output_tokens": 56
-  },
-  {
-   "action": "assess_claim",
-   "wall_s": 7.7,
-   "prompt_tokens": 371,
-   "output_tokens": 18
+   "wall_s": 17.3,
+   "prompt_tokens": 641,
+   "output_tokens": 71
   },
   {
    "action": "check_founder_statement",
-   "wall_s": 16.4,
-   "prompt_tokens": 557,
-   "output_tokens": 76
+   "wall_s": 9.5,
+   "prompt_tokens": 469,
+   "output_tokens": 59
   }
  ],
- "model_seconds": 71.8,
- "elapsed_s": 72.6
+ "model_seconds": 50.4,
+ "elapsed_s": 51.2
 }

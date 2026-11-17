@@ -7,14 +7,13 @@
 3. One model call reviews each assumption. The JSON schema only allows existing
    assumption IDs and finding IDs (constrained output), and Python checks every
    reference again, so an invented reference cannot get through either way.
-4. Python decides what each point rests on:
-   - EVIDENCE: cites an established finding that is relevant to the brief;
-   - CONTRADICTING EVIDENCE: cites a finding whose quoted text contradicts it;
-   - UNCONFIRMED: cites only findings that are not established;
-   - ASSUMPTION: cites nothing valid.
-   A stance the cited findings do not back ("supported" without an established
-   finding, "contradicted" without contradicting evidence) is downgraded to
-   "untested" and the change is recorded.
+4. The model's stance and reason are advisory. Python classifies every cited
+   finding (direct, indirect, irrelevant, contradictory; see classify_link) and
+   recomputes the stance: "supported" needs a finding that is established,
+   related, covers what the assumption asserts (time, money ...) and that one
+   assessment call (the existing evidence-assessment prompt) judges to support
+   the assumption as worded. A citation existing never establishes support.
+   Labels: EVIDENCE, PARTIAL EVIDENCE, CONTRADICTING EVIDENCE, UNCONFIRMED, ASSUMPTION.
 5. Criticism of the founder's assumptions is kept apart from new hypotheses the
    Challenger raises itself, which are labelled as the Challenger's own.
 Experiments that would fake social proof, pose as someone or take money are removed.
@@ -39,10 +38,11 @@ from llm import LLMError, OllamaClient
 AGENT = "challenger"
 
 BASIS_ESTABLISHED = "EVIDENCE"
+BASIS_PARTIAL = "PARTIAL EVIDENCE"
 BASIS_CONTRADICTING = "CONTRADICTING EVIDENCE"
 BASIS_UNCONFIRMED = "UNCONFIRMED (needs review)"
 BASIS_ASSUMPTION = "ASSUMPTION"
-GROUNDED = (BASIS_ESTABLISHED, BASIS_CONTRADICTING, BASIS_UNCONFIRMED)
+GROUNDED = (BASIS_ESTABLISHED, BASIS_PARTIAL, BASIS_CONTRADICTING, BASIS_UNCONFIRMED)
 
 Stance = Literal["supported", "weakened", "contradicted", "untested"]
 
@@ -158,13 +158,78 @@ class Challenge:
             "grounded_reviews": self.grounded_reviews, "elapsed_s": round(self.elapsed_s, 1)}
 
 
-def basis(ids: list[str], findings: dict[str, Finding]) -> str:
-    cited = [findings[i] for i in ids if i in findings]
-    if any(f.standing is ev.Standing.CONTRADICTED and f.relevance != "off_topic" for f in cited):
+# --- what a cited finding can do for an assumption -------------------------------------------
+#
+# A citation existing never establishes support. Code first classifies each link:
+#   irrelevant     no verified quote, off-topic, or the quote shares fewer than two key
+#                  concepts with the assumption;
+#   contradictory  a check of the founder's own statement (A1) whose quote contradicts it;
+#   indirect       related, but not established, or the quote never mentions an aspect the
+#                  assumption asserts (time, money, frequency, difficulty);
+#   candidate      established, related and covering every asserted aspect.
+# Only a candidate can support an assumption, and only if one assessment call with the
+# existing evidence-assessment prompt (evidence.assess) says the quotes support the
+# assumption as worded; "partially_supports" gives "partly supported". The model's own
+# stance is advisory: code recomputes the stance from these links.
+
+DIRECT, INDIRECT, IRRELEVANT, CONTRADICTORY, CANDIDATE, PARTIAL = (
+    "direct", "indirect", "irrelevant", "contradictory", "candidate", "partial")
+
+ASPECTS = {
+    "time": "time hour hours minute minutes day days week weeks month months long slow quick fast spend "
+            "spent spending took take takes taking waste wasted weekend",
+    "money": "pay paid paying price pricing cost costs costly expensive cheap budget fee fees dollar dollars "
+             "euro euros subscription afford",
+    "frequency": "often every daily weekly monthly always frequent frequently regularly recurring repeatedly",
+    "difficulty": "hard difficult tedious painful pain annoying annoyed struggle struggling frustrating "
+                  "frustrated tricky confusing chore",
+}
+_ASPECT_WORDS = {name: {rel.normalise(w) for w in words.split()} for name, words in ASPECTS.items()}
+MAX_SUPPORT_CHECKS = 3  # bound on extra model calls per run
+
+
+def aspects(text: str) -> set[str]:
+    tokens = {rel.normalise(t) for t in re.findall(r"[a-z0-9]+", text.lower())}
+    return {name for name, words in _ASPECT_WORDS.items() if tokens & words}
+
+
+def quote_text(f: Finding) -> str:
+    return " ".join(q.text for q in f.item.quotes if q.verified)
+
+
+def classify_link(assumption: Assumption, f: Finding) -> tuple[str, str]:
+    """Deterministic relationship between a cited finding and an assumption, with the reason."""
+    text = quote_text(f)
+    if not text:
+        return IRRELEVANT, "no verified quotation"
+    if f.relevance == "off_topic":
+        return IRRELEVANT, "off-topic for this brief"
+    if f.origin == "hypothesis_check" and assumption.field == "problem_statement":
+        if f.standing is ev.Standing.CONTRADICTED:
+            return CONTRADICTORY, "the quoted text contradicts the founder's statement"
+        return INDIRECT, f"a check of the founder's statement that is {f.standing.value}, not established"
+    shared_terms = rel.shared(rel.key_terms(assumption.text), text)
+    if len(shared_terms) < rel.MIN_SHARED:
+        return IRRELEVANT, f"the quote shares {len(shared_terms)} key concept(s) with the assumption"
+    if f.standing is ev.Standing.CONTRADICTED:
+        return IRRELEVANT, "the finding's own claim is contradicted by its quote; it says nothing about this"
+    if f.standing is not ev.Standing.ESTABLISHED:
+        return INDIRECT, f"related but {f.standing.value}"
+    missing = aspects(assumption.text) - aspects(text)
+    if missing:
+        return INDIRECT, f"the quote does not mention {', '.join(sorted(missing))}, which the assumption asserts"
+    return CANDIDATE, "established, related and covers what the assumption asserts"
+
+
+def link_basis(links: list[dict[str, Any]]) -> str:
+    kinds = {link["relationship"] for link in links}
+    if CONTRADICTORY in kinds:
         return BASIS_CONTRADICTING
-    if any(f.standing is ev.Standing.ESTABLISHED and f.relevance != "off_topic" for f in cited):
+    if DIRECT in kinds:
         return BASIS_ESTABLISHED
-    if any(f.standing is not ev.Standing.ASSUMPTION for f in cited):
+    if PARTIAL in kinds:
+        return BASIS_PARTIAL
+    if kinds & {INDIRECT, CANDIDATE}:
         return BASIS_UNCONFIRMED
     return BASIS_ASSUMPTION
 
@@ -174,19 +239,6 @@ def _valid_refs(raw: list[str], findings: dict[str, Finding], removed: list[str]
     for bad in dict.fromkeys(i for i in raw if i not in findings):
         removed.append(f"{where}: reference {bad!r} does not exist; dropped")
     return valid
-
-
-def _check_stance(stance: str, grounding: str) -> tuple[str, str]:
-    """Keep the model's stance only if the cited evidence backs it."""
-    if stance not in ("supported", "weakened", "contradicted", "untested"):
-        return "untested", f"unknown stance {stance!r}"
-    if stance == "supported" and grounding != BASIS_ESTABLISHED:
-        return "untested", "model said 'supported' but cites no established finding"
-    if stance == "contradicted" and grounding != BASIS_CONTRADICTING:
-        return "untested", "model said 'contradicted' but cites no contradicting evidence"
-    if stance == "weakened" and grounding == BASIS_ASSUMPTION:
-        return "untested", "model said 'weakened' but cites no finding"
-    return stance, ""
 
 
 _ID_IN_TEXT = re.compile(r"\b[FH]\d{1,3}\b")
@@ -251,42 +303,103 @@ def challenge(
 
     removed = result.removed
     reviewed: set[str] = set()
+    support_checks = 0
     for aid, r in reply.reviews.items():
         if aid not in a_ids:  # cannot happen with constrained output; checked anyway
             removed.append(f"review of unknown assumption {aid!r} dropped")
             continue
+        assumption = a_ids[aid]
         # IDs written in the reason count as citations too, and are checked the same way.
         refs = _valid_refs(list(r.evidence) + _ID_IN_TEXT.findall(r.reason), by_id, removed, aid)
-        grounding = basis(refs, by_id)
-        stance, note = _check_stance(r.stance, grounding)
+        links = []
+        for i in refs:
+            relationship, why = classify_link(assumption, by_id[i])
+            links.append({"finding": i, "relationship": relationship, "why": why})
+        candidates = [link for link in links if link["relationship"] == CANDIDATE]
+        stance, note = "untested", ""
+        if r.stance == "supported":
+            if not candidates:
+                note = "model said 'supported' but no cited finding can support it: " + (
+                    "; ".join(f"{link['finding']} {link['why']}" for link in links) or "nothing cited")
+            elif support_checks >= MAX_SUPPORT_CHECKS:
+                note = "model said 'supported'; support not checked (limit of checks per run reached)"
+            else:
+                support_checks += 1
+                cited = [by_id[link["finding"]] for link in candidates]
+                quotes = [q.text for f in cited for q in f.item.quotes if q.verified]
+                answer = None
+                try:
+                    answer, res = ev.assess(client, model, assumption.text, quotes, "\n".join(quotes))
+                    record_calls(result.calls, "check_support", [res])
+                except LLMError as exc:
+                    note = f"support check failed ({str(exc)[:80]})"
+                outcome = {"supports": (DIRECT, "supported"), "partially_supports": (PARTIAL, "partly_supported"),
+                           "does_not_support": (IRRELEVANT, "untested"),
+                           "contradicts": (CONTRADICTORY, "weakened")}.get(answer.verdict if answer else "")
+                if outcome:
+                    for link in candidates:
+                        link["relationship"] = outcome[0]
+                        link["why"] = f"assessment of the quote against the assumption: {answer.verdict}"
+                        link["assessment_reason"] = answer.reason
+                    stance = outcome[1]
+                    if stance != "supported":
+                        note = f"model said 'supported'; the assessment of the cited quotes says {answer.verdict}"
+        elif r.stance == "contradicted":
+            if any(link["relationship"] == CONTRADICTORY for link in links):
+                stance = "contradicted"
+            else:
+                note = "model said 'contradicted' but no cited finding contradicts this assumption"
+        elif r.stance == "weakened":
+            if any(link["relationship"] != IRRELEVANT for link in links):
+                stance = "weakened"
+            else:
+                note = "model said 'weakened' but every cited finding is irrelevant to it"
+        elif r.stance != "untested":
+            note = f"unknown stance {r.stance!r}"
+        for link in links:  # untried candidates are related and established, but support was not checked
+            if link["relationship"] == CANDIDATE:
+                link["relationship"] = INDIRECT
+                link["why"] += "; support for this assumption was not checked"
         if note:
-            removed.append(f"{aid}: {note}; stance set to 'untested'")
+            removed.append(f"{aid}: {note}; stance set to '{stance}'")
         reviewed.add(aid)
+        kept = [link["finding"] for link in links if link["relationship"] != IRRELEVANT]
         result.reviews.append({
-            "assumption": aid, "assumption_text": a_ids[aid].text,
-            "stated": a_ids[aid].stated, "stance": stance, "model_stance": r.stance,
-            "reason": r.reason, "evidence": refs, "basis": grounding,
-            "sources": sorted({u for i in refs for u in by_id[i].urls}),
+            "assumption": aid, "assumption_text": assumption.text, "stated": assumption.stated,
+            "stance": stance, "model_stance": r.stance, "reason": r.reason, "reason_is_advisory": True,
+            "evidence": kept, "links": links, "basis": link_basis(links),
+            "sources": sorted({u for i in kept for u in by_id[i].urls}),
         })
     for a in assumptions:  # every founder assumption is reported, reviewed or not
         if a.id not in reviewed:
-            result.reviews.append({"assumption": a.id, "assumption_text": a.text, "stated": a.stated,
-                                   "stance": "untested", "model_stance": None,
-                                   "reason": "no finding relates to it, so the Challenger did not review it" if not next(x for x in result.assumptions if x["id"] == a.id)["related_findings"] else "not reviewed by the Challenger", "evidence": [],
-                                   "basis": BASIS_ASSUMPTION, "sources": []})
+            related = next(x for x in result.assumptions if x["id"] == a.id)["related_findings"]
+            result.reviews.append({
+                "assumption": a.id, "assumption_text": a.text, "stated": a.stated, "stance": "untested",
+                "model_stance": None, "reason_is_advisory": True,
+                "reason": "not reviewed by the Challenger" if related
+                else "no finding relates to it, so the Challenger did not review it",
+                "evidence": [], "links": [], "basis": BASIS_ASSUMPTION, "sources": []})
     result.reviews.sort(key=lambda r: int(r["assumption"][1:]))
+
+    def side_note_basis(text: str, refs: list[str]) -> tuple[list[str], str]:
+        # New hypotheses and risks are never checked for support, so they are at most UNCONFIRMED.
+        kept = [i for i in refs if quote_text(by_id[i]) and by_id[i].relevance != "off_topic"
+                and rel.is_about(rel.key_terms(text), quote_text(by_id[i]))]
+        return kept, BASIS_UNCONFIRMED if kept else BASIS_ASSUMPTION
+
     for h in reply.new_hypotheses:
         refs = _valid_refs(list(h.evidence) + _ID_IN_TEXT.findall(h.text), by_id, removed, "new hypothesis")
-        result.new_hypotheses.append({"text": h.text, "raised_by": "challenger", "evidence": refs,
-                                      "basis": basis(refs, by_id),
-                                      "sources": sorted({u for i in refs for u in by_id[i].urls})})
+        kept, grounding = side_note_basis(h.text, refs)
+        result.new_hypotheses.append({"text": h.text, "raised_by": "challenger", "evidence": kept,
+                                      "basis": grounding, "sources": sorted({u for i in kept for u in by_id[i].urls})})
     for r in reply.risks:
         if r.assumption not in a_ids or r.kind not in ("market", "feasibility"):
             removed.append(f"risk tied to {r.assumption!r} ({r.kind!r}) dropped: unknown assumption or kind")
             continue
         refs = _valid_refs(list(r.evidence) + _ID_IN_TEXT.findall(r.text), by_id, removed, f"risk on {r.assumption}")
-        result.risks.append({"assumption": r.assumption, "kind": r.kind, "text": r.text, "evidence": refs,
-                             "basis": basis(refs, by_id)})
+        kept, grounding = side_note_basis(r.text, refs)
+        result.risks.append({"assumption": r.assumption, "kind": r.kind, "text": r.text, "evidence": kept,
+                             "basis": grounding})
     for e in reply.experiments:
         if e.assumption not in a_ids:
             removed.append(f"experiment {e.name!r} dropped: tests unknown assumption {e.assumption!r}")

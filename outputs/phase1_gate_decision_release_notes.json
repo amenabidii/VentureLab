@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+ "run_id": "run-2026-11-17T12:00:31Z-d399df",
  "model": "qwen3:4b",
  "effort": "full",
  "gate": "phase1_evidence_gate",
@@ -27,8 +27,8 @@
    "rule": "STOP_CONTRADICTED",
    "applies": false,
    "inputs": {
-    "supporting_findings": 0,
-    "supporting_sources": 0,
+    "supporting_findings": 1,
+    "supporting_sources": 1,
     "contradicting_sources": 0,
     "alternatives": 0
    },
@@ -38,8 +38,8 @@
    "rule": "PIVOT_ALTERNATIVE_SUPPORTED",
    "applies": false,
    "inputs": {
-    "supporting_findings": 0,
-    "supporting_sources": 0,
+    "supporting_findings": 1,
+    "supporting_sources": 1,
     "contradicting_sources": 0,
     "alternatives": 0,
     "alternative_findings": []
@@ -50,8 +50,8 @@
    "rule": "REPEAT_MIXED_EVIDENCE",
    "applies": false,
    "inputs": {
-    "supporting_findings": 0,
-    "supporting_sources": 0,
+    "supporting_findings": 1,
+    "supporting_sources": 1,
     "contradicting_sources": 0,
     "alternatives": 0
    },
@@ -79,14 +79,14 @@
    "rule": "GO_TO_FURTHER_VALIDATION",
    "applies": false,
    "inputs": {
-    "supporting_findings": 0,
-    "supporting_sources": 0,
+    "supporting_findings": 1,
+    "supporting_sources": 1,
     "contradicting_sources": 0,
     "alternatives": 0,
     "not_counted": {
-     "needs_review": 3,
+     "needs_review": 0,
      "partial": 0,
-     "off_topic": 0,
+     "off_topic": 2,
      "assumptions": 0
     }
    },
@@ -103,21 +103,26 @@
   "sources_total": 3,
   "sources_readable": 3,
   "sources_analysed": 1,
-  "supporting": [],
-  "supporting_sources": [],
+  "supporting": [
+   "F1"
+  ],
+  "supporting_sources": [
+   "https://news.ycombinator.com/item?id=46279042"
+  ],
   "alternatives": [],
   "contradicting_checks": [],
   "contradicting_sources": [],
   "unsupported_checks": [],
-  "needs_review": [
-   "F1",
+  "needs_review": [],
+  "partial": [],
+  "off_topic": [
    "F2",
+   "F4"
+  ],
+  "assumptions": [],
+  "established_other": [
    "F3"
   ],
-  "partial": [],
-  "off_topic": [],
-  "assumptions": [],
-  "established_other": [],
   "demand_signals": []
  },
  "failed_conditions": [],
@@ -140,8 +145,8 @@
   "decision": "REPEAT",
   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
   "missing_evidence": [
-   "Established, relevant problem findings: 0 of 2 needed, from 0 of 2 sources needed.",
-   "3 needs-review and 0 partial findings do not count. A person may check them against their quotes; they never count automatically.",
+   "Established, relevant problem findings: 1 of 2 needed, from 1 of 2 sources needed.",
+   "2 findings were off-topic for this brief and were not counted.",
    "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
    "Condition 'problem_interviews' not yet measured (interviewees_confirming_problem >= 5)."
   ],
@@ -149,20 +154,11 @@
   "feasibility_notes": [],
   "experiments": [
    {
-    "assumption": "A1",
-    "name": "Test manual vs automated time",
-    "method": "Ask 5 small software teams to write release notes manually and via the web app",
-    "support_if": "Manual takes longer than automated",
-    "weaken_if": "Manual takes less time or automated is less accurate",
-    "status": "proposed, not run",
-    "origin": "challenger"
-   },
-   {
-    "assumption": "A1",
-    "name": "Test problem severity",
-    "method": "Survey 20 small software teams about time spent on release notes",
-    "support_if": "More than 50% spend over 1 hour per release",
-    "weaken_if": "Less than 20% spend over 1 hour per release",
+    "assumption": "A3",
+    "name": "Test GitHub-generated release notes",
+    "method": "Ask users if they currently use GitHub-generated release notes for their release notes",
+    "support_if": "Users say they use GitHub-generated release notes",
+    "weaken_if": "Users say they don't use GitHub-generated release notes",
     "status": "proposed, not run",
     "origin": "challenger"
    },
@@ -188,10 +184,10 @@
  },
  "timings_s": {
   "model_load": 0.0,
-  "investigator": 79.3,
-  "challenger": 79.3,
-  "total": 158.7
+  "investigator": 109.4,
+  "challenger": 49.6,
+  "total": 159.1
  },
- "model_calls": 4,
- "model_seconds": 156.8
+ "model_calls": 8,
+ "model_seconds": 138.2
 }

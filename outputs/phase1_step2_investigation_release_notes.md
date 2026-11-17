@@ -1,6 +1,6 @@
 # Phase 1, step 2: Investigation
 
-Model: `qwen3:4b` (local, via Ollama), effort `full`. Searches: release notes automation, changelog writing time, small team release notes (model). Model calls: 3. Time: 79 s.
+Model: `qwen3:4b` (local, via Ollama), effort `full`. Searches: release notes automation, changelog writing time, small team release notes (model). Model calls: 7. Time: 109 s.
 Every quotation below was copied from the retrieved source by code, not written by the model, and cites the comment or page it came from. Only established findings about the founder's problem statement count as evidence.
 
 ## Sources
@@ -9,29 +9,35 @@ Every quotation below was copied from the retrieved source by code, not written 
 |---|---|---|---|
 | hn_comments | available | 10 | https://hn.algolia.com/api/v1/search?query=release+notes+automation&tags=comment&hitsPerPage=10 |
 | hn_comments | available | 10 | https://hn.algolia.com/api/v1/search?query=changelog+writing+time&tags=comment&hitsPerPage=10 |
-| hn_comments | available | 7 | https://hn.algolia.com/api/v1/search?query=small+team+release+notes&tags=comment&hitsPerPage=10 |
+| hn_comments | available | 6 | https://hn.algolia.com/api/v1/search?query=small+team+release+notes&tags=comment&hitsPerPage=10 |
 
-Relevance selection: 27 comments retrieved, 1 set aside as off-topic (fewer than two key words shared with the brief), 8 analysed. Key words: app, changelog, companie, customer, developer, draft, edit, facing, manager, merged, note, product, publish, pull, release, request, saa, software, team, web, writing.
+Relevance selection: 26 comments retrieved, 3 set aside as off-topic (fewer than two key words shared with the brief), 8 analysed. Key words: app, compani, customer, developer, draft, edit, fac, manager, merg, product, publish, pull_request, release_notes, saa, softwar, team, web, writ.
 
 ## Customer problem and segment findings
 
+### Established (verified quote, supported, confirmed, wording checked)
+
+- **F1** [customer_problem, statement] One user says they hand write release notes and copy-paste version numbers for each release.
+  - Verdict: supports; second check: agreed. The quote directly states the user hands writes release notes and copies version numbers, matching the claim exactly.
+  > I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).  
+  > Source: https://news.ycombinator.com/item?id=46279042
+- **F3** [segment, statement] One user says they use GitHub generated release notes from Pull Request bodies for their dev team.
+  - Verdict: supports; second check: agreed. The quote directly states that the user uses GitHub generated release notes from Pull Request bodies for their dev team, matching the claim exactly.
+  > I use Github generated release notes based on Pull Request bodies and this is more than sufficient for my dev team.  
+  > Source: https://news.ycombinator.com/item?id=46279042
+
 ### Needs review (kept with its quote; wording, attribution or relevance is uncertain)
 
-- **F1** [customer_problem, statement] One user says they spend time writing release notes and changel: hand write the release notes, copy and paste the version number, and select date for each release
-  - Needs review: wording goes beyond the quoted text: spend, time, writing, changel
-  - Note: not sent to the model: the wording or attribution checks already rule out establishing it
-  > I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).  
+- **F2** [customer_problem, off-topic] One user says they hand author release notes in a Django admin for a /release-notes/ page.
+  - Needs review: the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it
+  - Note: not sent to the model: off-topic for this brief
+  > Clicking that takes the user to a /release-notes/ page that has a descending order list of the notes that I hand author in the Django admin.  
   > Source: https://news.ycombinator.com/item?id=46279042
-- **F2** [customer_problem, statement] One user says they spend time writing release notes and changelogs: hand write the release notes, copy and paste the version number, and select date for each release
-  - Needs review: wording goes beyond the quoted text: spend, time, writing, changelogs
-  - Note: not sent to the model: the wording or attribution checks already rule out establishing it
-  > I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).  
-  > Source: https://news.ycombinator.com/item?id=46279042
-- **F3** [segment, statement] One user says they hand write release notes for their dev team
-  - Needs review: wording goes beyond the quoted text: dev, team
-  - Note: not sent to the model: the wording or attribution checks already rule out establishing it
-  > I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).  
-  > Source: https://news.ycombinator.com/item?id=46279042
+- **F4** [customer_problem, off-topic] One user says they have to manually check release notes for accuracy before publishing.
+  - Needs review: the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it
+  - Note: not sent to the model: off-topic for this brief
+  > Because of this it's tricky to fully automate the process as at some level you usually need a person casting an eye over the release note just to sense check.  
+  > Source: https://news.ycombinator.com/item?id=46597069
 
 
 ## Competitor findings (existing products; not evidence of demand)

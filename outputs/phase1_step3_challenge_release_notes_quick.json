@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+ "run_id": "run-2026-11-17T12:03:11Z-9f2050",
  "model": "qwen3:4b",
  "assumptions": [
   {
@@ -8,8 +8,6 @@
    "text": "Small software teams spend too much time writing release notes and changelogs.",
    "stated": true,
    "related_findings": [
-    "F1",
-    "F2",
     "H1"
    ]
   },
@@ -26,8 +24,6 @@
    "text": "This solves it: A web app that drafts customer-facing release notes from a small software team's merged pull requests, for a person to edit and publish.",
    "stated": true,
    "related_findings": [
-    "F1",
-    "F2",
     "H1"
    ]
   },
@@ -58,16 +54,23 @@
    "assumption": "A1",
    "assumption_text": "Small software teams spend too much time writing release notes and changelogs.",
    "stated": true,
-   "stance": "supported",
+   "stance": "untested",
    "model_stance": "supported",
-   "reason": "F1 and F2 both confirm that release notes are a communication channel, not just a dev artifact, implying time-",
+   "reason": "H1 provides partial evidence that small software teams spend too much time writing release notes and changelog",
+   "reason_is_advisory": true,
    "evidence": [
-    "F1",
-    "F2"
+    "H1"
    ],
-   "basis": "EVIDENCE",
+   "links": [
+    {
+     "finding": "H1",
+     "relationship": "indirect",
+     "why": "a check of the founder's statement that is partial_evidence, not established"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
    "sources": [
-    "https://news.ycombinator.com/item?id=46597069"
+    "https://news.ycombinator.com/item?id=31602126"
    ]
   },
   {
@@ -76,8 +79,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -85,15 +90,23 @@
    "assumption": "A3",
    "assumption_text": "This solves it: A web app that drafts customer-facing release notes from a small software team's merged pull requests, for a person to edit and publish.",
    "stated": true,
-   "stance": "weakened",
-   "model_stance": "weakened",
-   "reason": "F2 states that automation requires human sense checking, which contradicts the claim that the web app fully",
+   "stance": "untested",
+   "model_stance": "supported",
+   "reason": "H1 provides partial evidence that small software teams spend too much time writing release notes and changelog",
+   "reason_is_advisory": true,
    "evidence": [
-    "F2"
+    "H1"
    ],
-   "basis": "EVIDENCE",
+   "links": [
+    {
+     "finding": "H1",
+     "relationship": "indirect",
+     "why": "related but partial_evidence"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
    "sources": [
-    "https://news.ycombinator.com/item?id=46597069"
+    "https://news.ycombinator.com/item?id=31602126"
    ]
   },
   {
@@ -102,8 +115,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -113,8 +128,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -124,27 +141,49 @@
    "stated": false,
    "stance": "untested",
    "model_stance": "untested",
-   "reason": "No findings address whether customers would pay for this product",
+   "reason": "No findings speak to whether enough customers would pay for it",
+   "reason_is_advisory": true,
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   }
  ],
  "new_hypotheses": [],
- "risks": [],
- "experiments": [],
+ "risks": [
+  {
+   "assumption": "A6",
+   "kind": "market",
+   "text": "Assuming customers will pay for a tool that automates release notes may not be valid if the value is",
+   "evidence": [],
+   "basis": "ASSUMPTION"
+  }
+ ],
+ "experiments": [
+  {
+   "assumption": "A6",
+   "name": "Ask small SaaS teams about willingness",
+   "method": "Survey 10 small SaaS teams about willingness to pay for a tool that drafts release notes from PRs",
+   "support_if": "At least 50% say they would pay 50 EUR/month",
+   "weaken_if": "At least 50% say they would not pay for it",
+   "status": "proposed, not run"
+  }
+ ],
  "contradictions": [],
- "removed": [],
+ "removed": [
+  "A1: model said 'supported' but no cited finding can support it: H1 a check of the founder's statement that is partial_evidence, not established; stance set to 'untested'",
+  "A3: model said 'supported' but no cited finding can support it: H1 related but partial_evidence; stance set to 'untested'"
+ ],
  "calls": [
   {
    "action": "challenge_assumptions",
-   "wall_s": 30.9,
+   "wall_s": 52.2,
    "prompt_tokens": 799,
-   "output_tokens": 142
+   "output_tokens": 320
   }
  ],
  "status": "ok",
  "error": "",
  "grounded_reviews": 2,
- "elapsed_s": 30.9
+ "elapsed_s": 52.2
 }

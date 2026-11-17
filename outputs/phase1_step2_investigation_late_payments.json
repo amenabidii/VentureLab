@@ -1,0 +1,308 @@
+{
+ "run_id": "run-2026-11-17T12:04:55Z-e5c768",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "late payments freelancers",
+  "unpaid invoices reminders",
+  "client payment delays freelancers"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=late+payments+freelancers&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"late payments freelancers\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T12:05:02Z",
+   "items": 8
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=unpaid+invoices+reminders&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"unpaid invoices reminders\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T12:05:03Z",
+   "items": 5
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=client+payment+delays+freelancers&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"client payment delays freelancers\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T12:05:04Z",
+   "items": 5
+  }
+ ],
+ "selection": {
+  "comments_seen": 18,
+  "off_topic_dropped": 0,
+  "relevant": 18,
+  "kept": 8,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=19747211",
+   "https://news.ycombinator.com/item?id=42853373",
+   "https://news.ycombinator.com/item?id=43381182",
+   "https://news.ycombinator.com/item?id=47639329",
+   "https://news.ycombinator.com/item?id=5877610",
+   "https://news.ycombinator.com/item?id=7929193",
+   "https://news.ycombinator.com/item?id=41748040",
+   "https://news.ycombinator.com/item?id=47664297"
+  ],
+  "topic_terms": [
+   "app",
+   "customer",
+   "designer",
+   "developer",
+   "freelanc",
+   "freelancer",
+   "invoice",
+   "lat",
+   "pay",
+   "polit",
+   "reminder",
+   "schedul",
+   "send",
+   "show",
+   "softwar",
+   "struggl",
+   "unpaid",
+   "usually",
+   "web",
+   "which"
+  ],
+  "problem_terms": [
+   "customer",
+   "freelancer",
+   "invoice",
+   "pay",
+   "struggl"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says freelancers often experience late payments for invoices.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "customer",
+    "pay"
+   ],
+   "quotes": [
+    {
+     "text": "I've experienced late payments multiple times myself, so a built-in solution with multiple payment options should be a no-brainer for the client.",
+     "url": "https://news.ycombinator.com/item?id=42853373",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "freelancers",
+    "often",
+    "experience",
+    "invoices"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: freelancers, often, experience, invoices"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says it takes time and effort to align clients and designers on project scope and style.",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "customer",
+    "designer"
+   ],
+   "quotes": [
+    {
+     "text": "It takes time and effort to get clients and designers on the same page regarding design style and project scope.",
+     "url": "https://news.ycombinator.com/item?id=41748040",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "segment",
+   "model_type": "segment",
+   "claim": "Freelancers and solopreneurs use PayPrompt to automate invoice creation and payment reminders.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "freelancer",
+    "invoice",
+    "pay"
+   ],
+   "quotes": [
+    {
+     "text": "I’m building PayPrompt, a simple but powerful tool for freelancers and solopreneurs to automate invoice creation and payment reminders.",
+     "url": "https://news.ycombinator.com/item?id=43381182",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "use"
+   ],
+   "attributed": false,
+   "review": [
+    "wording goes beyond the quoted text: use",
+    "a claim about people must be attributed to one person (\"One host says ...\")"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "competitor",
+   "model_type": "competitor",
+   "claim": "dotbrand automates early client communication for designers and agencies to align project expectations.",
+   "standing": "established",
+   "relevance": "statement",
+   "shared_terms": [
+    "customer",
+    "pay"
+   ],
+   "quotes": [
+    {
+     "text": "dotbrand solves this by automating the early stages of client communication (before the down payment), helping designers and agencies gather key information, align project expectations, and send reports to both the client and the design team before investing a lot of time.",
+     "url": "https://news.ycombinator.com/item?id=41748040",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote describes dotbrand automating early client communication to align expectations, matching the claim exactly.",
+   "limitations": "Limited to dotbrand's specific process, not general applicability.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [],
+   "attributed": true,
+   "review": [],
+   "notes": []
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "Freelancers struggle to get clients to pay their invoices on time.",
+   "standing": "partial_evidence",
+   "relevance": "statement",
+   "shared_terms": [
+    "customer",
+    "invoice",
+    "pay"
+   ],
+   "quotes": [
+    {
+     "text": "Click start on the timer at the beginning of the call, click stop when you've ended the call, create invoice, add time entry, send to client (via email through Harpoon).",
+     "url": "https://news.ycombinator.com/item?id=19747211",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "I might hound Joe down the street for that $10 he never paid me back for the rest of my days, but I can accept losing a few days of billable time because my client went bankrupt and can't pay me.",
+     "url": "https://news.ycombinator.com/item?id=5877610",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "partially_supports",
+   "reason": "The quotes describe a freelancer's experience with late payments and accepting lost billable time due to client bankruptcy, but the context shows this is a personal example of risk acceptance, not a general struggle with timely payments.",
+   "limitations": "Limited to one freelancer's specific situation, not representative of all freelancers.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "freelancers",
+    "struggle",
+    "get",
+    "invoices"
+   ],
+   "attributed": false,
+   "review": [
+    "wording goes beyond the quoted text: freelancers, struggle, get, invoices",
+    "a claim about people must be attributed to one person (\"One host says ...\")"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 5,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 7.0,
+   "prompt_tokens": 149,
+   "output_tokens": 33
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 44.8,
+   "prompt_tokens": 832,
+   "output_tokens": 181
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 13.6,
+   "prompt_tokens": 545,
+   "output_tokens": 53
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 8.5,
+   "prompt_tokens": 389,
+   "output_tokens": 18
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 24.7,
+   "prompt_tokens": 676,
+   "output_tokens": 82
+  }
+ ],
+ "model_seconds": 98.6,
+ "elapsed_s": 101.9
+}

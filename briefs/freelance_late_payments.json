@@ -1,0 +1,10 @@
+{
+  "idea": "A web app that sends polite, scheduled payment reminders for freelancers' unpaid invoices and shows which clients usually pay late.",
+  "problem_statement": "Freelancers struggle to get clients to pay their invoices on time.",
+  "target_customer": "freelance software developers and designers",
+  "market": "online, English-speaking freelancers",
+  "founder_skills": ["Python", "web development"],
+  "hours_per_week": 10,
+  "budget_eur": 200,
+  "values_and_constraints": ["no dark patterns", "reminders are only sent after the freelancer approves them"]
+}
