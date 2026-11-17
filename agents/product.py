@@ -240,7 +240,7 @@ def mvp_checks(idea: str) -> list[dict]:
         {"check": "working MVP: finds the decision in a thread (SYNTHETIC input)", "passed": dec == [2],
          "detail": f"decisions at messages {dec}"},
         {"check": "working MVP: finds the action item", "passed": act == [3], "detail": f"action items at {act}"},
-        {"check": "working MVP: answered question closed, open question kept", "passed": opn == [4],
+        {"check": "working MVP: all questions retained for review without inferred resolution", "passed": opn == [1, 4],
          "detail": f"open questions at {opn}"},
         {"check": "working MVP: every point links to its source message (AC2)",
          "passed": all(f"href='#m{n}'" in html and f"id='m{n}'" in html for n in dec + act + opn),

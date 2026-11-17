@@ -22,8 +22,8 @@ def test_extracts_decisions_questions_and_actions_with_their_source_message():
     assert [x["message"] for x in d["decisions"]] == [3, 4]
     assert "Migration notes go in the changelog" in d["decisions"][1]["text"]
     assert [x["message"] for x in d["action_items"]] == [1, 6]  # "please read ..." is a request
-    # Omar's question (#2) was settled by a later decision from someone else; Maya's and Sam's are still open.
-    assert [x["message"] for x in d["open_questions"]] == [5, 7]
+    # A later decision cannot establish that a specific question was answered.
+    assert [x["message"] for x in d["open_questions"]] == [2, 5, 7]
     assert d["participants"] == {"lina": 2, "maya": 2, "omar": 2, "sam": 1}
 
 
@@ -37,7 +37,7 @@ def test_output_quotes_messages_unchanged_and_links_every_point():
 def test_different_threads_give_different_digests():
     other = "ana: Should we rename the app?\nben: Let's go with the current name.\nana: I'll update the docs."
     a, b = digest(THREAD).to_dict(), digest(other).to_dict()
-    assert a != b and b["decisions"][0]["author"] == "ben" and b["open_questions"] == []
+    assert a != b and b["decisions"][0]["author"] == "ben" and len(b["open_questions"]) == 1
 
 
 def test_nothing_is_invented_for_an_empty_or_plain_thread():
@@ -73,3 +73,36 @@ def test_web_form_runs_the_mvp_locally_and_refuses_foreign_posts():
     assert ok.status_code == 200 and "<h2>Decisions</h2>" in ok.text and "href='#m4'" in ok.text
     assert client.post("/mvp", data={"thread": EXAMPLE}).status_code == 403
     assert client.post("/mvp", data={"thread": EXAMPLE}, headers={"origin": "http://evil.example"}).status_code == 403
+
+
+def test_unrelated_decision_never_hides_a_question():
+    result = digest("ana: Is the security review complete?\nben: Decided: use a blue logo.")
+    assert [m.n for m in result.questions] == [1]
+
+
+@pytest.mark.parametrize("text", ["We have not decided on Friday.", "Was that approved?", "No decision yet."])
+def test_negation_or_question_is_not_a_decision(text):
+    assert digest("ana: " + text).decisions == []
+
+
+def test_download_is_real_output_no_store_and_requires_same_origin():
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+    response = client.post('/mvp', data={"thread": "ana: I'll write the guide.", "format": "markdown"}, headers={"origin": "http://testserver"})
+    assert response.status_code == 200
+    assert response.headers['content-disposition'] == 'attachment; filename="thread-digest.md"'
+    assert response.headers['cache-control'] == 'no-store'
+    assert "Message #1" in response.text and "ana: I'll write the guide." in response.text
+    assert client.post('/mvp', data={"thread": THREAD, "format": "markdown"}, headers={"origin": "https://testserver"}).status_code == 403
+    assert client.get('/mvp?blank=1').text.count(THREAD) == 0
+
+
+def test_empty_and_malformed_forms_are_actionable_not_success():
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+    headers = {"origin": "http://testserver"}
+    assert 'Paste a discussion' in client.post('/mvp', data={"thread": "   "}, headers=headers).text
+    response = client.post('/mvp', content='a=1&b=2&c=3&d=4&e=5&f=6', headers=headers)
+    assert response.status_code == 200 and 'role="alert"' in response.text

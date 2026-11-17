@@ -39,6 +39,13 @@ and phases 2–6 ran as a labelled **REHEARSAL**
 (`outputs/phase1_step4_*` … `outputs/phase6_*`, `outputs/payment_test_log.md`: 8/8
 sale-to-cash checks passed), and the Phase 6 memo recommends **REPEAT**, not launch.
 
+**Try a working product:** open `/mvp` after startup, paste a discussion and get a
+source-linked catch-up brief. Inspect any point against its original message or
+download a Markdown handoff. No model or account is needed, and input is not stored.
+The included example is SYNTHETIC, not customer evidence. Fixed rules extract
+candidates; all questions remain visible for review rather than being silently
+closed by an unrelated decision. This demonstrates functionality, not validated demand.
+
 ## Quickstart
 
 Requirements: Docker with Compose, about 4 GB of free disk and roughly 4 GB of free RAM for

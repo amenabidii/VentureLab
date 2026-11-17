@@ -91,20 +91,17 @@ def parse(thread: str) -> list[Message]:
 def digest(thread: str) -> Digest:
     msgs = parse(thread)
     d = Digest(msgs)
-    answered = set()
-    for i, m in enumerate(msgs):
-        if _DECISION.search(m.text):
+    for m in msgs:
+        # These are candidates, not semantic conclusions. Negation and questions
+        # must not silently become settled decisions.
+        negated = re.search(r"\b(?:not|never|haven't|hasn't|isn't|wasn't|no)\b", m.text, re.I)
+        if _DECISION.search(m.text) and "?" not in m.text and not negated:
             d.decisions.append(m)
         if _ACTION.search(m.text) and not m.text.rstrip().endswith("?"):
             d.actions.append(m)
         if "?" in m.text:
-            # A question counts as open unless a later message from someone else quotes or answers it
-            # with a decision; the rule is shown to the user, not hidden.
-            later = msgs[i + 1:]
-            if any(o.author != m.author and _DECISION.search(o.text) for o in later):
-                answered.add(m.n)
-            else:
-                d.questions.append(m)
+            # A later decision cannot prove that this particular question was answered.
+            d.questions.append(m)
     return d
 
 
@@ -119,10 +116,36 @@ def render_html(d: Digest) -> str:
 
     people = ", ".join(f"{e(a)} ({n})" for a, n in d.participants.items()) or "none"
     source = "".join(f"<li id='m{m.n}'><b>#{m.n} {e(m.author)}</b>: {e(m.text)}</li>" for m in d.messages)
-    return (f"<h2>Decisions</h2>{items(d.decisions, 'No decision found in this thread.')}"
-            f"<h2>Open questions</h2>{items(d.questions, 'No open question found.')}"
-            f"<h2>Action items</h2>{items(d.actions, 'No action item found.')}"
-            f"<h2>Participants</h2><p>{len(d.messages)} messages · {people}</p>"
-            f"<details><summary>Original thread (every point above links here)</summary><ol class='src'>{source}</ol>"
-            f"</details><p class='muted'>Fixed rules, no model: lines are classified by their own words and quoted "
-            f"unchanged. Check anything important against the original message.</p>")
+    return (f"<section id='digest' aria-labelledby='digest-title'><div class='result-head'><div><span class='eyebrow'>YOUR THREAD, ORGANIZED</span>"
+            f"<h2 id='digest-title'>The catch-up brief.</h2></div><a class='text-link' href='#source-thread'>Inspect original messages ↓</a></div>"
+            f"<div class='metrics'><div><strong>{len(d.messages)}</strong><span>messages read</span></div>"
+            f"<div><strong>{len(d.decisions)}</strong><span>decision candidates</span></div>"
+            f"<div><strong>{len(d.actions)}</strong><span>action candidates</span></div>"
+            f"<div><strong>{len(d.questions)}</strong><span>questions to review</span></div></div>"
+            f"<p class='notice'>A working extraction tool, not a launch decision. Fixed rules identify candidates; "
+            f"they cannot verify intent, completion or whether a question was answered. Review every important point.</p>"
+            f"<div class='digest-grid'><article class='result-card'><span class='eyebrow'>01 / ALIGN</span><h2>Decisions</h2>"
+            f"<p class='muted'>Candidate decision language, quoted from the thread.</p>{items(d.decisions, 'No decision candidate found.')}</article>"
+            f"<article class='result-card'><span class='eyebrow'>02 / FOLLOW THROUGH</span><h2>Action items</h2>"
+            f"<p class='muted'>Requests and commitments. The speaker is not necessarily the owner.</p>{items(d.actions, 'No action candidate found.')}</article>"
+            f"<article class='result-card full'><span class='eyebrow'>03 / KEEP VISIBLE</span><h2>Questions to review</h2>"
+            f"<p class='muted'>All detected questions stay visible. A later decision never silently closes an unrelated question.</p>"
+            f"{items(d.questions, 'No question mark found in this thread.')}</article></div>"
+            f"<section id='source-thread'><h2>Original thread</h2><p class='muted'>{len(d.messages)} messages · {people}</p>"
+            f"<ol class='src'>{source}</ol></section></section>")
+
+
+def render_markdown(d: Digest) -> str:
+    """Portable local output; no network, persistence or invented attribution."""
+    lines = ["# Thread digest", "", "Fixed-rule candidates; verify against the source messages below.",
+             "Questions are not automatically marked answered. Speakers are not inferred task owners.", ""]
+    for title, messages in [("Decision candidates", d.decisions), ("Action candidates", d.actions),
+                            ("Questions to review", d.questions), ("Source messages", d.messages)]:
+        lines += ["## " + title, ""]
+        if not messages:
+            lines.append("None detected.")
+        for m in messages:
+            # Blockquote every source line so source headings cannot impersonate sections.
+            lines += [f"Message #{m.n}", "> " + m.author + ": " + m.text.replace("\n", "\n> "), ""]
+        lines.append("")
+    return "\n".join(lines)
