@@ -4,7 +4,7 @@
  "decision": "REVIEW",
  "checks": [
   {
-   "check": "every box filled or marked UNKNOWN",
+   "check": "every box filled or labelled ASSUMPTION",
    "passed": true
   },
   {

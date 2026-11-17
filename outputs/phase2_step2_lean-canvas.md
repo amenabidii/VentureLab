@@ -5,14 +5,14 @@ A Lean Canvas is a set of hypotheses. Labels show where each entry came from; no
 
 ## Problem
 
-- **FOUNDER-PROVIDED**: Remote workers waste time catching up on long Slack threads they missed. Test: Ask 10 remote workers about Slack thread.
-- **SOURCED: NEEDS_REVIEW (not established)**: One user says Slack threads are too long to read and they miss important messages. Sources: https://news.ycombinator.com/item?id=36434999.
-- **SOURCED: PARTIAL_EVIDENCE (not established)**: One user says Slack messages go unanswered more often than in Teams. Sources: https://news.ycombinator.com/item?id=20896857.
-- **SOURCED: PARTIAL_EVIDENCE (not established)**: Remote workers waste time catching up on long Slack threads they missed. Sources: https://news.ycombinator.com/item?id=25056920, https://news.ycombinator.com/item?id=36434999.
+- **FOUNDER-STATED**: Remote workers waste time catching up on long Slack threads they missed. Test: Ask 10 remote workers about Slack thread.
+- **ASSUMPTION (quote found, not established: needs_review)**: One user says Slack threads are too long to read and they miss important messages. Sources: https://news.ycombinator.com/item?id=36434999.
+- **ASSUMPTION (quote found, not established: partial_evidence)**: One user says Slack messages go unanswered more often than in Teams. Sources: https://news.ycombinator.com/item?id=20896857.
+- **ASSUMPTION (quote found, not established: partial_evidence)**: Remote workers waste time catching up on long Slack threads they missed. Sources: https://news.ycombinator.com/item?id=25056920, https://news.ycombinator.com/item?id=36434999.
 
 ## Customer segments
 
-- **FOUNDER-PROVIDED**: remote engineers and product managers on distributed teams. Test: Recruit 5–10 people who match this segment for interviews.
+- **FOUNDER-STATED**: remote engineers and product managers on distributed teams. Test: Recruit 5–10 people who match this segment for interviews.
 
 ## Unique value proposition
 
@@ -20,19 +20,19 @@ A Lean Canvas is a set of hypotheses. Labels show where each entry came from; no
 
 ## Solution
 
-- **FOUNDER-PROVIDED**: A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.
+- **FOUNDER-STATED**: A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.
 
 ## Channels
 
-- **FOUNDER-PROVIDED**: Reach customers in: Online, English-speaking remote software teams. Test: Count how many qualified people one channel yields per hour of effort.
+- **FOUNDER-STATED**: Reach customers in: Online, English-speaking remote software teams. Test: Count how many qualified people one channel yields per hour of effort.
 
 ## Revenue streams
 
-- **UNKNOWN — needs evidence**: Willingness to pay is unknown. Desk research cannot establish it. Test: Pricing questions in interviews, then a priced pre-order or waitlist test (Phase 4 hypotheses).
+- **ASSUMPTION — no evidence yet**: Willingness to pay is unknown. Desk research cannot establish it. Test: Pricing questions in interviews, then a priced pre-order or waitlist test (Phase 4 hypotheses).
 
 ## Cost structure
 
-- **FOUNDER-PROVIDED**: Founder time: 8 hours a week; budget 5000 EGP; local open-weight model, $0 API cost.
+- **FOUNDER-STATED**: Founder time: 8 hours a week; budget 5000 EGP; local open-weight model, $0 API cost.
 
 ## Key metrics
 

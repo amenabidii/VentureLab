@@ -179,7 +179,7 @@ def plan(ctx: Context) -> list[str]:
     ctx.rec(2, "build_lean_canvas", "drafted", sources=sources)
     complete = all(canvas["canvas"][b] for b in canvas["canvas"])
     ctx.gate_file(2, "lean-canvas", "REVIEW" if complete else "REPEAT",
-                  [{"check": "every box filled or marked UNKNOWN", "passed": complete},
+                  [{"check": "every box filled or labelled ASSUMPTION", "passed": complete},
                    {"check": "revenue streams evidenced", "passed": "revenue_streams" not in canvas["summary"]["unknown_boxes"]}],
                   [])
     ctx.rec(2, "lean_canvas_gate", "founder review required; demand not evidenced")

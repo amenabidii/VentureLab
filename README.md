@@ -65,7 +65,7 @@ Full walkthrough, CLI options and platform notes: [docs/usage.md](docs/usage.md)
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
 | Validate-phase results: the founder records observed counts against the threshold approved in the kit; a deterministic validation gate returns GO / REPEAT / STOP. Results are labelled FOUNDER-REPORTED and are not verified by VentureLab | **Working** (no real experiment results have been recorded) |
-| Phase 2 Lean Canvas: every box FOUNDER-PROVIDED, SOURCED (with quote URL and standing) or ASSUMPTION/UNKNOWN | **Working** (`agents/strategist.py`) |
+| Phase 2 run-level Lean Canvas (`workflow.py`), same labels as the kit's canvas: FOUNDER-STATED, EVIDENCE (ESTABLISHED only) or ASSUMPTION (quotes that are not established shown with URL and standing) | **Working** (`agents/strategist.py`) |
 | Phase 4 pricing hypotheses (labelled ASSUMPTION) and draft terms, privacy and refund policies (DRAFT, not legal advice); price chosen only by founder approval | **Working** (`agents/commercial.py`) |
 | Phase 5 store page and launch-post drafts; publishing and posting | Drafts **Working**; publishing **MOCKED** (local only, founder approval of the exact page) |
 | Phase 5 sale to cash: payment events, automatic delivery, refunds revoke access, duplicate and forged events refused, reconciliation | **MOCKED** (`payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`): simulated test orders only, no payments of any kind, not even sandbox; log in `outputs/payment_test_log.md` |

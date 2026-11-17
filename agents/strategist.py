@@ -1,8 +1,9 @@
 """Phase 2 (Validate), core step "Design the business": a Lean Canvas.
 
-Deterministic: every box is filled only from the founder's brief (FOUNDER-PROVIDED),
-from Discover findings with their verified source URLs (ESTABLISHED or NEEDS_REVIEW,
-labelled as such), or is written as an explicit ASSUMPTION to test. Nothing is invented:
+Deterministic, with the same labels as the Builder's canvas (`lean_canvas.py`): an entry
+is FOUNDER-STATED (from the brief, not checked), EVIDENCE (an ESTABLISHED finding, with its
+source URLs) or ASSUMPTION (untested; a quote that was found but not established stays an
+ASSUMPTION, with its URL and standing shown). Nothing is invented:
 boxes the inputs cannot fill say so and name the experiment that would fill them.
 """
 from __future__ import annotations
@@ -10,10 +11,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-FOUNDER = "FOUNDER-PROVIDED"
+FOUNDER = "FOUNDER-STATED"
 ASSUMPTION = "ASSUMPTION"
-EVIDENCE = "SOURCED"
-UNKNOWN = "UNKNOWN — needs evidence"
+EVIDENCE = "EVIDENCE"
+UNKNOWN = "ASSUMPTION — no evidence yet"
 
 BOXES = ["problem", "customer_segments", "unique_value_proposition", "solution", "channels",
          "revenue_streams", "cost_structure", "key_metrics", "unfair_advantage"]
@@ -44,8 +45,8 @@ def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, chall
     canvas["problem"].append(Entry(brief["problem_statement"], FOUNDER, test=first_test))
     for f in problem_findings:
         standing = f.get("standing", "assumption")
-        label = (f"{EVIDENCE}: ESTABLISHED" if standing == "established"
-                 else f"{EVIDENCE}: {standing.upper()} (not established)")
+        label = (EVIDENCE if standing == "established"
+                 else f"{ASSUMPTION} (quote found, not established: {standing})")
         canvas["problem"].append(Entry(f["claim"], label, _verified_urls(f)))
     canvas["customer_segments"].append(Entry(brief["target_customer"], FOUNDER,
                                              test="Recruit 5–10 people who match this segment for interviews"))
@@ -71,8 +72,8 @@ def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, chall
         test="List existing alternatives interviewees already use"))
 
     unsupported = [a["id"] for a in (challenge or {}).get("assumptions", [])]
-    sourced = sum(1 for box in canvas.values() for e in box if e.label.startswith(EVIDENCE))
-    established = sum(1 for box in canvas.values() for e in box if "ESTABLISHED" in e.label)
+    sourced = sum(1 for box in canvas.values() for e in box if e.sources)
+    established = sum(1 for box in canvas.values() for e in box if e.label == EVIDENCE)
     return {
         "run_id": gate.get("run_id"),
         "discover_decision": gate.get("decision"),
@@ -113,7 +114,7 @@ def score_opportunities(brief: dict, gate: dict, investigation: dict | None, cha
     findings = {f["id"]: f for f in (investigation or {}).get("findings", [])}
     problem_ids = [f["id"] for f in findings.values() if f.get("type") == "customer_problem"]
     risks = (challenge or {}).get("risks", [])
-    options = [{"option": brief["idea"], "origin": "founder's idea (FOUNDER-PROVIDED)", "evidence_ids": problem_ids,
+    options = [{"option": brief["idea"], "origin": "founder's idea (FOUNDER-STATED)", "evidence_ids": problem_ids,
                 "fit": 2, "risk_count": len(risks)}]
     for h in (challenge or {}).get("new_hypotheses", []):
         options.append({"option": h["text"], "origin": f"raised by the Challenger ({h.get('basis', 'ASSUMPTION')})",

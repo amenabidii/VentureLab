@@ -9,7 +9,7 @@
  "options": [
   {
    "option": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
-   "origin": "founder's idea (FOUNDER-PROVIDED)",
+   "origin": "founder's idea (FOUNDER-STATED)",
    "evidence_ids": [
     "F1",
     "F2",
@@ -55,7 +55,7 @@
  "market": {
   "definition": "Online, English-speaking remote software teams",
   "customer": "remote engineers and product managers on distributed teams",
-  "label": "FOUNDER-PROVIDED",
+  "label": "FOUNDER-STATED",
   "size": "UNKNOWN — no sourced market-size figure; none is estimated"
  }
 }

@@ -122,10 +122,11 @@ questions or interpreting polite interest as demand.
   them), and each recording appends a founder entry (`approved_by: founder`) and a gate
   entry to `decision_log.json`. The phase 1 decision is never rewritten.
 
-**Lean Canvas (Working, `agents/strategist.py`):** all nine boxes, each entry labelled
-FOUNDER-PROVIDED, SOURCED (verified quote URL plus its standing; only ESTABLISHED counts as
-established) or ASSUMPTION/UNKNOWN with the test that would resolve it. Revenue stays
-UNKNOWN until willingness to pay is measured. Outputs `phase2_step2_lean-canvas.*` and
+**Run-level Lean Canvas (Working, `agents/strategist.py`):** all nine boxes, with the same
+labels as the kit's canvas: FOUNDER-STATED, EVIDENCE (ESTABLISHED findings only, with URLs)
+or ASSUMPTION with the test that would resolve it; a quote that was found but not
+established stays an ASSUMPTION and shows its URL and standing. Revenue stays an
+assumption until willingness to pay is measured. Outputs `phase2_step2_lean-canvas.*` and
 `phase2_gate_lean-canvas.json` (founder review; demand not evidenced). The web workspace's kit bundle carries its own canvas (`lean_canvas.py`, above), fingerprinted with the kit it belongs to.
 
 **Remaining Validate design (STUBBED):** updating a canvas from recorded validation results (a new version per experiment). The Builder would propose a

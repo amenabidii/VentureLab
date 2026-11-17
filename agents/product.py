@@ -19,7 +19,7 @@ BANNED = ("testimonial", "five-star", "5-star", "limited time", "only 3 left", "
 def mvp_scope(brief: dict, canvas: dict) -> dict:
     values = brief.get("values_and_constraints", [])
     return {
-        "core_job": brief["idea"], "for": brief["target_customer"], "label": "FOUNDER-PROVIDED scope",
+        "core_job": brief["idea"], "for": brief["target_customer"], "label": "FOUNDER-STATED scope",
         "in_scope": [f"The single core job: {brief['idea']}"],
         "out_of_scope": ["Accounts, payments and integrations beyond the core job",
                          "Any feature not needed to test the riskiest assumption"],
@@ -28,9 +28,9 @@ def mvp_scope(brief: dict, canvas: dict) -> dict:
             {"id": "AC1", "text": "A target customer completes the core job unaided in one session.",
              "label": "ASSUMPTION (threshold set by the founder before testing)"},
             {"id": "AC2", "text": "The output links every point back to its original source.",
-             "label": "FOUNDER-PROVIDED (from the idea)" if "link" in brief["idea"].lower() else "ASSUMPTION"},
+             "label": "FOUNDER-STATED (from the idea)" if "link" in brief["idea"].lower() else "ASSUMPTION"},
             {"id": "AC3", "text": "No data is read outside what the user explicitly installs it for.",
-             "label": "FOUNDER-PROVIDED (from values/constraints)" if values else "ASSUMPTION"},
+             "label": "FOUNDER-STATED (from values/constraints)" if values else "ASSUMPTION"},
         ],
         "riskiest_assumption_first": (canvas.get("summary") or {}).get("founder_assumptions_under_test", [])[:1],
         "code_generation": "STUBBED — VentureLab does not yet generate the MVP's application code.",

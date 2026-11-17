@@ -5,13 +5,13 @@
   "problem": [
    {
     "text": "Remote workers waste time catching up on long Slack threads they missed.",
-    "label": "FOUNDER-PROVIDED",
+    "label": "FOUNDER-STATED",
     "sources": [],
     "test": "Ask 10 remote workers about Slack thread"
    },
    {
     "text": "One user says Slack threads are too long to read and they miss important messages.",
-    "label": "SOURCED: NEEDS_REVIEW (not established)",
+    "label": "ASSUMPTION (quote found, not established: needs_review)",
     "sources": [
      "https://news.ycombinator.com/item?id=36434999"
     ],
@@ -19,7 +19,7 @@
    },
    {
     "text": "One user says Slack messages go unanswered more often than in Teams.",
-    "label": "SOURCED: PARTIAL_EVIDENCE (not established)",
+    "label": "ASSUMPTION (quote found, not established: partial_evidence)",
     "sources": [
      "https://news.ycombinator.com/item?id=20896857"
     ],
@@ -27,7 +27,7 @@
    },
    {
     "text": "Remote workers waste time catching up on long Slack threads they missed.",
-    "label": "SOURCED: PARTIAL_EVIDENCE (not established)",
+    "label": "ASSUMPTION (quote found, not established: partial_evidence)",
     "sources": [
      "https://news.ycombinator.com/item?id=25056920",
      "https://news.ycombinator.com/item?id=36434999"
@@ -38,7 +38,7 @@
   "customer_segments": [
    {
     "text": "remote engineers and product managers on distributed teams",
-    "label": "FOUNDER-PROVIDED",
+    "label": "FOUNDER-STATED",
     "sources": [],
     "test": "Recruit 5–10 people who match this segment for interviews"
    }
@@ -54,7 +54,7 @@
   "solution": [
    {
     "text": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
-    "label": "FOUNDER-PROVIDED",
+    "label": "FOUNDER-STATED",
     "sources": [],
     "test": null
    }
@@ -62,7 +62,7 @@
   "channels": [
    {
     "text": "Reach customers in: Online, English-speaking remote software teams",
-    "label": "FOUNDER-PROVIDED",
+    "label": "FOUNDER-STATED",
     "sources": [],
     "test": "Count how many qualified people one channel yields per hour of effort"
    }
@@ -70,7 +70,7 @@
   "revenue_streams": [
    {
     "text": "Willingness to pay is unknown. Desk research cannot establish it.",
-    "label": "UNKNOWN — needs evidence",
+    "label": "ASSUMPTION — no evidence yet",
     "sources": [],
     "test": "Pricing questions in interviews, then a priced pre-order or waitlist test (Phase 4 hypotheses)"
    }
@@ -78,7 +78,7 @@
   "cost_structure": [
    {
     "text": "Founder time: 8 hours a week; budget 5000 EGP; local open-weight model, $0 API cost.",
-    "label": "FOUNDER-PROVIDED",
+    "label": "FOUNDER-STATED",
     "sources": [],
     "test": null
    }

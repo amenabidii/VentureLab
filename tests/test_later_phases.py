@@ -217,8 +217,9 @@ def test_lean_canvas_labels_every_entry_and_never_invents_demand(tmp_path):
     entries = [e for box in canvas["canvas"].values() for e in box]
     assert all(e["label"] for e in entries)
     assert "revenue_streams" in canvas["summary"]["unknown_boxes"]
-    sourced = [e for e in entries if e["label"].startswith("SOURCED")]
-    assert sourced and all(e["sources"] and "NEEDS_REVIEW" in e["label"] for e in sourced)
+    quoted = [e for e in entries if e["sources"]]
+    assert quoted and all(e["label"].startswith("ASSUMPTION (quote found, not established") for e in quoted)
+    assert {e["label"].split(" ")[0] for e in entries} <= {"FOUNDER-STATED", "EVIDENCE", "ASSUMPTION"}
     assert canvas["summary"]["established_entries"] == 0
 
 
