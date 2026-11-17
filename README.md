@@ -1,5 +1,7 @@
 # VentureLab
 
+> **Try it in 30 seconds:** `docker compose up`, then open <http://localhost:8000/mvp> (the working Phase 3 MVP, no model needed), <http://localhost:8000/phases> (all six phases and their gates) and <http://localhost:8000> (Discover, recorded runs, founder approval).
+
 **Challenge the idea. Verify the evidence. Build with confidence.**
 
 VentureLab is an open-source, multi-agent AI co-founder for early digital-product
