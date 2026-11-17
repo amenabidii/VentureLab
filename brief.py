@@ -82,7 +82,7 @@ PROHIBITED: dict[str, re.Pattern[str]] = {
     ),
     "financial_investment_or_crypto": re.compile(
         r"\b(?:crypto(?:currenc(?:y|ies))?|bitcoin|ethereum|blockchain tokens?|nfts?|defi|tokens? sale|"
-        r"trading (?:signals?|bots?|tips)|day[- ]trading|forex|stock (?:picks?|tips|signals?)|"
+        r"trading (?:signals?|bots?|tips)|day[- ]trading|forex|stock[- ](?:picks?|picking|pickers?|tips|signals?)|"
         r"investment (?:advice|tips|signals?|recommendations?)|financial advice|"
         r"(?:payday |personal )?loans?|lending|insurance (?:policies|products)|robo[- ]advis[oe]r)\b",
         re.IGNORECASE,
@@ -113,14 +113,25 @@ DECEPTIVE: dict[str, re.Pattern[str]] = {
         r"sell(?:s|ing)?|produce[sd]?|mass[- ]produce)\s+(?:\w+\s+){0,3}?"
         r"(?:\d+\s+)?(?:five|5)[- ]star\s+(?:reviews?|ratings?)\b"
         r"|\b(?:inflate[sd]?|inflating|pad(?:s|ding)?)\s+(?:\w+\s+){0,2}?(?:sign-?up|waitlist|review|follower|user)"
-        r"\s*(?:counts?|numbers?|totals?)\b",
+        r"\s*(?:counts?|numbers?|totals?)\b"
+        # Reviews or testimonials written by the seller, not by customers.
+        r"|\b(?:writ(?:e|es|ing)|generat(?:e|es|ed|ing)|creat(?:e|es|ed|ing)|produc(?:e|es|ed|ing)|draft(?:s|ed|ing)?|"
+        r"post(?:s|ed|ing)?|invent(?:s|ed|ing)?|ghostwrit\w*)\s+(?:\w+\s+){0,3}?"
+        r"(?:testimonials?|(?:customer |user |buyer |product |positive |glowing )?reviews?\s+(?:for|of|about|on)\s+"
+        r"(?:my|our|the|his|her|their)\b)"
+        r"|\b(?:fake|false|fabricated|manufactured)\s+social proof\b"
+        r"|\b(?:look|looks|seem|seems|appear|appears)\s+(?:like|as if)\s+(?:[\d,]+|many|lots of|hundreds of|"
+        r"thousands of|millions of)\s+(?:people|users|customers|buyers)\b",
         re.IGNORECASE,
     ),
     "fake_urgency_or_scarcity": re.compile(
         r"\b(?:fake|false|artificial|manufactured|invented)\s+(?:\w+\s+){0,1}?(?:urgency|scarcity|countdowns?|"
         r"deadlines?|stock (?:levels?|counts?))\b"
         r"|\b(?:always|perpetual|evergreen|resetting|fake)\s+(?:\w+\s+){0,2}?(?:countdown|timer|scarcity)\w*"
-        r"|\bonly \d+ (?:left|remaining)\b",
+        r"|\bonly \d+ (?:left|remaining)\b"
+        # A sales countdown that restarts per visitor or page load is a fake deadline.
+        r"|\b(?:countdowns?|timers?)\s+(?:\w+\s+){0,2}?(?:that|which)\s+(?:\w+\s+)?resets?\s+(?:for|on|when|with|at|"
+        r"after)\s+(?:\w+\s+){0,2}?(?:visit\w*|page|load|reload|refresh\w*|customers?|buyers?|users?|sessions?)\b",
         re.IGNORECASE,
     ),
     "impersonation": re.compile(
@@ -130,15 +141,29 @@ DECEPTIVE: dict[str, re.Pattern[str]] = {
         r"|\bposts?\s+as\s+(?:\w+\s+){0,2}?(?:customers?|users?|buyers?|people)\b"
         r"|\bsock ?puppet\w*"
         r"|\bunder\s+(?:different|other|fake|false|made[- ]up|invented|several|many)\s+"
-        r"(?:customer|people'?s?|user|buyer|reviewer)?\s*names\b",
+        r"(?:customer|people'?s?|user|buyer|reviewer)?\s*names\b"
+        r"|\b(?:sign(?:s|ed|ing)?|writ(?:e|es|ing)|post(?:s|ed|ing)?|repl(?:y|ies|ied|ying)|email(?:s|ed|ing)?|"
+        r"messag(?:e|es|ed|ing)|tweet(?:s|ed|ing)?|send(?:s|ing)?)\s+(?:\w+\s+){0,3}?as\s+(?:the\s+|a\s+)?"
+        r"(?:founder|ceo|owner|official|spokes\w+|support team|staff)\s+(?:of|at|from|for)\b",
         re.IGNORECASE,
     ),
     "income_promise": re.compile(
         r"\bguarantee[sd]?\s+(?:\w+\s+){0,4}?(?:income|earnings|profits?|revenue|returns?|sales|\$|€|£)"
-        r"|\bguaranteed\s+(?:\w+\s+){0,2}?(?:income|earnings|profits?|returns?|sales|money)\b",
+        r"|\bguaranteed\s+(?:\w+\s+){0,2}?(?:income|earnings|profits?|returns?|sales|money)\b"
+        r"|\bpromis(?:e|es|ed|ing)\s+(?:\w+\s+){0,5}?(?:(?:passive |extra |monthly |steady )?income|earnings|"
+        r"profits?|returns|to make money|make money|get rich|financial freedom|\$|€|£)",
         re.IGNORECASE,
     ),
 }
+# Speaking as a named brand ("reply to tweets as Nike"): case-sensitive, a capitalised name after "as",
+# excluding words that commonly follow "as" in an honest brief (formats, languages, roles).
+_AS_BRAND = re.compile(
+    r"\b(?:[Ss]ign(?:s|ed|ing)?|[Ww]rit(?:e|es|ing)|[Pp]ost(?:s|ed|ing)?|[Rr]epl(?:y|ies|ied|ying)|"
+    r"[Ee]mail(?:s|ed|ing)?|[Tt]weet(?:s|ed|ing)?|[Cc]omment(?:s|ed|ing)?|[Ss]peak(?:s|ing)?|[Rr]espond(?:s|ed|ing)?)"
+    r"\s+(?:\w+\s+){0,3}?as\s+(?!(?:PDF|PDFs|HTML|CSV|JSON|Markdown|English|Arabic|French|Spanish|German|I|We|"
+    r"You|Monday|Friday|Slack|Python|Gmail)\b)[A-Z][\w&.'-]+")
+_SOLICIT = re.compile(r"\b(?:ask\w*|invit\w*|request\w*|remind\w*|encourag\w*|help\w*|let\w*|allow\w*|collect\w*)"
+                      r"\s+(?:\w+\s+){0,3}$", re.IGNORECASE)
 # Only a counter-measure verb right before the match (at most three words earlier) exempts it,
 # so "write fake reviews" is not excused by "detect" elsewhere in the brief.
 _COUNTER_MEASURE = re.compile(
@@ -152,9 +177,16 @@ def _deceptive_matches(fields: list[str]) -> dict[str, list[str]]:
     for field in fields:  # each field separately: words in one field never excuse another
         for category, pattern in DECEPTIVE.items():
             for m in pattern.finditer(field):
-                if _COUNTER_MEASURE.search(field[max(0, m.start() - 60):m.start()]):
+                before = field[max(0, m.start() - 60):m.start()]
+                if _COUNTER_MEASURE.search(before):
+                    continue
+                # "ask real customers to write reviews for our shop" is the honest way to get reviews.
+                if category == "fake_reviews_or_social_proof" and _SOLICIT.search(before):
                     continue
                 found.setdefault(category, set()).add(" ".join(m.group(0).lower().split()))
+        for m in _AS_BRAND.finditer(field):
+            if not _COUNTER_MEASURE.search(field[max(0, m.start() - 60):m.start()]):
+                found.setdefault("impersonation", set()).add(" ".join(m.group(0).lower().split()))
     return {k: sorted(v) for k, v in found.items()}
 
 
