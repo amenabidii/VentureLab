@@ -1,0 +1,39 @@
+{
+ "product": "Concept for remote engineers and product managers on distributed teams",
+ "discover_decision": "REPEAT",
+ "options": [
+  {
+   "id": "free-core",
+   "model": "Free core features",
+   "price_eur_per_month": 0,
+   "label": "ASSUMPTION",
+   "why": "Lets interviewees try the concept; no paywall on the core job."
+  },
+  {
+   "id": "pro-4",
+   "model": "Paid tier, monthly",
+   "price_eur_per_month": 4,
+   "label": "ASSUMPTION",
+   "why": "Test price only. No evidence yet that anyone would pay this."
+  },
+  {
+   "id": "pro-8",
+   "model": "Paid tier, monthly",
+   "price_eur_per_month": 8,
+   "label": "ASSUMPTION",
+   "why": "Test price only. No evidence yet that anyone would pay this."
+  },
+  {
+   "id": "pro-15",
+   "model": "Paid tier, monthly",
+   "price_eur_per_month": 15,
+   "label": "ASSUMPTION",
+   "why": "Test price only. No evidence yet that anyone would pay this."
+  }
+ ],
+ "evidence": "None. Willingness to pay has not been measured (Lean Canvas: revenue streams UNKNOWN).",
+ "test": "Ask each interviewee what they spend today on the problem and at what monthly price the product would be too expensive / a bargain; then a priced waitlist with no payment taken.",
+ "pass_mark_to_set_before_testing": "e.g. at least 3 of 10 qualified interviewees accept the chosen test price (ASSUMPTION: the founder sets the real pass mark).",
+ "founder_choice": null,
+ "payments": "None. No payment provider, sandbox or card handling exists in this phase."
+}

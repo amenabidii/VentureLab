@@ -1,0 +1,61 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "phase": 5,
+ "decision": "REHEARSAL PASSED",
+ "checks": [
+  {
+   "check": "paid order",
+   "expected": "delivered",
+   "actual": "delivered",
+   "passed": true
+  },
+  {
+   "check": "same webhook delivered twice",
+   "expected": "duplicate_event_ignored",
+   "actual": "duplicate_event_ignored",
+   "passed": true
+  },
+  {
+   "check": "paid order",
+   "expected": "delivered",
+   "actual": "delivered",
+   "passed": true
+  },
+  {
+   "check": "refund",
+   "expected": "access_revoked",
+   "actual": "access_revoked",
+   "passed": true
+  },
+  {
+   "check": "declined payment",
+   "expected": "no_delivery_payment_failed",
+   "actual": "no_delivery_payment_failed",
+   "passed": true
+  },
+  {
+   "check": "forged signature",
+   "expected": "rejected_bad_signature",
+   "actual": "rejected_bad_signature",
+   "passed": true
+  },
+  {
+   "check": "same event, valid signature",
+   "expected": "delivered",
+   "actual": "delivered",
+   "passed": true
+  },
+  {
+   "check": "reconciliation balanced",
+   "passed": true,
+   "mismatches": []
+  }
+ ],
+ "founder_approvals": [
+  "publish_store_page",
+  "enable_mock_delivery"
+ ],
+ "discover_decision": "REPEAT",
+ "rehearsal": true,
+ "decided_by": "fixed rules in workflow.py"
+}

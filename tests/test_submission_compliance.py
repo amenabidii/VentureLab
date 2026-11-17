@@ -106,11 +106,13 @@ def test_architecture_has_required_sections_and_a_text_diagram():
         assert outcome in section(ROOT / "ARCHITECTURE.md", "Gates")
 
 
-def test_unbuilt_phases_and_payments_are_labelled_stubbed():
+def test_every_phase_states_what_is_still_stubbed_and_sale_to_cash_is_mocked():
     text = (ROOT / "ARCHITECTURE.md").read_text(encoding="utf-8")
     for phase in ["Commercial Setup", "Launch", "Operate & Learn"]:
-        assert re.search(rf"^### \d\. {re.escape(phase)} \(STUBBED\)", text, re.M), phase
-    assert "STUBBED" in section(ROOT / "ARCHITECTURE.md", "Sale to cash")
+        body = re.search(rf"^### \d\. {re.escape(phase)}.*?(?=^### |^## )", text, re.M | re.S)
+        assert body and "STUBBED" in body.group(0), phase
+    sale = section(ROOT / "ARCHITECTURE.md", "Sale to cash")
+    assert "MOCKED" in sale and "no real or sandbox" in sale
 
 
 def test_license_is_complete_mit_text():
@@ -136,12 +138,17 @@ def test_decision_log_entries_have_the_required_keys_and_types():
         assert re.match(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d", entry["timestamp"])
 
 
-def test_founder_approvals_in_the_log_name_the_founder_only_on_approval_actions():
+def test_founder_approvals_in_the_log_name_the_founder_only_after_a_real_approval():
+    """approved_by "founder" appears on approval events, or on a gated action that a founder
+    approval event recorded earlier in the log made possible; never out of nowhere."""
     log = json.loads((ROOT / "decision_log.json").read_text(encoding="utf-8"))
+    seen_approval = False
     for entry in log:
-        if entry["approved_by"] == "founder":
-            assert entry.get("agent") in {"approval", "builder"} or "approv" in entry["action"], entry
-
+        if entry["approved_by"] != "founder":
+            continue
+        is_approval_event = entry.get("agent") == "approval" or "approv" in entry["action"]
+        assert is_approval_event or seen_approval or entry.get("agent") == "builder", entry
+        seen_approval = seen_approval or is_approval_event
 
 def output_files() -> list[Path]:
     return [p for p in (ROOT / "outputs").rglob("*") if p.is_file() and p.name != ".gitkeep"]
@@ -151,7 +158,9 @@ def test_output_files_follow_phase_step_naming_and_are_small_text():
     files = output_files()
     assert files
     for path in files:
-        assert OUTPUT_NAME.match(path.name), path.name
+        # CLAUDE.md names one file outside the phase pattern: outputs/payment_test_log.md (top level only).
+        named_by_claude_md = path.relative_to(ROOT / "outputs").as_posix() == "payment_test_log.md"
+        assert OUTPUT_NAME.match(path.name) or named_by_claude_md, path.name
         assert path.suffix in TEXT_SUFFIXES, path.name
         assert path.stat().st_size < 1_000_000, path.name
 

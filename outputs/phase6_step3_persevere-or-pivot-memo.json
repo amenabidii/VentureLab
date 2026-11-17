@@ -1,0 +1,22 @@
+{
+ "recommendation": "REPEAT",
+ "rule": "Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.",
+ "discover_decision": "REPEAT",
+ "real_experiment_results": {},
+ "mocked_metrics_used_as_evidence": false,
+ "mocked_metrics_reference": {
+  "label": "MOCKED — computed from simulated test orders, not customers. Not evidence of demand.",
+  "test_orders": 4,
+  "paid": 3,
+  "refunded": 1,
+  "failed": 1,
+  "active_access": 2,
+  "reconciliation_balanced": true
+ },
+ "next_steps": [
+  "Ask 10 remote workers about Slack thread: Survey",
+  "Check Slack usage patterns: Analyze Slack data from a small team",
+  "Problem interviews: Talk to people who match 'remote engineers and product managers on distributed teams' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea."
+ ],
+ "no_guarantee": "No recommendation here guarantees customers or income."
+}

@@ -15,8 +15,13 @@ written only after the founder approves the exact artifact.
 **Status, stated plainly:** the founder web workspace runs the whole Discover workflow
 on a real brief, shows the evidence, the Challenger's analysis, the gate decision and
 the counterfactual, prepares Builder artifacts and enforces founder approval in the
-backend before anything is written. Commercial Setup, Launch and Operate & Learn are
-architecture only (STUBBED). Nothing is ever published, sent or paid.
+backend before anything is written. `workflow.py` then carries a run through the later
+phases: a Lean Canvas (Phase 2), pricing hypotheses and draft policies (Phase 4), a store
+page, launch-post drafts and a MOCKED sale-to-cash path with automatic delivery, refunds
+and reconciliation (Phase 5), and support, metrics and a persevere-or-pivot memo (Phase 6).
+Each phase ends in a gate, and every publish, delivery or price choice needs the
+founder's fingerprint-bound approval. After a REPEAT, the later phases run only as a
+founder-approved, clearly labelled REHEARSAL. Nothing is ever published, sent or paid.
 
 ## Quickstart
 
@@ -67,7 +72,16 @@ checkout owned by your normal user; a root-owned checkout is refused with an exp
    sample cannot be enlarged after the fact, and a GO or STOP result is final.
 6. **Decision history**: every recorded action for the run.
 
-The command-line workflow still works:
+Later phases for a completed run (each step stops at a gate until the founder approves;
+`approve` asks you to type `APPROVE <action>`):
+
+```bash
+docker compose run --rm app python workflow.py plan --run outputs/runs/<run-id>
+```
+
+then `approve`, `prepare-launch`, `approve`, `launch`, as printed by each step.
+
+The command-line Discover workflow still works:
 `docker compose run --rm -v "$PWD:/srv" app python orchestrator.py --brief briefs/indie_game_bug_reports.json --quick`.
 Retrieval needs internet access. On a smaller machine set `VENTURELAB_MODEL=qwen3:1.7b`
 in `.env` (copy `.env.example`).
@@ -94,8 +108,12 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
 | Validate-phase results: the founder records observed counts against the threshold approved in the kit; a deterministic validation gate returns GO / REPEAT / STOP. Results are labelled FOUNDER-REPORTED and are not verified by VentureLab | **Working** (no real experiment results have been recorded) |
-| Commercial Setup, Launch, Operate & Learn | **STUBBED** (architecture only) |
-| Payments, sale to cash | **STUBBED**, deliberately not implemented, no real or sandbox transactions |
+| Phase 2 Lean Canvas: every box FOUNDER-PROVIDED, SOURCED (with quote URL and standing) or ASSUMPTION/UNKNOWN | **Working** (`agents/strategist.py`) |
+| Phase 4 pricing hypotheses (labelled ASSUMPTION) and draft terms, privacy and refund policies (DRAFT, not legal advice); price chosen only by founder approval | **Working** (`agents/commercial.py`) |
+| Phase 5 store page and launch-post drafts; publishing and posting | Drafts **Working**; publishing **MOCKED** (local only, founder approval of the exact page) |
+| Phase 5 sale to cash: payment events, automatic delivery, refunds revoke access, duplicate and forged events refused, reconciliation | **MOCKED** (`payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`): simulated test orders only, no payments of any kind, not even sandbox; log in `outputs/payment_test_log.md` |
+| Phase 6 support triage, metrics and persevere-or-pivot memo (fixed rules over real evidence only) | **Working** (`agents/operator.py`); metrics from the rehearsal are **MOCKED** and never counted as evidence; no real support requests exist yet |
+| Phase 3 MVP generation beyond the landing page | **STUBBED** |
 | "Explore demo" data in the workspace | **MOCKED**, synthetic, labelled in the interface, never stored as results |
 | Model transport and public sources in offline tests | **MOCKED** (tests only) |
 
@@ -108,7 +126,10 @@ briefs are in [docs/evaluation-runs.md](docs/evaluation-runs.md): four ended in
 comments counted were a quoted government report and a developer's technical criticism,
 not screen reader users' own experiences. The rule was corrected, and a rerun ended in
 **REPEAT**. No recorded run currently reaches GO. Earlier command-line runs are in
-`outputs/phase1_*` with their log archived in `docs/history/`.
+`outputs/phase1_*` with their log archived in `docs/history/`. The later phases were run
+on the Slack-thread run as a founder-approved REHEARSAL (the gate said REPEAT): outputs
+`outputs/phase2_*`, `phase4_*`, `phase5_*`, `phase6_*` and `outputs/payment_test_log.md`
+(all 8 sale-to-cash checks passed); the Phase 6 memo recommends **REPEAT**.
 
 ## Architecture
 
@@ -138,6 +159,12 @@ inventory are in [ARCHITECTURE.md](ARCHITECTURE.md); integration details are in
   the brief, the network and the hardware.
 - **Offline**: the app, model and gate run offline, but retrieval needs internet; a
   failed source is recorded as unavailable and never filled in.
+- **AI tools used to build VentureLab** (disclosed as the hackathon rules require):
+  Claude Code (Anthropic's Claude models) and OpenAI Codex wrote and reviewed most of
+  the code, tests and documentation under the team's direction. Their output was checked
+  with the automated test suite, adversarial tests, real Docker runs and manual review of
+  every generated output; the team made every founder approval decision. The running
+  system itself uses only the local open-weight Qwen3 model above.
 
 ## Cost per run
 
