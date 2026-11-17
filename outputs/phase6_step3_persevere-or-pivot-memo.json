@@ -2,6 +2,7 @@
  "recommendation": "REPEAT",
  "rule": "Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.",
  "discover_decision": "REPEAT",
+ "validation_gate": null,
  "real_experiment_results": {},
  "mocked_metrics_used_as_evidence": false,
  "mocked_metrics_reference": {

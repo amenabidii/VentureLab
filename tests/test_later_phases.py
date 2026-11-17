@@ -331,3 +331,16 @@ def test_rerunning_plan_keeps_the_commercial_gate_consistent_with_approvals(tmp_
     assert full_flow(cli, monkeypatch) == 0
     assert cli("plan") == 0
     assert json.loads((cli.out / "phase4_gate_commercial.json").read_text())["decision"] == "REHEARSAL GO"
+
+
+@pytest.mark.parametrize("decision,expected", [("GO", "PERSEVERE"), ("STOP", "PIVOT OR STOP"), ("REPEAT", "REPEAT")])
+def test_memo_uses_founder_reported_validation_results(decision, expected):
+    gate = {"decision": decision, "rule": f"{decision}_RULE", "participants": 5, "successes": 3,
+            "result_source": "FOUNDER-REPORTED"}
+    memo = persevere_or_pivot({"decision": "REPEAT"}, BRIEF, None, gate)
+    assert memo["recommendation"] == expected and memo["validation_gate"]["decision"] == decision
+
+
+def test_discover_stop_still_wins_over_any_validation_result():
+    memo = persevere_or_pivot({"decision": "STOP"}, BRIEF, None, {"decision": "GO"})
+    assert memo["recommendation"] == "STOP"

@@ -309,7 +309,9 @@ def launch(ctx: Context) -> dict:
     metrics = mocked_metrics(recon)
     ctx.write("phase6_step2_metrics.json", metrics)
     ctx.rec(6, "compute_metrics", "MOCKED metrics from test orders")
-    memo = persevere_or_pivot(ctx.gate, ctx.brief, metrics)
+    vpath = ctx.run_dir / "phase2_gate_validation.json"
+    validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
+    memo = persevere_or_pivot(ctx.gate, ctx.brief, metrics, validation)
     ctx.write("phase6_step3_persevere-or-pivot-memo.json", memo)
     ctx.write("phase6_step3_persevere-or-pivot-memo.md", memo_markdown(memo, support))
     ctx.gate_file(6, "persevere-or-pivot", memo["recommendation"],

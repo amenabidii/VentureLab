@@ -46,14 +46,28 @@ def mocked_metrics(reconciliation: dict) -> dict:
             "reconciliation_balanced": reconciliation["balanced"]}
 
 
-def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None) -> dict:
-    """Fixed rules, first match wins. Real customer evidence is the only input that can say PERSEVERE."""
+def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, validation: dict | None = None) -> dict:
+    """Fixed rules, first match wins. Real customer evidence is the only input that can say PERSEVERE.
+
+    `validation` is the Phase 2 validation gate (`phase2_gate_validation.json`): the founder's
+    reported interview results against the threshold approved before any result existed.
+    """
     decision = discover["decision"]
     results = brief.get("experiment_results") or {}
     conditions = brief.get("validation_conditions") or []
     failed = [c["id"] for c in conditions if c["metric"] in results and results[c["metric"]] < c["minimum"]]
+    v = (validation or {}).get("decision")
     if decision == "STOP":
         rec, rule = "STOP", "Discover gate decided STOP; nothing downstream may proceed."
+    elif v == "STOP":
+        rec, rule = "PIVOT OR STOP", (f"Founder-reported validation failed the pre-approved threshold "
+                                      f"({validation.get('rule')}); do not lower the threshold.")
+    elif v == "GO":
+        rec, rule = "PERSEVERE", (f"Founder-reported validation met the pre-approved threshold "
+                                  f"({validation.get('successes')} of {validation.get('participants')} participants; "
+                                  f"{validation.get('rule')}). Continue to Build; this is not proof of a market.")
+    elif v == "REPEAT":
+        rec, rule = "REPEAT", "The founder's validation experiment is still incomplete; continue it."
     elif failed:
         rec, rule = "PIVOT OR STOP", f"Real experiment results failed pre-set pass marks: {', '.join(failed)}."
     elif decision == "PIVOT":
@@ -65,6 +79,8 @@ def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None) -> dic
                                f"{decision}, and no real experiment results exist yet.")
     next_steps = [f"{x['name']}: {x['method']}" for x in (discover.get("counterfactual") or {}).get("experiments", [])][:3]
     return {"recommendation": rec, "rule": rule, "discover_decision": decision,
+            "validation_gate": ({k: validation.get(k) for k in ("decision", "rule", "participants", "successes",
+                                                                 "result_source")} if validation else None),
             "real_experiment_results": results, "mocked_metrics_used_as_evidence": False,
             "mocked_metrics_reference": metrics, "next_steps": next_steps,
             "no_guarantee": "No recommendation here guarantees customers or income."}
@@ -83,6 +99,7 @@ Rule applied: {memo['rule']}
 
 - Discover gate: **{memo['discover_decision']}** (fixed rules in `gates.py`).
 - Real experiment results recorded: {json.dumps(memo['real_experiment_results']) if memo['real_experiment_results'] else 'none'}.
+- Phase 2 validation gate (founder-reported results): {json.dumps(memo['validation_gate']) if memo['validation_gate'] else 'no results recorded yet'}.
 - Real support requests: {len(support['tickets'])}. {support['note']}
 - MOCKED sale-to-cash metrics were **not** used as evidence ({m.get('label', 'none')}).
 

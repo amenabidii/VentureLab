@@ -8,6 +8,7 @@ Rule applied: Not enough real evidence: the Discover gate decided REPEAT, and no
 
 - Discover gate: **REPEAT** (fixed rules in `gates.py`).
 - Real experiment results recorded: none.
+- Phase 2 validation gate (founder-reported results): no results recorded yet.
 - Real support requests: 0. No real support requests exist yet (the product has not launched). None were generated.
 - MOCKED sale-to-cash metrics were **not** used as evidence (MOCKED — computed from simulated test orders, not customers. Not evidence of demand.).
 
