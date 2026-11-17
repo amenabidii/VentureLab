@@ -223,6 +223,14 @@ def test_execution_without_approval_is_refused(pending):
     assert r.status_code == 409 and not (svc.builder_root / run_id).exists()
 
 
+def test_a_pending_request_is_labelled_not_written(pending):
+    api, svc, run_id, _, _ = pending
+    items = api.get(f"/api/runs/{run_id}/artifacts").json()
+    assert items and all(a["status"] == "Proposed — not written; awaiting your decision" for a in items)
+    assert all("not written" in a["description"] for a in items if ":" in a["id"])
+    assert not (svc.builder_root / run_id).exists()
+
+
 @pytest.mark.parametrize("key", ["", "0" * 64, "not-a-key"])
 def test_decision_without_the_founder_key_is_refused_and_recorded(pending, key):
     api, svc, run_id, approval, _ = pending

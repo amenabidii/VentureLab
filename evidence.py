@@ -77,6 +77,23 @@ def split_passages(source: str, max_chars: int = 400) -> list[Passage]:
 
 
 _WORD = re.compile(r"[a-z0-9]+")
+
+# A person describing their own experience speaks in the first person. Text without these
+# words (a report, a generalisation about others) is never one person's own account.
+_FIRST_PERSON = re.compile(
+    r"(?<![\w'])(?:i|i'm|i've|i'd|i'll|me|my|mine|myself|we|we're|we've|we'd|our|ours|ourselves)(?![\w'])",
+    re.IGNORECASE)
+
+
+def speaks_for_self(text: str) -> bool:
+    """True if the text contains a first-person word (I, my, we, our ...)."""
+    return bool(_FIRST_PERSON.search(text.replace("\u2019", "'")))
+
+
+def quoted_line(source: str, offset: int) -> bool:
+    """True if the line containing `offset` is quoted material ("> ..."), i.e. someone else's words."""
+    line_start = source.rfind("\n", 0, offset) + 1
+    return source[line_start:offset + 1].lstrip().startswith(">")
 _STOP = frozenset(
     "a an and are as at be but by for from has have i in is it its my of on or so that the their them "
     "they this to was we were with you your our me do does did not no".split()

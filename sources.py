@@ -55,6 +55,14 @@ class Source:
     def available(self) -> bool:
         return self.status == "available"
 
+    def author_at(self, start: int | None) -> str | None:
+        """The author of the segment containing an offset, if known."""
+        if start is not None:
+            for seg in self.segments:
+                if seg.start <= start < seg.end:
+                    return seg.author
+        return None
+
     def url_at(self, start: int | None) -> str:
         """The URL of the segment containing an offset (the comment permalink)."""
         if start is not None:
@@ -203,8 +211,13 @@ def combine(title: str, url: str, picked: list[tuple[Source, Segment]]) -> Sourc
 # Retrieved text is untrusted data. Text that addresses an AI system or tries to steer an
 # assessment is never sent to the model for a verdict; it stays visible, labelled.
 _INSTRUCTION_LIKE = re.compile(
-    r"\b(?:ignore|disregard|forget)\b.{0,40}\b(?:instructions?|prompts?|rules?|above|previous)\b"
-    r"|\b(?:system|developer)\s+prompt\b"
+    # "ignore ... instructions" or "ignore the previous/above [instructions]", but not
+    # "ignore the previous version of the docs"
+    r"\b(?:ignore|disregard|forget)\b.{0,40}\b(?:instructions?|prompts?|rules?)\b"
+    r"|\b(?:ignore|disregard|forget)\s+(?:all\s+|any\s+|the\s+|everything\s+)?(?:above|previous|prior|earlier)"
+    r"(?:\s+(?:instructions?|prompts?|messages?|text|context))?\s*(?:[.!,;:]|$)"
+    # a prompt header ("SYSTEM PROMPT: ..."), not a discussion of system prompts
+    r"|\b(?:system|developer)\s+prompt\s*[:=]"
     r"|\b(?:you are|act as)\s+(?:an?\s+)?(?:ai|assistant|language model|llm|chatbot|evaluator|judge)\b"
     r"|\b(?:respond|answer|reply|output)\s+(?:only\s+)?(?:with|in)\b.{0,30}\b(?:json|verdict|supports?|yes)\b"
     r"|\bverdict\s*[:=]"

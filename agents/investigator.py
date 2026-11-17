@@ -71,6 +71,7 @@ class Finding:
     # point; "off_topic": shares too few key words with the brief to count for anything.
     relevance: str = "statement"
     shared_terms: list[str] = field(default_factory=list)
+    speaker: str | None = None  # the commenter, for checks of one person's words
 
     @property
     def standing(self) -> ev.Standing:
@@ -95,6 +96,7 @@ class Finding:
             "standing": self.standing.value,
             "relevance": self.relevance,
             "shared_terms": self.shared_terms,
+            "speaker": self.speaker,
             "quotes": [{"text": q.text, "url": q.source_url, "status": q.status.value, "note": q.note}
                        for q in i.quotes],
             "verdict": i.verdict,
@@ -158,9 +160,10 @@ _FALLBACK_STOP = set("a an and are as at be by for from has have in is it of on 
                      "to too was with who which when spend spends long much more most many".split())
 
 
-def personal_claim(problem_statement: str) -> str:
+def personal_claim(problem_statement: str, target_customer: str = "") -> str:
     """The founder's statement as a question about one commenter's own experience."""
-    return f"One commenter says they experience this problem: {problem_statement.strip()}"
+    who = f", as one of the target customers ({target_customer.strip()})," if target_customer.strip() else ""
+    return f"One commenter says that they personally{who} experience this problem: {problem_statement.strip()}"
 
 
 def fallback_queries(brief: FounderBrief) -> list[str]:
@@ -349,12 +352,21 @@ def investigate(
         # Check the founder's own statement against each commenter separately, using that
         # person's exact words: the most relevant passage per comment, up to a limit. Each
         # check cites one comment, so independent people are counted independently.
+        # Only the commenter's own first-person words can describe their own experience: quoted
+        # material ("> ...", someone else's words) and statements about other people are skipped.
         body = [p for p in passages if p.id not in headers]
-        scored = []
+        scored, not_own = [], 0
         for p in body:
             shared = terms.statement_match(p.text)
-            if shared:
-                scored.append((len(shared), p.id, p))
+            if not shared:
+                continue
+            if ev.quoted_line(source.text, p.start) or not ev.speaks_for_self(p.text):
+                not_own += 1
+                continue
+            scored.append((len(shared), p.id, p))
+        if not_own:
+            inv.selection["statement_passages_not_own_experience"] = (
+                inv.selection.get("statement_passages_not_own_experience", 0) + not_own)
         picks, seen_urls = [], set()
         for _, _, p in sorted(scored, key=lambda s: (-s[0], s[1])):
             url = source.url_at(p.start)
@@ -369,14 +381,17 @@ def investigate(
                        reason="the comment contains text that reads like instructions to an AI; never sent to the model")
         if not picks:
             log.record(AGENT, "check_founder_statement", sources=[source.url], model=None, outcome="skipped",
-                       reason="no passage shares two key words with the problem statement")
+                       reason="no passage in a commenter's own first-person words shares two key words "
+                              "with the problem statement")
             continue
         for p in picks:
             quotes = ev.quotes_from_passages(source.text, passages, [p.id], breaks=breaks, url_at=source.url_at)
             n_checks += 1
             # The question is about this one person, so one person's words can answer it fully.
             check = Finding(f"H{n_checks}", "hypothesis_check", source.kind,
-                            ev.EvidenceItem(personal_claim(brief.problem_statement), "customer_problem", quotes))
+                            ev.EvidenceItem(personal_claim(brief.problem_statement, brief.target_customer),
+                                            "customer_problem", quotes),
+                            speaker=source.author_at(p.start))
             classify(check, terms)
             results = ev.assess_item(client, model, check.item, source.text, economical=True, exclude=headers)
             if check.item.verdict == "supports" and check.item.verified:

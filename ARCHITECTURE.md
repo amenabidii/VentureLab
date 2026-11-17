@@ -128,10 +128,14 @@ the first that applies decides, and every check up to it is recorded in the outp
 A source supports the problem in one of two ways, and each source counts once:
 - an ESTABLISHED customer-problem finding about the founder's statement; or
 - a **corroborating check**: the founder's statement is tested against each relevant
-  commenter separately, in that person's exact verified words ("One commenter says they
-  experience this problem: …"). It counts only if the assessment says it fully supports
-  it **and** the sceptical second check agrees; partial support never counts. The check
-  is about one person, so it is never ESTABLISHED and never evidence of a market.
+  commenter separately, in that person's exact verified words ("One commenter says that
+  they personally, as one of the target customers (…), experience this problem: …"). Code
+  only checks passages in the commenter's own first-person words, never quoted material
+  (`>` lines). A check counts only if the assessment says it fully supports the claim
+  **and** the sceptical second check agrees (including whether the speaker is that
+  customer, not a developer, vendor or reporter). Partial support never counts, and each
+  person and each wording counts once whatever URL it appears under. The check is about
+  one person, so it is never ESTABLISHED and never evidence of a market.
 
 NEEDS_REVIEW, partial, off-topic, competitor, segment and demand findings never satisfy
 a requirement. Retrieved comments that contain instructions to an AI ("ignore previous
@@ -207,9 +211,12 @@ Nothing is deleted automatically; the founder decides what to commit or share.
 
 Known limits: relevance is a keyword and concept list, not semantic understanding; the
 extraction model sometimes generalises or misattributes claims (the checks hold those
-back as NEEDS_REVIEW, which also makes ESTABLISHED evidence scarce); the landing page has
-been exercised only in tests because no real run has reached GO; the founder key is a
-single-machine capability, not an account system.
+back as NEEDS_REVIEW, which also makes ESTABLISHED evidence scarce); whether a
+first-person comment really comes from the target customer is decided by two model
+judgements, not by code (two earlier GO results were wrong for this reason, see
+[docs/evaluation-runs.md](docs/evaluation-runs.md)); no recorded run reaches GO under the
+corrected rule, so the landing page has been prepared live but never approved; the founder
+key is a single-machine capability, not an account system.
 
 ## Roadmap
 

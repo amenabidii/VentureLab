@@ -2595,5 +2595,299 @@
   "destination": "/srv/outputs/builder/run-4209f27582724d6f/d7d3f12d89144e0c8631d9a6285e256b",
   "outcome": "pending",
   "recorded_in": "approval_store"
+ },
+ {
+  "timestamp": "2026-11-17T15:34:02Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "accepted",
+  "screen": "no prohibited category matched"
+ },
+ {
+  "timestamp": "2026-11-17T15:34:02Z",
+  "agent": "orchestrator",
+  "action": "load_model",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "ok"
+ },
+ {
+  "timestamp": "2026-11-17T15:34:07Z",
+  "agent": "investigator",
+  "action": "plan_searches",
+  "sources": [],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "ok",
+  "queries": [
+   "pdf accessibility screen reader",
+   "inaccessible pdfs blind users",
+   "pdf to html screen reader friendly"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:08Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=pdf+accessibility+screen+reader&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 10,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T15:34:08Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=inaccessible+pdfs+blind+users&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "empty",
+  "kind": "hn_comments",
+  "items": 0,
+  "error": "no comments matched the query"
+ },
+ {
+  "timestamp": "2026-11-17T15:34:08Z",
+  "agent": "investigator",
+  "action": "retrieve_source",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=pdf+to+html+screen+reader+friendly&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "available",
+  "kind": "hn_comments",
+  "items": 2,
+  "error": null
+ },
+ {
+  "timestamp": "2026-11-17T15:34:08Z",
+  "agent": "investigator",
+  "action": "select_relevant_comments",
+  "sources": [
+   "https://news.ycombinator.com/item?id=4610922",
+   "https://news.ycombinator.com/item?id=46176345",
+   "https://news.ycombinator.com/item?id=43522830",
+   "https://news.ycombinator.com/item?id=38488376",
+   "https://news.ycombinator.com/item?id=17549787",
+   "https://news.ycombinator.com/item?id=34431828",
+   "https://news.ycombinator.com/item?id=43419741",
+   "https://news.ycombinator.com/item?id=40613580"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "ok",
+  "comments_seen": 12,
+  "off_topic_dropped": 1,
+  "relevant": 11,
+  "kept": 8,
+  "problem_terms": [
+   "document",
+   "inaccessibl",
+   "pdf",
+   "read",
+   "struggl",
+   "user"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "extract_claims",
+  "sources": [
+   "https://news.ycombinator.com/item?id=4610922",
+   "https://news.ycombinator.com/item?id=46176345",
+   "https://news.ycombinator.com/item?id=43522830",
+   "https://news.ycombinator.com/item?id=38488376",
+   "https://news.ycombinator.com/item?id=17549787",
+   "https://news.ycombinator.com/item?id=34431828",
+   "https://news.ycombinator.com/item?id=43419741",
+   "https://news.ycombinator.com/item?id=40613580"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "ok",
+  "claims": 4
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=4610922"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "finding": "F1",
+  "standing": "needs_review",
+  "relevance": "statement",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "wording goes beyond the quoted text: flip, check"
+  ],
+  "notes": [
+   "not sent to the model: the wording or attribution checks already rule out establishing it"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=4610922"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "finding": "F2",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=17549787"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "finding": "F3",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "assess_claim",
+  "sources": [
+   "https://news.ycombinator.com/item?id=34431828"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "finding": "F4",
+  "standing": "needs_review",
+  "relevance": "off_topic",
+  "verdict": null,
+  "second_check": null,
+  "review": [
+   "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+  ],
+  "notes": [
+   "not sent to the model: off-topic for this brief"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:34:47Z",
+  "agent": "investigator",
+  "action": "check_founder_statement",
+  "sources": [
+   "https://hn.algolia.com/api/v1/search?query=pdf+accessibility+screen+reader&tags=comment&hitsPerPage=10"
+  ],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "skipped",
+  "reason": "no passage in a commenter's own first-person words shares two key words with the problem statement"
+ },
+ {
+  "timestamp": "2026-11-17T15:35:29Z",
+  "agent": "challenger",
+  "action": "challenge_assumptions",
+  "sources": [
+   "https://news.ycombinator.com/item?id=4610922"
+  ],
+  "model": "qwen3:4b",
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "ok",
+  "reviews": 6,
+  "grounded_reviews": 1,
+  "new_hypotheses": 1,
+  "risks": 1,
+  "experiments": 1,
+  "contradictions": 0,
+  "removed": [
+   "A1: model said 'supported' but no cited finding can support it: F1 related but needs_review; stance set to 'untested'"
+  ]
+ },
+ {
+  "timestamp": "2026-11-17T15:35:29Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE"
+ },
+ {
+  "timestamp": "2026-11-17T15:35:29Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+  "outcome": "repeat",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing": 5,
+  "experiments": 3
  }
 ]

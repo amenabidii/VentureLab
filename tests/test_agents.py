@@ -167,7 +167,8 @@ def test_founder_statement_support_never_becomes_established(tmp_path):
     assert check.item.verdict == "supports" and check.standing is not ev.Standing.ESTABLISHED
     # The second check runs only to decide corroboration; the check still can never be established.
     assert model.calls.count("confirm") == len(inv.by_origin("hypothesis_check"))
-    assert check.item.claim.startswith("One commenter says they experience this problem:")
+    assert check.item.claim.startswith("One commenter says that they personally, as one of the target customers")
+    assert check.speaker in ("alice", "bob")  # the commenter is recorded, so one person counts once
 
 
 def test_unavailable_source_is_logged_and_yields_nothing(tmp_path):

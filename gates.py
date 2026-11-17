@@ -18,19 +18,22 @@ decision can be traced to one named rule.
 
 Support for the founder's problem comes from independent sources, each counted once:
 - an ESTABLISHED customer-problem finding about the founder's statement, or
-- a corroborating check: one commenter's exact, verified words, about the statement
+- a corroborating check: one commenter's exact, verified, first-person words (never
+  quoted material), about the statement
   by the deterministic relevance rule, that the assessment judges to fully support
   "this person experiences the founder's problem" AND that the sceptical second check
   confirms (it rejects product descriptions, changed context and opposite meaning).
   Partial support never counts. This is one person's account, so it is never
   ESTABLISHED and never proof of a market; two independent people describing the
-  problem in their own words justify customer interviews, nothing more.
+  problem in their own words justify customer interviews, nothing more. Each person and
+  each wording counts once, whatever URL it appears under.
 NEEDS_REVIEW, off-topic, segment, competitor and demand findings never satisfy an
 evidence requirement.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -101,6 +104,9 @@ class EvidenceSummary:
     supporting_sources: list[str] = field(default_factory=list)
     corroborating_checks: list[str] = field(default_factory=list)  # one commenter's words support the statement
     corroborating_sources: list[str] = field(default_factory=list)
+    # statement checks the model judged supportive that cannot count: not the person's own
+    # first-person words, or the same person / the same words already counted
+    not_counted_checks: list[dict[str, str]] = field(default_factory=list)
     support_sources: list[str] = field(default_factory=list)  # distinct sources of either kind
     alternatives: list[dict[str, Any]] = field(default_factory=list)  # established, about a different problem
     contradicting_checks: list[str] = field(default_factory=list)
@@ -124,6 +130,8 @@ class EvidenceSummary:
         support_urls: set[str] = set()
         contra_urls: set[str] = set()
         corro_urls: set[str] = set()
+        speakers: set[str] = set()
+        texts: set[str] = set()
         for f in inv.findings:
             st = f.standing
             if f.origin == "hypothesis_check":
@@ -132,8 +140,19 @@ class EvidenceSummary:
                     contra_urls.update(f.urls)
                 elif (f.relevance == "statement" and f.item.verified and len(f.urls) == 1
                       and f.item.verdict == "supports" and f.item.confirmed is True):
-                    s.corroborating_checks.append(f.id)
-                    corro_urls.update(f.urls)
+                    text = " ".join(re.findall(r"[a-z0-9]+", " ".join(q.text for q in f.item.quotes).lower()))
+                    who = (f.speaker or "").strip().lower() or f.urls[0]
+                    if not all(ev.speaks_for_self(q.text) for q in f.item.quotes):
+                        s.not_counted_checks.append({"check": f.id, "reason": "not in the first person"})
+                    elif who in speakers or f.urls[0] in corro_urls:
+                        s.not_counted_checks.append({"check": f.id, "reason": "same person already counted"})
+                    elif text in texts:
+                        s.not_counted_checks.append({"check": f.id, "reason": "same words already counted"})
+                    else:
+                        speakers.add(who)
+                        texts.add(text)
+                        s.corroborating_checks.append(f.id)
+                        corro_urls.update(f.urls)
                 elif st is ev.Standing.UNSUPPORTED:
                     s.unsupported_checks.append(f.id)
                 elif st is ev.Standing.NEEDS_REVIEW:

@@ -549,7 +549,7 @@ test("the Builder's real landing-page markup is readable in the preview and stay
   data.artifacts[1].content =
     html.replace(
       "</main>",
-      '<section><script>alert(1)</script><style>body{display:none}</style><form action="/x"><input></form><a href="javascript:alert(1)">link text</a><img src="https://attacker.invalid/p"></section></main>',
+      '<section><script>alert(1)</script><style>body{display:none}</style><form action="/x"><input></form><a href="javascript:alert(1)">link text</a><p onclick="alert(1)" onmouseover="alert(1)">handler text</p><details open ontoggle="alert(1)"><summary>more</summary></details><img src="https://attacker.invalid/p"></section></main>',
     );
   const requests = [];
   page.on("request", (r) => requests.push(r.url()));
@@ -571,6 +571,11 @@ test("the Builder's real landing-page markup is readable in the preview and stay
     frame.locator("[src],[href],[style],[class],script,form,input,iframe,svg,img,a"),
   ).toHaveCount(0);
   await expect(frame.locator("style")).toHaveCount(0);
+  await frame.getByText("handler text").hover();
+  const withAttributes = await frame
+    .locator("body *")
+    .evaluateAll((els) => els.filter((el) => el.attributes.length > 0).length);
+  expect(withAttributes).toBe(0); // no attribute survives: no event handlers, links or styles
   expect(requests.some((u) => u.includes("attacker.invalid"))).toBe(false);
   expect(dialogs).toBe(0);
 });

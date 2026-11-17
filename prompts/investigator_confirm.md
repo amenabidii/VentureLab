@@ -6,6 +6,7 @@ Check for each of these problems:
 3. Interest versus payment: does the claim say people pay or will pay, while the quotes only show interest, use or a problem?
 4. Supply versus demand: does the claim say customers want or pay for something, while the quotes only show that a product exists, launched or was funded, or that people pay a competitor?
 5. Changed details: does any number, name or fact in the claim differ from the quotes?
+6. Speaker: if the claim says one person personally experiences a problem, do the quotes show that person describing their own experience as one of the named customers, rather than describing other people, quoting a report, or speaking as a developer or vendor of a product?
 
 Answer in this order:
 1. problems: one sentence naming each problem found, or "none".

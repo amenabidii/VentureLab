@@ -1,0 +1,249 @@
+{
+ "run_id": "run-2026-11-17T15:34:02Z-b5f6ba",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "pdf accessibility screen reader",
+  "inaccessible pdfs blind users",
+  "pdf to html screen reader friendly"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=pdf+accessibility+screen+reader&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"pdf accessibility screen reader\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T15:34:07Z",
+   "items": 10
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=inaccessible+pdfs+blind+users&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"inaccessible pdfs blind users\"",
+   "status": "empty",
+   "error": "no comments matched the query",
+   "retrieved_at": "2026-11-17T15:34:07Z",
+   "items": 0
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=pdf+to+html+screen+reader+friendly&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"pdf to html screen reader friendly\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T15:34:08Z",
+   "items": 2
+  }
+ ],
+ "selection": {
+  "comments_seen": 12,
+  "off_topic_dropped": 1,
+  "relevant": 11,
+  "kept": 8,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=4610922",
+   "https://news.ycombinator.com/item?id=46176345",
+   "https://news.ycombinator.com/item?id=43522830",
+   "https://news.ycombinator.com/item?id=38488376",
+   "https://news.ycombinator.com/item?id=17549787",
+   "https://news.ycombinator.com/item?id=34431828",
+   "https://news.ycombinator.com/item?id=43419741",
+   "https://news.ycombinator.com/item?id=40613580"
+  ],
+  "topic_terms": [
+   "blind",
+   "convert",
+   "document",
+   "friendly",
+   "html",
+   "inaccessibl",
+   "into",
+   "low",
+   "pdf",
+   "read",
+   "reader",
+   "screen",
+   "struggl",
+   "tool",
+   "user",
+   "vision",
+   "web",
+   "who"
+  ],
+  "problem_terms": [
+   "document",
+   "inaccessibl",
+   "pdf",
+   "read",
+   "struggl",
+   "user"
+  ],
+  "statement_passages_not_own_experience": 2
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they flip between PDF pages to read text and check figures",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "pdf",
+    "read"
+   ],
+   "speaker": null,
+   "quotes": [
+    {
+     "text": "Think of the number of times you've flipped between pages of a PDF to read text and look at the figure described.",
+     "url": "https://news.ycombinator.com/item?id=4610922",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "flip",
+    "check"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: flip, check"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they open the same document twice to compare side-by-side",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "document",
+    "screen"
+   ],
+   "speaker": null,
+   "quotes": [
+    {
+     "text": "Sometimes I end up opening the same document twice and putting them on my screen side-by-side.",
+     "url": "https://news.ycombinator.com/item?id=4610922",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "segment",
+   "model_type": "segment",
+   "claim": "Screen readers for the blind should extract text for accessibility",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "blind",
+    "reader",
+    "screen"
+   ],
+   "speaker": null,
+   "quotes": [
+    {
+     "text": "Screen readers for the blind should be able to extract the text.",
+     "url": "https://news.ycombinator.com/item?id=17549787",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "segment",
+   "model_type": "segment",
+   "claim": "Screen reader users need accessibility for PDF documents",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "reader",
+    "screen",
+    "user"
+   ],
+   "speaker": null,
+   "quotes": [
+    {
+     "text": "That's important for accessibility, particularly for screen reader users.",
+     "url": "https://news.ycombinator.com/item?id=34431828",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  }
+ ],
+ "model_calls": 2,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 4.2,
+   "prompt_tokens": 138,
+   "output_tokens": 37
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 38.9,
+   "prompt_tokens": 777,
+   "output_tokens": 162
+  }
+ ],
+ "model_seconds": 43.1,
+ "elapsed_s": 44.8
+}
