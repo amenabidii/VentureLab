@@ -27,7 +27,7 @@ _SCOPE_THREAD = re.compile(r"\b(?:threads?|messages?|chats?|discussions?|convers
 _SCOPE_JOB = re.compile(r"\b(?:summar\w*|digest\w*|recap\w*|catch(?:ing)? up|tl;?dr|missed)\b", re.I)
 
 # "author: text" or "[time] author: text"; anything else continues the previous message.
-_LINE = re.compile(r"^\s*(?:\[[^\]]{1,40}\]\s*)?(?P<author>[A-Za-z0-9_.@' -]{1,40}?)\s*:\s+(?P<text>.+)$")
+_LINE = re.compile(r"^\s*(?:\[[^\]]{1,40}\]\s*)?(?P<author>[\w.@' -]{1,40}?)\s*:\s+(?P<text>.+)$")
 _DECISION = re.compile(r"\b(?:decided|decision|we(?:'ll| will) go with|let'?s go with|agreed|we agree|"
                        r"approved|final(?:ly)?[, ]+we|going with|settled on|ship it)\b", re.I)
 _ACTION = re.compile(r"\b(?:i'?ll|i will|todo|to-do|action item|can you|could you|please|will do|"
@@ -80,7 +80,7 @@ def parse(thread: str) -> list[Message]:
         if m:
             messages.append(Message(len(messages) + 1, m["author"].strip(), m["text"].strip()))
         elif messages:
-            messages[-1].text += " " + line
+            messages[-1].text += "\n" + line
         else:
             messages.append(Message(1, "unknown", line))
         if len(messages) > MAX_MESSAGES:
@@ -145,7 +145,10 @@ def render_markdown(d: Digest) -> str:
         if not messages:
             lines.append("None detected.")
         for m in messages:
-            # Blockquote every source line so source headings cannot impersonate sections.
-            lines += [f"Message #{m.n}", "> " + m.author + ": " + m.text.replace("\n", "\n> "), ""]
+            # A variable-length fence keeps raw HTML, links and embedded backticks
+            # literal in Markdown viewers instead of activating source content.
+            text = m.author + ": " + m.text
+            fence = "`" * max(3, 1 + max((len(x) for x in re.findall(r"`+", text)), default=0))
+            lines += [f"Message #{m.n}", fence + "text", text, fence, ""]
         lines.append("")
     return "\n".join(lines)

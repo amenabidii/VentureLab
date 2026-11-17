@@ -106,3 +106,27 @@ def test_empty_and_malformed_forms_are_actionable_not_success():
     assert 'Paste a discussion' in client.post('/mvp', data={"thread": "   "}, headers=headers).text
     response = client.post('/mvp', content='a=1&b=2&c=3&d=4&e=5&f=6', headers=headers)
     assert response.status_code == 200 and 'role="alert"' in response.text
+
+
+def test_unicode_authors_remain_distinct_and_continuation_lines_are_preserved():
+    messages = parse("أمينة: I'll review the guide.\nÉlodie: Decided: keep the source links.\nSecond line stays separate.")
+    assert [m.author for m in messages] == ["أمينة", "Élodie"]
+    assert messages[1].text == "Decided: keep the source links.\nSecond line stays separate."
+
+
+def test_markdown_export_keeps_active_content_inside_unbreakable_literal_blocks():
+    from mvp.thread_digest import render_markdown
+    text = "eve: <img src=https://example.invalid/pixel> decided: ``` ![image](https://example.invalid/x)"
+    result = render_markdown(digest(text))
+    assert "````text\neve: <img" in result
+    assert "``` ![image](https://example.invalid/x)\n````" in result
+
+
+def test_recoverable_message_limit_error_keeps_the_input():
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+    thread = "\n".join(f"a: message {i}" for i in range(401))
+    response = client.post('/mvp', data={"thread": thread}, headers={"origin": "http://testserver"})
+    assert 'More than 400 messages' in response.text
+    assert 'a: message 400' in response.text

@@ -32,7 +32,7 @@ main{max-width:1160px;margin:auto;padding:48px 24px}h1{font-size:clamp(36px,6vw,
 .workbench{display:grid;grid-template-columns:minmax(0,1fr) 270px;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.editor{padding:26px}.editor h2{margin-top:0}aside{background:#eaf0e5;padding:26px}aside h2{font-size:19px}aside ol{padding-left:20px}aside li{margin-bottom:18px}
 label{display:block;font-weight:700;margin:12px 0}textarea{display:block;width:100%;min-height:250px;resize:vertical;border:1px solid #91a18f;border-radius:9px;background:#fbfcf8;color:var(--ink);padding:16px;font:14px/1.65 ui-monospace,monospace}
 button,.button{font:inherit;font-weight:650;border:1px solid var(--green);border-radius:8px;padding:11px 18px;background:var(--green);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}.secondary{background:#fff;color:var(--green)}.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}.muted{color:var(--muted);font-size:14px}.notice{padding:14px 18px;border-left:3px solid #8a681b;background:#f7eedb;font-size:14px}.error{border-color:#a12f2f;background:#fff1ee}
-#digest{margin-top:48px}.result-head{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.result-head h2{font-size:32px;margin:8px 0 22px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:22px}.metrics div{padding:18px}.metrics strong{display:block;font-size:32px}.metrics span{font-size:13px;color:var(--muted)}.digest-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.result-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;min-width:0}.full{grid-column:1/-1}.result-card ul{padding-left:20px}.result-card li{padding:9px 0;overflow-wrap:anywhere}.src{padding-left:24px}.src li{border-bottom:1px solid var(--line);padding:14px 12px;overflow-wrap:anywhere;scroll-margin-top:24px}.src li:target{background:#fff0b5;outline:2px solid #8a681b;border-radius:6px}footer{margin-top:48px;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:13px}
+#digest{margin-top:48px}.result-head{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.result-head h2{font-size:32px;margin:8px 0 22px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:22px}.metrics div{padding:18px}.metrics strong{display:block;font-size:32px}.metrics span{font-size:13px;color:var(--muted)}.digest-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.result-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;min-width:0}.full{grid-column:1/-1}.result-card ul{padding-left:20px}.result-card li{white-space:pre-wrap;padding:9px 0;overflow-wrap:anywhere}.src{padding-left:24px}.src li{white-space:pre-wrap;border-bottom:1px solid var(--line);padding:14px 12px;overflow-wrap:anywhere;scroll-margin-top:24px}.src li:target{background:#fff0b5;outline:2px solid #8a681b;border-radius:6px}footer{margin-top:48px;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:13px}
 @media(max-width:720px){main{padding:30px 16px}.workbench{grid-template-columns:1fr}.editor,aside{padding:20px}.digest-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.brand span{display:none}h1{letter-spacing:-1px}.actions button{width:100%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 """
@@ -75,9 +75,12 @@ async def mvp_run(request: Request) -> Response:
         same_origin = False
     if not same_origin:
         raise HTTPException(403, "Accepted only from this VentureLab page")
-    raw = await request.body()
-    if len(raw) > MAX_CHARS * 12:
-        return _page("", note="The thread is too long; paste a shorter part.")
+    raw = bytearray()
+    async for chunk in request.stream():
+        if len(raw) + len(chunk) > MAX_CHARS * 12:
+            return _page("", note="The thread is too long; paste a shorter part.")
+        raw.extend(chunk)
+    thread = ""
     try:
         fields = parse_qs(raw.decode("utf-8", "replace"), max_num_fields=5)
         thread = (fields.get("thread") or [""])[0]
@@ -89,4 +92,4 @@ async def mvp_run(request: Request) -> Response:
                             headers={**HEADERS, "Content-Disposition": 'attachment; filename="thread-digest.md"'})
         return _page(thread, render_html(result))
     except ValueError as exc:
-        return _page("", note=str(exc))
+        return _page(thread[:MAX_CHARS], note=str(exc))

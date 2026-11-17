@@ -1,6 +1,6 @@
 # VentureLab
 
-> **Try it in 30 seconds:** `docker compose up`, then open <http://localhost:8000/mvp> (the working Phase 3 MVP, no model needed), <http://localhost:8000/phases> (all six phases and their gates) and <http://localhost:8000> (Discover, recorded runs, founder approval).
+> **Try the working product:** `docker compose up`, then open <http://localhost:8000/mvp> (the working Phase 3 MVP, no model needed; first startup may take several minutes), <http://localhost:8000/phases> (all six phases and their gates) and <http://localhost:8000> (Discover, recorded runs, founder approval).
 
 **Challenge the idea. Verify the evidence. Build with confidence.**
 
@@ -25,7 +25,7 @@ written only after the founder approves the exact artifact.
 |---|---|---|---|
 | 1 Discover | **Find opportunities**: sharpen the idea, score it against alternatives, define the market, Mom Test customer interviews | Investigator retrieves and verifies quotes; Challenger; opportunity scorecard; past-behaviour interview questions and recruiting post; deterministic gate + Counterfactual Challenge | **Working** (live `qwen3:4b`, Hacker News retrieval); holding the interviews is manual (**STUBBED**) |
 | 2 Validate | **Design the business**: Lean Canvas, landing-page demand test, waitlist-threshold gate | Lean Canvas with every entry sourced or labelled; validation kit; landing page after GO; fixed gate on a target set in advance (100 sign-ups in 14 days, 12 arrive → STOP or pivot) | **Working**; collecting real sign-ups **STUBBED** |
-| 3 Build | **Build the product**: tested MVP and user docs | A **working MVP** for the supported product type (thread digest at `/mvp`: paste a discussion, get decisions, open questions and action items, each linked to its source message), plus a clickable prototype, MVP scope, draft user guide and executed checks that run the MVP on real input | **Working** for the supported type (tested); other ideas get the clickable prototype only; arbitrary app generation **STUBBED** |
+| 3 Build | **Build the product**: tested MVP and user docs | A **working MVP** for the supported product type (thread digest at `/mvp`: paste a discussion, get decision candidates, questions to review and action candidates, each linked to its source message), plus a clickable prototype, MVP scope, draft user guide and executed checks that run the MVP on real input | **Working** for the supported type (tested); other ideas get the clickable prototype only; arbitrary app generation **STUBBED** |
 | 4 Commercial setup | **Set the price and policies** | Price hypotheses (ASSUMPTION), price set only by founder approval, DRAFT terms/privacy/refund | **Working** (no payments of any kind) |
 | 5 Launch | **Open the store; deliver automatically** | Store page and post drafts; signed payment events, idempotent delivery, refunds, reconciliation | Drafts **Working**; publishing and sale to cash **MOCKED** |
 | 6 Operate and learn | None (Phase 6 work: support, metrics, persevere-or-pivot memo) | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
