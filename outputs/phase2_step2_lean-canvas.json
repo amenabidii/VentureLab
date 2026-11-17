@@ -33,6 +33,24 @@
      "https://news.ycombinator.com/item?id=36434999"
     ],
     "test": null
+   },
+   {
+    "text": "Existing alternative: Manual message scanning in Slack",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Ask what they use today and what it costs"
+   },
+   {
+    "text": "Existing alternative: Using Slack's built-in search to find missed messages",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Ask what they use today and what it costs"
+   },
+   {
+    "text": "Existing alternative: Third-party Slack apps that summarize threads",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Ask what they use today and what it costs"
    }
   ],
   "customer_segments": [
@@ -49,6 +67,12 @@
     "label": "ASSUMPTION",
     "sources": [],
     "test": "Ask interviewees how they handle the problem today before showing the concept"
+   },
+   {
+    "text": "Get important Slack messages without missing them when you're not looking at the channel.",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Compare with the alternatives interviewees name"
    }
   ],
   "solution": [
@@ -65,6 +89,24 @@
     "label": "FOUNDER-STATED",
     "sources": [],
     "test": "Count how many qualified people one channel yields per hour of effort"
+   },
+   {
+    "text": "r/remoteengineering: Active community of remote engineers who use Slack daily and have experienced message overload",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Recruit 3 interviewees here; count hours spent"
+   },
+   {
+    "text": "Slack Dev Community: Dedicated Slack ecosystem users who discuss tooling and workflow improvements",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Recruit 3 interviewees here; count hours spent"
+   },
+   {
+    "text": "Product Manager Slack: Specialized group for product managers on distributed teams who face similar communication challenges",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Recruit 3 interviewees here; count hours spent"
    }
   ],
   "revenue_streams": [
@@ -89,6 +131,12 @@
     "label": "ASSUMPTION",
     "sources": [],
     "test": "Set pass marks in the brief's validation_conditions before running"
+   },
+   {
+    "text": "Time spent reviewing missed Slack messages per week",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Fix the pass mark before measuring"
    }
   ],
   "unfair_advantage": [

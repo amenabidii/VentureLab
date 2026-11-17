@@ -6,11 +6,11 @@
   {
    "check": "price chosen by founder",
    "passed": true,
-   "choice": "pro-8"
+   "choice": "pro-10"
   }
  ],
  "founder_approvals": [
-  "set_price:pro-8"
+  "set_price:pro-10"
  ],
  "discover_decision": "REPEAT",
  "rehearsal": true,

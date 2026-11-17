@@ -1,11 +1,11 @@
 # Payment and delivery test log (MOCKED)
 
-Run `run-64fdee373f244b81` · 2026-11-17T18:00:04Z · Discover gate **REPEAT** · REHEARSAL.
+Run `run-64fdee373f244b81` · 2026-11-17T18:15:45Z · Discover gate **REPEAT** · REHEARSAL.
 
 Everything below is a local simulation produced by `workflow.py launch`: a MOCKED payment provider
 (`payments.py`), SIMULATED test buyers, signed webhook events, automatic delivery (`delivery.py`),
 refunds that revoke access (`refunds.py`) and reconciliation (`reconcile.py`). No payment of any kind,
-no sandbox, no card data, no money, no people. Test price: €8/month.
+no sandbox, no card data, no money, no people. Test price: €10/month.
 
 ## Events
 
@@ -21,8 +21,8 @@ no sandbox, no card data, no money, no people. Test price: €8/month.
 
 ## Reconciliation
 
-Gross 2400 · fees 159 (MOCKED fee schedule) · refunds 800
-· expected net 1441 · payout net 1441 (cents).
+Gross 3000 · fees 177 (MOCKED fee schedule) · refunds 1000
+· expected net 1823 · payout net 1823 (cents).
 Mismatches: none.
 
 ## Checks

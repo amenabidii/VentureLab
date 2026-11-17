@@ -1,0 +1,53 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "source": "model",
+ "model": "qwen3:4b",
+ "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+ "value_proposition": "Get important Slack messages without missing them when you're not looking at the channel.",
+ "current_alternatives": [
+  "Manual message scanning in Slack",
+  "Using Slack's built-in search to find missed messages",
+  "Third-party Slack apps that summarize threads"
+ ],
+ "channels": [
+  {
+   "name": "r/remoteengineering",
+   "why": "Active community of remote engineers who use Slack daily and have experienced message overload"
+  },
+  {
+   "name": "Slack Dev Community",
+   "why": "Dedicated Slack ecosystem users who discuss tooling and workflow improvements"
+  },
+  {
+   "name": "Product Manager Slack",
+   "why": "Specialized group for product managers on distributed teams who face similar communication challenges"
+  }
+ ],
+ "key_metric": "Time spent reviewing missed Slack messages per week",
+ "price_anchor": null,
+ "price_points_eur_per_month": [
+  5,
+  10,
+  20
+ ],
+ "pricing_rationale": "Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for",
+ "interview_questions": [
+  "Tell me about the last time you missed an important Slack message and had to go back through the thread to find it?",
+  "How much time did you spend reviewing Slack messages you missed last week?",
+  "What did you do when you realized you missed a Slack message?",
+  "How often do you check Slack messages outside of work hours?",
+  "What tools do you use to track missed Slack messages?"
+ ],
+ "launch_angle": "Focus on reducing time spent reviewing missed Slack messages for remote engineers and product managers",
+ "riskiest_assumption": "Remote engineers and product managers spend significant time reviewing missed Slack messages",
+ "kill_criterion": "Stop if fewer than 3 of 10 interviewees reported spending more than 30 minutes per week reviewing missed Slack messages",
+ "evidence_ids": [],
+ "dropped": [
+  "price_anchor"
+ ],
+ "call": {
+  "model": "qwen3:4b",
+  "attempts": 1,
+  "wall_s": 132.2
+ }
+}

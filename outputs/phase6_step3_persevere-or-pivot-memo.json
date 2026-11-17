@@ -15,6 +15,8 @@
   "reconciliation_balanced": true
  },
  "next_steps": [
+  "Test the riskiest assumption first (ASSUMPTION (proposed by qwen3:4b; not evidence)): Remote engineers and product managers spend significant time reviewing missed Slack messages",
+  "Decide before testing (proposed stop rule, ASSUMPTION (proposed by qwen3:4b; not evidence)): Stop if fewer than 3 of 10 interviewees reported spending more than 30 minutes per week reviewing missed Slack messages",
   "Ask 10 remote workers about Slack thread: Survey",
   "Check Slack usage patterns: Analyze Slack data from a small team",
   "Problem interviews: Talk to people who match 'remote engineers and product managers on distributed teams' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea."

@@ -54,7 +54,7 @@ privacy and refund policy (Phase 4), pending professional review.</small></p>
 """
 
 
-def launch_posts(product: str, brief: dict, price_option: dict) -> str:
+def launch_posts(product: str, brief: dict, price_option: dict, advice: dict | None = None) -> str:
     price = price_option["price_eur_per_month"]
     offer = "free to try" if price == 0 else f"planned at €{price}/month (test price)"
     posts = [
@@ -69,5 +69,9 @@ def launch_posts(product: str, brief: dict, price_option: dict) -> str:
         check_content(text)
     body = "\n\n".join(f"## {title}\n\n> {text}\n\nStatus: DRAFT, not posted. Posting needs founder approval "
                        f"and is MOCKED in this prototype." for title, text in posts)
+    if advice and advice.get("source") == "model":
+        where = "\n".join(f"- **{c['name']}**: {c['why']}" for c in advice["channels"])
+        body += (f"\n\n## Where to post first ({advice['label']})\n\n{where or '- none proposed'}\n\n"
+                 f"Angle to lead with: {advice.get('launch_angle') or brief['problem_statement']}")
     return ("# Phase 5, step 1: Launch posts (drafts)\n\nWritten in the founder's voice for the founder to "
             "edit and post themselves. VentureLab never posts or messages anyone.\n\n" + body + "\n")

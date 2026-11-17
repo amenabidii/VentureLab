@@ -35,7 +35,8 @@ def _verified_urls(finding: dict) -> list[str]:
     return [q["url"] for q in finding.get("quotes", []) if q.get("status") == "verified" and q.get("url")]
 
 
-def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, challenge: dict | None) -> dict:
+def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, challenge: dict | None,
+                      advice: dict | None = None) -> dict:
     findings = (investigation or {}).get("findings", [])
     problem_findings = [f for f in findings if f.get("type") == "customer_problem" and _verified_urls(f)]
     experiments = (gate.get("counterfactual") or {}).get("experiments", [])
@@ -66,6 +67,20 @@ def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, chall
         "Share of interviewees who describe a recent, specific occurrence of the problem; "
         "then waitlist sign-up rate from the landing page.", ASSUMPTION,
         test="Set pass marks in the brief's validation_conditions before running"))
+    if advice and advice.get("source") == "model":
+        lab = advice["label"]
+        canvas["problem"] += [Entry(f"Existing alternative: {a}", lab, test="Ask what they use today and what it costs")
+                              for a in advice["current_alternatives"]]
+        if advice.get("value_proposition"):
+            canvas["unique_value_proposition"].append(Entry(advice["value_proposition"], lab,
+                                                            test="Compare with the alternatives interviewees name"))
+        canvas["channels"] += [Entry(f"{c['name']}: {c['why']}", lab, test="Recruit 3 interviewees here; count hours spent")
+                               for c in advice["channels"]]
+        if advice.get("price_anchor"):
+            canvas["revenue_streams"].append(Entry(f"Price anchor: {advice['price_anchor']}", lab,
+                                                   test="Ask what they spend today on the alternatives"))
+        if advice.get("key_metric"):
+            canvas["key_metrics"].append(Entry(advice["key_metric"], lab, test="Fix the pass mark before measuring"))
     skills = ", ".join(brief.get("founder_skills", []))
     canvas["unfair_advantage"].append(Entry(
         f"Founder skills: {skills}. Not an advantage until compared with alternatives.", ASSUMPTION,

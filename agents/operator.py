@@ -46,7 +46,8 @@ def mocked_metrics(reconciliation: dict) -> dict:
             "reconciliation_balanced": reconciliation["balanced"]}
 
 
-def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, validation: dict | None = None) -> dict:
+def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, validation: dict | None = None,
+                       advice: dict | None = None) -> dict:
     """Fixed rules, first match wins. Real customer evidence is the only input that can say PERSEVERE.
 
     `validation` is the Phase 2 validation gate (`phase2_gate_validation.json`): the founder's
@@ -78,6 +79,11 @@ def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, valida
         rec, rule = "REPEAT", ("Not enough real evidence: the Discover gate decided "
                                f"{decision}, and no real experiment results exist yet.")
     next_steps = [f"{x['name']}: {x['method']}" for x in (discover.get("counterfactual") or {}).get("experiments", [])][:3]
+    if advice and advice.get("source") == "model":
+        if advice.get("kill_criterion"):
+            next_steps.insert(0, f"Decide before testing (proposed stop rule, {advice['label']}): {advice['kill_criterion']}")
+        if advice.get("riskiest_assumption"):
+            next_steps.insert(0, f"Test the riskiest assumption first ({advice['label']}): {advice['riskiest_assumption']}")
     return {"recommendation": rec, "rule": rule, "discover_decision": decision,
             "validation_gate": ({k: validation.get(k) for k in ("decision", "rule", "participants", "successes",
                                                                  "result_source")} if validation else None),

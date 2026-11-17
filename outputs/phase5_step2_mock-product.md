@@ -2,4 +2,4 @@
 
 This file stands in for the product a buyer receives after a (MOCKED) payment. It contains no real product yet.
 
-Price option: `pro-8`. Rehearsal: True.
+Price option: `pro-10`. Rehearsal: True.

@@ -45,6 +45,12 @@ def make_run(tmp_path: Path, decision="REPEAT") -> Path:
     return run
 
 
+@pytest.fixture(autouse=True)
+def no_live_model(monkeypatch):
+    # Unit tests never reach a model; the advisor's labelled fallback is used instead.
+    monkeypatch.setenv("VENTURELAB_ADVISOR_MODEL", "0")
+
+
 class CLI:
     def __init__(self, tmp_path, run):
         self.base = ["--out", str(tmp_path / "out"), "--log", str(tmp_path / "log.json"),
@@ -345,3 +351,88 @@ def test_memo_uses_founder_reported_validation_results(decision, expected):
 def test_discover_stop_still_wins_over_any_validation_result():
     memo = persevere_or_pivot({"decision": "STOP"}, BRIEF, None, {"decision": "GO"})
     assert memo["recommendation"] == "STOP"
+
+
+class FakeResult:
+    def __init__(self, parsed):
+        self.parsed, self.attempts = parsed, 1
+
+
+class FakeClient:
+    def __init__(self, reply):
+        self.reply = reply
+
+    def chat_json(self, model, messages, output_type, **kw):
+        return FakeResult(output_type.model_validate(self.reply))
+
+
+ADVICE_REPLY = {  # MOCKED model reply, including deliberately bad items the code must drop
+    "value_proposition": "Catch up on a missed thread in two minutes with links to every message",
+    "current_alternatives": ["Scrolling the thread", "Asking a teammate for a recap"],
+    "channels": [{"name": "r/ExperiencedDevs", "why": "Remote engineers discuss async overload"},
+                 {"name": "Loved by 10,000 users forum", "why": "x"}],
+    "key_metric": "Minutes from opening a missed thread to replying",
+    "price_anchor": "They pay nothing today but spend team time on recaps",
+    "price_points_eur_per_month": [5, 9, 999],
+    "pricing_rationale": "Below typical per-seat tool add-ons",
+    "interview_questions": ["Tell me about the last time you came back to a long thread you missed?",
+                            "Would you love a tool that summarises threads?",
+                            "How long did catching up take last week?"],
+    "launch_angle": "Async teams that lose an hour a day to thread backlog",
+    "riskiest_assumption": "Catching up is painful enough to change tools",
+    "kill_criterion": "Fewer than 3 of 10 interviewees describe catching up as a weekly problem",
+    "evidence_ids": ["F1", "F999"]}
+
+
+def test_advisor_keeps_safe_specific_items_and_drops_unsafe_ones(tmp_path):
+    from agents.advisor import advise
+    run = make_run(tmp_path)
+    load = lambda n: json.loads((run / n).read_text())  # noqa: E731
+    advice, meta = advise(BRIEF, load("phase1_gate_decision.json"), load("phase1_step2_investigation.json"),
+                          load("phase1_step3_challenge.json"), FakeClient(ADVICE_REPLY), "qwen3:4b")
+    assert advice["source"] == "model" and "qwen3:4b" in advice["label"] and "ASSUMPTION" in advice["label"]
+    assert advice["price_points_eur_per_month"] == [5, 9]                      # 999 refused
+    assert [c["name"] for c in advice["channels"]] == ["r/ExperiencedDevs"]     # fake social proof dropped
+    assert all("Would" not in q for q in advice["interview_questions"])          # leading question dropped
+    assert advice["evidence_ids"] == ["F1"]                                     # unknown finding id removed
+    assert advice["dropped"]
+
+
+def test_advisor_falls_back_honestly_when_the_model_fails(tmp_path):
+    from agents.advisor import advise
+
+    class Broken:
+        def chat_json(self, *a, **k):
+            raise RuntimeError("no model")
+    advice, meta = advise(BRIEF, {"decision": "REPEAT"}, None, None, Broken(), "qwen3:4b")
+    assert advice["source"] == "deterministic-fallback" and advice["model"] is None and meta is None
+
+
+def test_tailored_prices_reach_pricing_and_canvas(tmp_path):
+    from agents.advisor import sanitize, Advice
+    from agents.commercial import pricing_hypotheses
+    advice = sanitize(Advice.model_validate(ADVICE_REPLY), {"F1"}, "qwen3:4b")
+    p = pricing_hypotheses(BRIEF, "REPEAT", advice)
+    assert [o["price_eur_per_month"] for o in p["options"]] == [0, 5, 9]
+    assert "qwen3:4b" in p["price_source"] and all(o["label"] == "ASSUMPTION" for o in p["options"])
+    run = make_run(tmp_path)
+    load = lambda n: json.loads((run / n).read_text())  # noqa: E731
+    canvas = build_lean_canvas(BRIEF, load("phase1_gate_decision.json"), None, None, advice)
+    texts = [e["text"] for e in canvas["canvas"]["channels"]]
+    assert any("r/ExperiencedDevs" in t for t in texts)
+
+
+def test_advisor_accepts_tell_me_prompts_and_rejects_inverted_stop_rules():
+    from agents.advisor import sanitize, Advice
+    reply = dict(ADVICE_REPLY, interview_questions=["Tell me about the last time you missed a thread"],
+                 kill_criterion="Stop if fewer than 3 of 10 say so")
+    a = sanitize(Advice.model_validate(reply), set(), "m")
+    assert a["interview_questions"] and a["kill_criterion"].startswith("Stop if")
+    inverted = dict(reply, kill_criterion="Customer spends more than 10 minutes")
+    assert sanitize(Advice.model_validate(inverted), set(), "m")["kill_criterion"] is None
+
+
+def test_no_source_file_contains_control_characters():
+    root = Path(__file__).resolve().parent.parent
+    for path in list(root.glob("*.py")) + list(root.glob("agents/*.py")) + list(root.glob("app/*.py")):
+        assert b"\x08" not in path.read_bytes(), path

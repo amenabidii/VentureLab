@@ -10,30 +10,31 @@
    "why": "Lets interviewees try the concept; no paywall on the core job."
   },
   {
-   "id": "pro-4",
+   "id": "pro-5",
    "model": "Paid tier, monthly",
-   "price_eur_per_month": 4,
+   "price_eur_per_month": 5,
    "label": "ASSUMPTION",
-   "why": "Test price only. No evidence yet that anyone would pay this."
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
   },
   {
-   "id": "pro-8",
+   "id": "pro-10",
    "model": "Paid tier, monthly",
-   "price_eur_per_month": 8,
+   "price_eur_per_month": 10,
    "label": "ASSUMPTION",
-   "why": "Test price only. No evidence yet that anyone would pay this."
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
   },
   {
-   "id": "pro-15",
+   "id": "pro-20",
    "model": "Paid tier, monthly",
-   "price_eur_per_month": 15,
+   "price_eur_per_month": 20,
    "label": "ASSUMPTION",
-   "why": "Test price only. No evidence yet that anyone would pay this."
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
   }
  ],
  "evidence": "None. Willingness to pay has not been measured (Lean Canvas: revenue streams UNKNOWN).",
  "test": "Ask each interviewee what they spend today on the problem and at what monthly price the product would be too expensive / a bargain; then a priced waitlist with no payment taken.",
  "pass_mark_to_set_before_testing": "e.g. at least 3 of 10 qualified interviewees accept the chosen test price (ASSUMPTION: the founder sets the real pass mark).",
+ "price_source": "tailored by qwen3:4b from this brief and its evidence",
  "founder_choice": null,
  "payments": "None. No payment provider, sandbox or card handling exists in this phase."
 }

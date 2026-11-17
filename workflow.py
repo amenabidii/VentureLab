@@ -31,6 +31,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agents.advisor import advise
 from agents.commercial import pricing_hypotheses, pricing_markdown, policy_drafts, product_name
 from agents.launcher import launch_posts, store_page_html
 from agents.operator import memo_markdown, mocked_metrics, persevere_or_pivot, triage_support
@@ -42,7 +43,7 @@ from delivery import DeliveryService
 from payments import MockPaymentProvider, Order
 from reconcile import reconcile
 
-AGENTS = {1: "strategist", 2: "strategist", 3: "product", 4: "commercial", 5: "launcher", 6: "operator"}
+AGENTS = {0: "advisor", 1: "strategist", 2: "strategist", 3: "product", 4: "commercial", 5: "launcher", 6: "operator"}
 
 
 class GateBlocked(RuntimeError):
@@ -114,8 +115,9 @@ class Approvals:
 # --- run context ----------------------------------------------------------------------------
 
 class Context:
-    def __init__(self, run_dir: Path, out: Path, log: Path, state: Path):
+    def __init__(self, run_dir: Path, out: Path, log: Path, state: Path, use_model: bool = True):
         self.run_dir, self.out = run_dir, out
+        self.use_model = use_model
         load = lambda name: (json.loads((run_dir / name).read_text(encoding="utf-8"))  # noqa: E731
                              if (run_dir / name).exists() else None)
         self.gate = load("phase1_gate_decision.json")
@@ -165,6 +167,69 @@ class Context:
 
 # --- commands -------------------------------------------------------------------------------
 
+ADVICE = "phase2_step3_advisor-proposals.json"
+
+
+def get_advice(ctx: Context, refresh: bool = False) -> dict:
+    """Idea-specific proposals from the local model, computed once per run and then reused,
+    so the files built from them (and the founder's approvals of those files) stay stable."""
+    path = ctx.out / ADVICE
+    if path.exists() and not refresh:
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        if saved.get("run_id") == ctx.run_id:
+            return saved
+    client, model = None, None
+    if ctx.use_model and os.environ.get("VENTURELAB_ADVISOR_MODEL", "1") != "0":
+        from llm import OllamaClient
+        settings = get_settings()
+        client, model = OllamaClient(settings), settings.model
+    try:
+        advice, meta = advise(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge, client, model)
+    finally:
+        if client is not None:
+            client.close()
+    advice = {"run_id": ctx.run_id, **advice, "call": meta}
+    ctx.write(ADVICE, advice)
+    ctx.write("phase2_step3_advisor-proposals.md", advice_markdown(advice))
+    ctx.log.record("advisor", "propose_tailored_plan", sources=[], model=advice.get("model"), cost=0,
+                   approved_by=None, outcome=advice["source"], dropped=len(advice.get("dropped", [])),
+                   discover_run_id=ctx.run_id, phase=2, rehearsal=ctx.rehearsal)
+    return advice
+
+
+def advice_markdown(a: dict) -> str:
+    qs = "\n".join(f"{i}. {q}" for i, q in enumerate(a.get("interview_questions", []), 1)) or "None."
+    ch = "\n".join(f"- **{c['name']}**: {c['why']}" for c in a.get("channels", [])) or "- none"
+    alts = "\n".join(f"- {x}" for x in a.get("current_alternatives", [])) or "- none"
+    dropped = ", ".join(a.get("dropped", [])) or "none"
+    prices = ", ".join(f"€{p}" for p in a.get("price_points_eur_per_month", []))
+    return f"""# Phase 2, step 3: Advisor proposals for this idea
+
+Source: **{a['source']}**{f" ({a['model']})" if a.get('model') else ''}. Label for every item: {a['label']}.
+These are specific proposals to test, not evidence. Items that failed VentureLab's content
+or non-leading rules were dropped by code: {dropped}.
+
+- Riskiest assumption: {a.get('riskiest_assumption')}
+- Proposed stop rule (decide before testing): {a.get('kill_criterion')}
+- Value proposition: {a.get('value_proposition')}
+- Key metric: {a.get('key_metric')}
+- Price anchor: {a.get('price_anchor')}; test prices per month: {prices}. {a.get('pricing_rationale') or ''}
+- Launch angle: {a.get('launch_angle')}
+
+## What these customers likely use today (verify in interviews)
+
+{alts}
+
+## Channels to recruit interviewees and launch
+
+{ch}
+
+## Interview questions (past behaviour, checked for leading wording)
+
+{qs}
+"""
+
+
 def plan(ctx: Context) -> list[str]:
     """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
     card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
@@ -172,7 +237,8 @@ def plan(ctx: Context) -> list[str]:
     ctx.write("phase1_step4_opportunity-scorecard.md", scorecard_markdown(card))
     ctx.rec(1, "score_against_alternatives", f"{len(card['options'])} options; test first: {card['test_first'][:80]}",
             sources=sorted({u for r in card["options"] for u in r["sources"]}))
-    canvas = build_lean_canvas(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
+    advice = get_advice(ctx)
+    canvas = build_lean_canvas(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge, advice)
     sources = [s for box in canvas["canvas"].values() for e in box for s in e["sources"]]
     ctx.write("phase2_step2_lean-canvas.json", canvas)
     ctx.write("phase2_step2_lean-canvas.md", lean_canvas_markdown(canvas))
@@ -189,7 +255,7 @@ def plan(ctx: Context) -> list[str]:
     ctx.write("phase3_step2_mvp-scope.json", scope)
     ctx.write("phase3_step3_user-guide-draft.md", user_guide(ctx.brief, scope))
     ctx.rec(3, "define_mvp_scope_and_guide", "drafted; MVP code generation STUBBED")
-    pricing = pricing_hypotheses(ctx.brief, ctx.decision)
+    pricing = pricing_hypotheses(ctx.brief, ctx.decision, advice)
     _, p_sha = ctx.write("phase4_step1_pricing.json", pricing)
     ctx.write("phase4_step1_pricing.md", pricing_markdown(pricing))
     ctx.rec(4, "draft_pricing_hypotheses", "drafted", options=[o["id"] for o in pricing["options"]])
@@ -226,7 +292,7 @@ def prepare_launch(ctx: Context) -> list[str]:
     product = product_name(ctx.brief)
     _, page_sha = ctx.write("phase5_step1_store-page.html", store_page_html(product, ctx.brief, option,
                                                                              rehearsal=ctx.rehearsal))
-    ctx.write("phase5_step1_launch-posts.md", launch_posts(product, ctx.brief, option))
+    ctx.write("phase5_step1_launch-posts.md", launch_posts(product, ctx.brief, option, get_advice(ctx)))
     ctx.rec(5, "draft_store_page_and_posts", "drafted; not published, not posted")
     package = (f"# {product}: early-access package (MOCKED digital product)\n\nThis file stands in for the "
                f"product a buyer receives after a (MOCKED) payment. It contains no real product yet.\n\n"
@@ -311,7 +377,7 @@ def launch(ctx: Context) -> dict:
     ctx.rec(6, "compute_metrics", "MOCKED metrics from test orders")
     vpath = ctx.run_dir / "phase2_gate_validation.json"
     validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
-    memo = persevere_or_pivot(ctx.gate, ctx.brief, metrics, validation)
+    memo = persevere_or_pivot(ctx.gate, ctx.brief, metrics, validation, get_advice(ctx))
     ctx.write("phase6_step3_persevere-or-pivot-memo.json", memo)
     ctx.write("phase6_step3_persevere-or-pivot-memo.md", memo_markdown(memo, support))
     ctx.gate_file(6, "persevere-or-pivot", memo["recommendation"],
@@ -362,6 +428,7 @@ def main(argv=None) -> int:
     for name in ("plan", "prepare-launch", "launch"):
         sp = sub.add_parser(name)
         sp.add_argument("--run", type=Path, required=True)
+        sp.add_argument("--no-model", action="store_true", help="use the labelled deterministic fallback")
     ap = sub.add_parser("approve", help="founder decision; confirm by typing 'APPROVE <action>'")
     ap.add_argument("action")
     ap.add_argument("sha256")
@@ -382,7 +449,7 @@ def main(argv=None) -> int:
                 outcome=f"{decision}: {args.action}", sha256=args.sha256, reason=args.reason)
             print(json.dumps({k: rec[k] for k in ("action", "sha256", "decision", "at")}, indent=1))
             return 0
-        ctx = Context(args.run, args.out, args.log, args.state)
+        ctx = Context(args.run, args.out, args.log, args.state, use_model=not args.no_model)
         result = {"plan": plan, "prepare-launch": prepare_launch, "launch": launch}[args.cmd](ctx)
         print(json.dumps(result, indent=1))
         return 0

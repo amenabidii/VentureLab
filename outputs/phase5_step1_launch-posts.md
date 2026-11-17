@@ -10,6 +10,14 @@ Status: DRAFT, not posted. Posting needs founder approval and is MOCKED in this 
 
 ## Short announcement (draft)
 
-> Early concept: a browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message. For remote engineers and product managers on distributed teams; planned at €8/month (test price). Feedback welcome; nothing is for sale yet.
+> Early concept: a browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message. For remote engineers and product managers on distributed teams; planned at €10/month (test price). Feedback welcome; nothing is for sale yet.
 
 Status: DRAFT, not posted. Posting needs founder approval and is MOCKED in this prototype.
+
+## Where to post first (ASSUMPTION (proposed by qwen3:4b; not evidence))
+
+- **r/remoteengineering**: Active community of remote engineers who use Slack daily and have experienced message overload
+- **Slack Dev Community**: Dedicated Slack ecosystem users who discuss tooling and workflow improvements
+- **Product Manager Slack**: Specialized group for product managers on distributed teams who face similar communication challenges
+
+Angle to lead with: Focus on reducing time spent reviewing missed Slack messages for remote engineers and product managers
