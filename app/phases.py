@@ -57,6 +57,19 @@ def phases_page() -> HTMLResponse:
                             for p in mine if p not in gates) or "<li>No outputs yet.</li>"
         sections.append(f"<section><h2>{n}. {escape(title)}</h2><h3>Gate decisions</h3><ul>{gate_rows}</ul>"
                         f"<h3>Outputs</h3><ul>{file_rows}</ul></section>")
+    runs_dir = _outputs() / "runs"
+    run_rows = []
+    if runs_dir.is_dir():
+        for gate in sorted(runs_dir.glob("run-*/phase1_gate_decision.json"), reverse=True):
+            rid = gate.parent.name
+            if re.fullmatch(r"run-[0-9a-f]{16}", rid):
+                data = json.loads(gate.read_text(encoding="utf-8"))
+                from gates import RULESET_VERSION
+                state = (escape(str(data.get("decision"))) if data.get("ruleset_version") == RULESET_VERSION
+                         else f"{escape(str(data.get('decision')))} (superseded rules: re-run Discover)")
+                run_rows.append(f"<li><a href='/phases/run/{escape(rid)}'>{escape(rid)}</a> · Discover <b>{state}</b></li>")
+    runs_html = ("<section><h2>Run phases 2–6 for a workspace run</h2><ul>" + "".join(run_rows) + "</ul></section>"
+                 if run_rows else "<p>Submit a brief in the workspace; finished runs appear here.</p>")
     log = [p for p in files if p.name == "payment_test_log.md"]
     extra = (f"<p>Sale-to-cash test log (MOCKED): <a href='/phases/view/payment_test_log.md'>payment_test_log.md</a></p>"
              if log else "")
@@ -66,10 +79,10 @@ def phases_page() -> HTMLResponse:
 section{{border:1px solid #d4ddd4;border-radius:10px;padding:4px 18px 10px;margin:14px 0}}
 .note{{background:#f3f6f0;padding:10px 14px;border-radius:8px}}a{{color:#195b48}}</style></head><body>
 <p><a href="/">← Workspace</a></p><h1>Phases 1–6: gates and outputs</h1>
-<p class="note">Read-only. Files come from real runs (<code>orchestrator.py</code> / the workspace for Discover,
+<p class="note">Files come from real runs (the workspace or <code>orchestrator.py</code> for Discover,
 <code>workflow.py</code> for later phases). After a REPEAT, phases 2–6 run only as a founder-approved REHEARSAL,
-and every sale-to-cash event is MOCKED. Running a phase or approving anything happens in <code>workflow.py</code>,
-never on this page.</p>{extra}{''.join(sections)}</body></html>"""
+and every sale-to-cash event is MOCKED. Run phases 2–6 from a run's own page below or with
+<code>workflow.py</code>; every step needs the founder's approval with the founder key.</p>{runs_html}<h2>Committed demo rehearsal (run-a9f21cd634924cca, current gate rules)</h2>{extra}{''.join(sections)}</body></html>"""
     return HTMLResponse(body, headers=HEADERS)
 
 

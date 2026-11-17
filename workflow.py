@@ -39,6 +39,7 @@ from agents.product import acceptance_checks, mvp_scope, user_guide
 from agents.strategist import build_lean_canvas, lean_canvas_markdown, score_opportunities, scorecard_markdown
 from audit import AuditLog
 from config import get_settings
+from gates import RULESET_VERSION
 from delivery import DeliveryService
 from payments import MockPaymentProvider, Order
 from reconcile import reconcile
@@ -61,7 +62,10 @@ def now() -> str:
 # --- founder approvals ------------------------------------------------------------------
 
 class Approvals:
-    def __init__(self, state_dir: Path):
+    """Founder approvals bound to (run, action, file SHA-256), HMAC-signed with a local key."""
+
+    def __init__(self, state_dir: Path, run_id: str):
+        self.run_id = run_id
         self.state = state_dir
         self.file = state_dir / "workflow_approvals.json"
         self.key_file = state_dir / "workflow.founder"
@@ -79,7 +83,8 @@ class Approvals:
         return self.key_file.read_text().strip().encode()
 
     def _mac(self, key: bytes, record: dict) -> str:
-        body = json.dumps({k: record[k] for k in ("action", "sha256", "decision", "reason", "at")}, sort_keys=True)
+        body = json.dumps({k: record.get(k) for k in ("run_id", "action", "sha256", "decision", "reason", "at")},
+                          sort_keys=True)
         return hmac.new(key, body.encode(), hashlib.sha256).hexdigest()
 
     def records(self) -> list[dict]:
@@ -87,8 +92,8 @@ class Approvals:
 
     def record(self, action: str, digest: str, decision: str, reason: str) -> dict:
         key = self._key(create=True)
-        rec = {"action": action, "sha256": digest, "decision": decision, "reason": reason, "at": now(),
-               "decided_by": "founder"}
+        rec = {"run_id": self.run_id, "action": action, "sha256": digest, "decision": decision, "reason": reason,
+               "at": now(), "decided_by": "founder"}
         rec["mac"] = self._mac(key, rec)
         self.file.write_text(json.dumps(self.records() + [rec], indent=1), encoding="utf-8")
         return rec
@@ -99,7 +104,7 @@ class Approvals:
         key = self._key(create=False)
         latest = None
         for rec in self.records():
-            if rec.get("action") == action and rec.get("sha256") == digest:
+            if rec.get("run_id") == self.run_id and rec.get("action") == action and rec.get("sha256") == digest:
                 if not hmac.compare_digest(rec.get("mac", ""), self._mac(key, rec)):
                     raise GateBlocked(f"Approval record for {action} failed verification")
                 latest = rec
@@ -107,7 +112,8 @@ class Approvals:
 
     def chosen(self, prefix: str, digest: str) -> str | None:
         for rec in reversed(self.records()):
-            if rec["action"].startswith(prefix) and rec["sha256"] == digest and self.approved(rec["action"], digest):
+            if (rec.get("run_id") == self.run_id and rec["action"].startswith(prefix) and rec["sha256"] == digest
+                    and self.approved(rec["action"], digest)):
                 return rec["action"][len(prefix):]
         return None
 
@@ -132,8 +138,10 @@ class Context:
         self.gate_sha = sha256((run_dir / "phase1_gate_decision.json").read_bytes())
         # The later phases are their own execution, linked to (not mixed into) the Discover run.
         self.log = AuditLog(log, f"{self.run_id}:phases-2-6")
-        self.approvals = Approvals(state)
+        self.approvals = Approvals(state, self.run_id)
         self.rehearsal = self.decision != "GO"
+        # Same rule as the Builder: a decision made by superseded gate rules unlocks nothing.
+        self.superseded = self.gate.get("ruleset_version") != RULESET_VERSION
         out.mkdir(parents=True, exist_ok=True)
 
     def write(self, name: str, content: str | dict) -> tuple[str, str]:
@@ -153,7 +161,15 @@ class Context:
             "founder_approvals": approvals, "discover_decision": self.decision,
             "rehearsal": self.rehearsal, "decided_by": "fixed rules in workflow.py"})
 
+    def require_current_rules(self):
+        if self.superseded:
+            self.rec(2, "gate_check", "blocked: Discover decision made by superseded gate rules")
+            raise GateBlocked(f"This run's {self.decision} was decided by superseded gate rules (version "
+                              f"{self.gate.get('ruleset_version') or 1}, current {RULESET_VERSION}). Re-run "
+                              f"Discover; a superseded decision cannot unlock later phases.")
+
     def require_rehearsal_approval(self):
+        self.require_current_rules()
         if self.decision == "STOP":
             self.rec(4, "gate_check", "blocked: Discover gate decided STOP")
             raise GateBlocked("Discover gate decided STOP: later phases are blocked")
@@ -232,6 +248,7 @@ or non-leading rules were dropped by code: {dropped}.
 
 def plan(ctx: Context) -> list[str]:
     """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
+    ctx.require_current_rules()
     card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
     ctx.write("phase1_step4_opportunity-scorecard.json", card)
     ctx.write("phase1_step4_opportunity-scorecard.md", scorecard_markdown(card))
@@ -430,6 +447,7 @@ def main(argv=None) -> int:
         sp.add_argument("--run", type=Path, required=True)
         sp.add_argument("--no-model", action="store_true", help="use the labelled deterministic fallback")
     ap = sub.add_parser("approve", help="founder decision; confirm by typing 'APPROVE <action>'")
+    ap.add_argument("--run", type=Path, required=True, help="the Discover run this approval is for")
     ap.add_argument("action")
     ap.add_argument("sha256")
     ap.add_argument("--reason", required=True)
@@ -442,12 +460,13 @@ def main(argv=None) -> int:
             if typed != f"{decision.upper()} {args.action}":
                 print(f"Not recorded. Type exactly: {decision.upper()} {args.action}", file=sys.stderr)
                 return 2
-            rec = Approvals(args.state).record(args.action, args.sha256, decision, args.reason)
-            AuditLog(args.log, "workflow-approvals").record(
+            run_id = json.loads((args.run / "phase1_gate_decision.json").read_text(encoding="utf-8"))["run_id"]
+            rec = Approvals(args.state, run_id).record(args.action, args.sha256, decision, args.reason)
+            AuditLog(args.log, f"{run_id}:phases-2-6").record(
                 "approval", f"founder_{decision}", model=None, cost=0,
                 approved_by="founder" if decision == "approve" else None,
                 outcome=f"{decision}: {args.action}", sha256=args.sha256, reason=args.reason)
-            print(json.dumps({k: rec[k] for k in ("action", "sha256", "decision", "at")}, indent=1))
+            print(json.dumps({k: rec[k] for k in ("run_id", "action", "sha256", "decision", "at")}, indent=1))
             return 0
         ctx = Context(args.run, args.out, args.log, args.state, use_model=not args.no_model)
         result = {"plan": plan, "prepare-launch": prepare_launch, "launch": launch}[args.cmd](ctx)

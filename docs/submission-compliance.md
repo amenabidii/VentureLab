@@ -124,7 +124,8 @@ Existing tests already cover these, so they were not duplicated here.
 | 5 Launch | `phase5_step1_*`, `phase5_step2_mock-product.md`, `phase5_step3_reconciliation.json`, `payment_test_log.md`, `phase5_gate_launch.json` | PASS (MOCKED publishing and sale to cash) |
 | 6 Operate & learn | `phase6_step1..3_*`, `phase6_gate_persevere-or-pivot.json` | PASS (memo REPEAT; rehearsal metrics MOCKED) |
 
-Phases 2–6 were run on the genuine REPEAT run `run-64fdee373f244b81` as a founder-approved
+Phases 2–6 were run on the genuine REPEAT run `run-a9f21cd634924cca` (Slack-thread brief re-run under the
+current gate rules, version 3; the earlier run of the same brief is superseded) as a founder-approved
 REHEARSAL; the approvals are HMAC-signed in the local state and mirrored in `decision_log.json`.
 
 ## Open items before final submission

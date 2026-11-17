@@ -8,4 +8,4 @@
 - **Retention:** data is deleted when the user deletes it or closes the account.
 - **Third parties:** none at draft stage. Any future processor must be listed here before it is used.
 - **User rights:** access, correction, export and deletion on request.
-- **Founder constraints applied:** Value: Respect privacy; Value: no dark patterns; Constraint: Messages are only read in workspaces that install the extension.
+- **Founder constraints applied:** Value: Respect privacy, no dark patterns; Constraint: Messages are only read in workspaces that install the extension.

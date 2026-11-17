@@ -10,8 +10,7 @@
   "Any feature not needed to test the riskiest assumption"
  ],
  "constraints": [
-  "Value: Respect privacy",
-  "Value: no dark patterns",
+  "Value: Respect privacy, no dark patterns",
   "Constraint: Messages are only read in workspaces that install the extension"
  ],
  "acceptance_criteria": [

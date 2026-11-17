@@ -177,4 +177,6 @@ from app.recordings import router as recordings_router
 app.include_router(recordings_router)
 
 from app.phases import router as phases_router  # noqa: E402
+from app.phase_runner import router as phase_runner_router  # noqa: E402
 app.include_router(phases_router)
+app.include_router(phase_runner_router)

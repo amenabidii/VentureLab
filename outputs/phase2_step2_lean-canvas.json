@@ -1,5 +1,5 @@
 {
- "run_id": "run-64fdee373f244b81",
+ "run_id": "run-a9f21cd634924cca",
  "discover_decision": "REPEAT",
  "canvas": {
   "problem": [
@@ -26,28 +26,35 @@
     "test": null
    },
    {
-    "text": "Remote workers waste time catching up on long Slack threads they missed.",
+    "text": "One commenter says that they personally, as one of the target customers (remote engineers and product managers on distributed teams), experience this problem: Remote workers waste time catching up on long Slack threads they missed.",
     "label": "ASSUMPTION (quote found, not established: partial_evidence)",
     "sources": [
-     "https://news.ycombinator.com/item?id=25056920",
      "https://news.ycombinator.com/item?id=36434999"
     ],
     "test": null
    },
    {
-    "text": "Existing alternative: Manual message scanning in Slack",
+    "text": "One commenter says that they personally, as one of the target customers (remote engineers and product managers on distributed teams), experience this problem: Remote workers waste time catching up on long Slack threads they missed.",
+    "label": "ASSUMPTION (quote found, not established: partial_evidence)",
+    "sources": [
+     "https://news.ycombinator.com/item?id=25056920"
+    ],
+    "test": null
+   },
+   {
+    "text": "Existing alternative: Manually scanning Slack threads for missed messages",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Ask what they use today and what it costs"
    },
    {
-    "text": "Existing alternative: Using Slack's built-in search to find missed messages",
+    "text": "Existing alternative: Using Slack's built-in search to find messages",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Ask what they use today and what it costs"
    },
    {
-    "text": "Existing alternative: Third-party Slack apps that summarize threads",
+    "text": "Existing alternative: Relying on teammates to share summaries",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Ask what they use today and what it costs"
@@ -69,7 +76,7 @@
     "test": "Ask interviewees how they handle the problem today before showing the concept"
    },
    {
-    "text": "Get important Slack messages without missing them when you're not looking at the channel.",
+    "text": "Get important Slack messages without having to read long threads they missed.",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Compare with the alternatives interviewees name"
@@ -91,19 +98,19 @@
     "test": "Count how many qualified people one channel yields per hour of effort"
    },
    {
-    "text": "r/remoteengineering: Active community of remote engineers who use Slack daily and have experienced message overload",
+    "text": "r/remoteengineering: Active community of remote engineers discussing Slack workflow challenges",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Recruit 3 interviewees here; count hours spent"
    },
    {
-    "text": "Slack Dev Community: Dedicated Slack ecosystem users who discuss tooling and workflow improvements",
+    "text": "Slack channel #product-managers: Dedicated Slack space for product managers to share workflow tips and pain points",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Recruit 3 interviewees here; count hours spent"
    },
    {
-    "text": "Product Manager Slack: Specialized group for product managers on distributed teams who face similar communication challenges",
+    "text": "The Remote Work newsletter: Monthly email for remote software teams on communication tools and productivity",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Recruit 3 interviewees here; count hours spent"
@@ -115,6 +122,12 @@
     "label": "ASSUMPTION — no evidence yet",
     "sources": [],
     "test": "Pricing questions in interviews, then a priced pre-order or waitlist test (Phase 4 hypotheses)"
+   },
+   {
+    "text": "Price anchor: Current time spent manually scanning Slack threads for missed messages",
+    "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
+    "sources": [],
+    "test": "Ask what they spend today on the alternatives"
    }
   ],
   "cost_structure": [
@@ -133,7 +146,7 @@
     "test": "Set pass marks in the brief's validation_conditions before running"
    },
    {
-    "text": "Time spent reviewing missed Slack messages per week",
+    "text": "Percentage of interviewees who missed at least one important Slack message in the last week",
     "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)",
     "sources": [],
     "test": "Fix the pass mark before measuring"
@@ -150,11 +163,9 @@
  },
  "summary": {
   "boxes": 9,
-  "sourced_entries": 3,
+  "sourced_entries": 4,
   "established_entries": 0,
-  "unknown_boxes": [
-   "revenue_streams"
-  ],
+  "unknown_boxes": [],
   "founder_assumptions_under_test": [
    "A1",
    "A2",

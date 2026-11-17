@@ -32,5 +32,10 @@ Field by field:
 - interview_questions: 5 questions, each one sentence, ending with "?" or starting with
   "Tell me about" / "Walk me through".
 - riskiest_assumption: the one belief that, if false, makes the idea pointless.
+- key_metric: something the founder can measure DURING validation, before the product exists
+  (e.g. share of interviewees with a recent occurrence, waitlist sign-ups per 100 visits), not
+  product usage.
+- pricing_rationale: explain the anchor qualitatively. Do not invent time savings, hours,
+  minutes or percentages; numbers other than the price points are refused.
 
 Return only JSON matching the schema.

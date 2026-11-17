@@ -12,4 +12,4 @@
 5. **Changes.** Material changes to these terms are announced to users before they apply.
 6. **Contact.** A support address will be listed on the product page before launch.
 
-Founder values carried into these terms: Value: Respect privacy; Value: no dark patterns; Constraint: Messages are only read in workspaces that install the extension.
+Founder values carried into these terms: Value: Respect privacy, no dark patterns; Constraint: Messages are only read in workspaces that install the extension.

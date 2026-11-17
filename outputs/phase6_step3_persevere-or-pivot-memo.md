@@ -14,10 +14,10 @@ Rule applied: Not enough real evidence: the Discover gate decided REPEAT, and no
 
 ## Next steps
 
-1. Test the riskiest assumption first (ASSUMPTION (proposed by qwen3:4b; not evidence)): Remote engineers and product managers spend significant time reviewing missed Slack messages
-2. Decide before testing (proposed stop rule, ASSUMPTION (proposed by qwen3:4b; not evidence)): Stop if fewer than 3 of 10 interviewees reported spending more than 30 minutes per week reviewing missed Slack messages
+1. Test the riskiest assumption first (ASSUMPTION (proposed by qwen3:4b; not evidence)): Remote engineers and product managers on distributed teams miss important Slack messages in long threads
+2. Decide before testing (proposed stop rule, ASSUMPTION (proposed by qwen3:4b; not evidence)): Stop if fewer than 5 of 10 interviewees missed at least one important Slack message in the last week
 3. Ask 10 remote workers about Slack thread: Survey
-4. Check Slack usage patterns: Analyze Slack data from a small team
+4. Ask 5 remote engineers about Slack: Survey
 5. Problem interviews: Talk to people who match 'remote engineers and product managers on distributed teams' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.
 
 No recommendation here guarantees customers or income.

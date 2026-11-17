@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 
 from builder_models import check_content
 
+UNSOURCED_QUANTITY = re.compile(r"\d+(\.\d+)?\s*(hours?|hrs?|minutes?|mins?|%|percent|x faster|times)", re.I)
 LEADING = re.compile(r"\b(would|wouldn't|will you|do you agree|love|amazing|our (app|product|tool))\b", re.I)
 PROMPT = Path(__file__).resolve().parent.parent / "prompts" / "advisor.md"
 
@@ -74,6 +75,9 @@ def sanitize(raw: Advice, known_ids: set[str], model: str) -> dict[str, Any]:
     dropped: list[str] = []
 
     def keep(field: str, text: str) -> str | None:
+        if field in ("value_proposition", "key_metric", "pricing_rationale", "price_anchor") and                 UNSOURCED_QUANTITY.search(text):
+            dropped.append(f"{field} (unsourced time or percentage claim)")
+            return None
         if _ok(text):
             return text.strip()
         dropped.append(field)

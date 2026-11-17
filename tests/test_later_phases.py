@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from gates import RULESET_VERSION
+
 import workflow
 from agents.commercial import pricing_hypotheses, policy_drafts
 from agents.launcher import launch_posts, store_page_html
@@ -32,7 +34,7 @@ BRIEF = {"idea": "A browser extension that summarises long chat threads a remote
 def make_run(tmp_path: Path, decision="REPEAT") -> Path:
     run = tmp_path / "run"
     run.mkdir()
-    gate = {"run_id": "run-synthetic", "decision": decision, "rule": f"{decision}_SYNTHETIC",
+    gate = {"run_id": "run-synthetic", "decision": decision, "rule": f"{decision}_SYNTHETIC", "ruleset_version": RULESET_VERSION,
             "counterfactual": {"experiments": [{"name": "Problem interviews", "method": "Talk to 10 people",
                                                 "support_if": "x", "weaken_if": "y"}]}}
     (run / "phase1_gate_decision.json").write_text(json.dumps(gate))
@@ -63,7 +65,8 @@ class CLI:
     def approve(self, monkeypatch, action, digest, typed=None, reject=False):
         word = "REJECT" if reject else "APPROVE"
         monkeypatch.setattr("sys.stdin", io.StringIO((typed or f"{word} {action}") + "\n"))
-        return workflow.main(self.base + ["approve", action, digest, "--reason", "SIMULATED test decision"]
+        return workflow.main(self.base + ["approve", "--run", str(self.run), action, digest,
+                                          "--reason", "SIMULATED test decision"]
                              + (["--reject"] if reject else []))
 
     def sha(self, name):
@@ -436,3 +439,35 @@ def test_no_source_file_contains_control_characters():
     root = Path(__file__).resolve().parent.parent
     for path in list(root.glob("*.py")) + list(root.glob("agents/*.py")) + list(root.glob("app/*.py")):
         assert b"\x08" not in path.read_bytes(), path
+
+
+def test_superseded_decisions_unlock_nothing(tmp_path, monkeypatch):
+    run = make_run(tmp_path, "GO")
+    gate = json.loads((run / "phase1_gate_decision.json").read_text())
+    gate.pop("ruleset_version")                     # decided under older gate rules
+    (run / "phase1_gate_decision.json").write_text(json.dumps(gate))
+    cli = CLI(tmp_path, run)
+    assert cli("plan") == 3 and not (cli.out / "phase2_step2_lean-canvas.md").exists()
+    assert any("superseded" in e["outcome"] for e in cli.log())
+
+
+def test_advisor_refuses_invented_time_savings():
+    from agents.advisor import sanitize, Advice
+    reply = dict(ADVICE_REPLY, pricing_rationale="It saves 8 hours per week, worth 40%",
+                 key_metric="Share of interviewees with a recent occurrence")
+    a = sanitize(Advice.model_validate(reply), set(), "m")
+    assert a["pricing_rationale"] is None and a["key_metric"]
+    assert any("unsourced" in d for d in a["dropped"])
+
+
+def test_approvals_are_bound_to_the_run(tmp_path, monkeypatch):
+    """An approval for identical bytes in another run authorizes nothing here."""
+    first = CLI(tmp_path / "a", make_run((tmp_path / "a").mkdir() or tmp_path / "a"))
+    assert full_flow(first, monkeypatch) == 0
+    other_root = tmp_path / "b"
+    other_root.mkdir()
+    run_b = make_run(other_root)
+    gate = json.loads((run_b / "phase1_gate_decision.json").read_text())
+    (run_b / "phase1_gate_decision.json").write_text(json.dumps(dict(gate, run_id="run-other")))
+    second = CLI(tmp_path / "a", run_b)          # same state folder, same output files
+    assert second("plan") == 3                   # its rehearsal was never approved

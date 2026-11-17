@@ -20,4 +20,4 @@ A browser extension that summarises long Slack threads a remote team member miss
 ## Limits
 
 - Results can be wrong; the original source is always the reference.
-- Constraints honoured: Value: Respect privacy; Value: no dark patterns; Constraint: Messages are only read in workspaces that install the extension.
+- Constraints honoured: Value: Respect privacy, no dark patterns; Constraint: Messages are only read in workspaces that install the extension.

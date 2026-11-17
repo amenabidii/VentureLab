@@ -1,11 +1,11 @@
 # Phase 1, step 4: Opportunity scorecard
 
-Discover gate: **REPEAT** (run `run-64fdee373f244b81`). No option has established evidence; the ranking only orders what to test first.
+Discover gate: **REPEAT** (run `run-a9f21cd634924cca`). No option has established evidence; the ranking only orders what to test first.
 
 | # | Option | Origin | Evidence | Founder fit | Open risks | Score | Sources |
 |---|---|---|---|---|---|---|---|
 | 1 | A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message. | founder's idea (FOUNDER-STATED) | 1 | 2 | 2 | **1** | https://news.ycombinator.com/item?id=36434999, https://news.ycombinator.com/item?id=20896857, https://news.ycombinator.com/item?id=25056920 |
-| 2 | Remote teams might prefer a Slack integration over a browser extension to avoid disrupting their workflow. | raised by the Challenger (UNCONFIRMED (needs review)) | 1 | 1 | 2 | **0** | https://news.ycombinator.com/item?id=20896857 |
+| 2 | Remote teams might prefer solutions that reduce meeting time over summarizing Slack threads | raised by the Challenger (UNCONFIRMED (needs review)) | 1 | 1 | 2 | **0** | https://news.ycombinator.com/item?id=20896857 |
 | 3 | Status quo: target customers keep their current workaround | baseline | 0 | 0 | 0 | **0** | — |
 
 Test first: **A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.**

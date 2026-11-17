@@ -14,21 +14,21 @@
    "model": "Paid tier, monthly",
    "price_eur_per_month": 5,
    "label": "ASSUMPTION",
-   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): The price points are anchored to the time spent by remote engineers and product managers manually scanning Slack threads for missed messages, which is a common workaround for this problem. These prices are low enough to test willingness to pay without committing to a full product launch. Anchor: Current time spent manually scanning Slack threads for missed messages"
   },
   {
    "id": "pro-10",
    "model": "Paid tier, monthly",
    "price_eur_per_month": 10,
    "label": "ASSUMPTION",
-   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): The price points are anchored to the time spent by remote engineers and product managers manually scanning Slack threads for missed messages, which is a common workaround for this problem. These prices are low enough to test willingness to pay without committing to a full product launch. Anchor: Current time spent manually scanning Slack threads for missed messages"
   },
   {
-   "id": "pro-20",
+   "id": "pro-15",
    "model": "Paid tier, monthly",
-   "price_eur_per_month": 20,
+   "price_eur_per_month": 15,
    "label": "ASSUMPTION",
-   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): Anchor to the cost of manual message scanning in Slack (5 EUR) and third-party Slack apps (10-20 EUR) that users currently pay for Anchor: unknown"
+   "why": "ASSUMPTION (proposed by qwen3:4b; not evidence): The price points are anchored to the time spent by remote engineers and product managers manually scanning Slack threads for missed messages, which is a common workaround for this problem. These prices are low enough to test willingness to pay without committing to a full product launch. Anchor: Current time spent manually scanning Slack threads for missed messages"
   }
  ],
  "evidence": "None. Willingness to pay has not been measured (Lean Canvas: revenue streams UNKNOWN).",

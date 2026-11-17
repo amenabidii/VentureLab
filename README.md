@@ -25,8 +25,10 @@ written only after the founder approves the exact artifact.
 
 Founder control is enforced in code: nothing is written, published or delivered without
 an approval bound to the exact file's SHA-256, and STOP blocks everything downstream.
-Latest genuine run: a new brief (missed Slack threads) ended **REPEAT** at the Discover
-gate; with the founder's approval, phases 2–6 then ran as a labelled **REHEARSAL**
+Latest genuine run (`run-a9f21cd634924cca`, current gate rules): a brief about missed Slack
+threads ended **REPEAT** at the Discover gate; with the founder's approvals (bound to that run),
+the local model proposed idea-specific channels, prices, interview questions and a stop rule,
+and phases 2–6 ran as a labelled **REHEARSAL**
 (`outputs/phase1_step4_*` … `outputs/phase6_*`, `outputs/payment_test_log.md`: 8/8
 sale-to-cash checks passed), and the Phase 6 memo recommends **REPEAT**, not launch.
 

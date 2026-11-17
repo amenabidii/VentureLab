@@ -1,5 +1,5 @@
 {
- "run_id": "run-64fdee373f244b81",
+ "run_id": "run-a9f21cd634924cca",
  "phase": 2,
  "decision": "REVIEW",
  "checks": [
@@ -9,7 +9,7 @@
   },
   {
    "check": "revenue streams evidenced",
-   "passed": false
+   "passed": true
   }
  ],
  "founder_approvals": [],

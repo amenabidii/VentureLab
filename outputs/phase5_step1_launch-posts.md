@@ -16,8 +16,8 @@ Status: DRAFT, not posted. Posting needs founder approval and is MOCKED in this 
 
 ## Where to post first (ASSUMPTION (proposed by qwen3:4b; not evidence))
 
-- **r/remoteengineering**: Active community of remote engineers who use Slack daily and have experienced message overload
-- **Slack Dev Community**: Dedicated Slack ecosystem users who discuss tooling and workflow improvements
-- **Product Manager Slack**: Specialized group for product managers on distributed teams who face similar communication challenges
+- **r/remoteengineering**: Active community of remote engineers discussing Slack workflow challenges
+- **Slack channel #product-managers**: Dedicated Slack space for product managers to share workflow tips and pain points
+- **The Remote Work newsletter**: Monthly email for remote software teams on communication tools and productivity
 
-Angle to lead with: Focus on reducing time spent reviewing missed Slack messages for remote engineers and product managers
+Angle to lead with: Focus on the immediate problem of missed messages in Slack threads for remote teams
