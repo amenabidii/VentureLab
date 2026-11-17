@@ -58,11 +58,16 @@ class CLI:
         self.base = ["--out", str(tmp_path / "out"), "--log", str(tmp_path / "log.json"),
                      "--state", str(tmp_path / "state")]
         self.run, self.out, self.tmp = run, tmp_path / "out", tmp_path
+        self.store = workflow.ApprovalStore(tmp_path / "state" / "approvals.sqlite3",
+                                            Path(workflow.get_settings().output_dir) / "builder")
 
     def __call__(self, cmd):
-        return workflow.main(self.base + [cmd, "--run", str(self.run)])
+        from unittest.mock import patch
+        with patch("workflow.getpass", return_value=self.store.founder_path.read_text()):
+            return workflow.main(self.base + [cmd, "--run", str(self.run)])
 
     def approve(self, monkeypatch, action, digest, typed=None, reject=False):
+        monkeypatch.setattr(workflow, "getpass", lambda _: self.store.founder_path.read_text())
         word = "REJECT" if reject else "APPROVE"
         monkeypatch.setattr("sys.stdin", io.StringIO((typed or f"{word} {action}") + "\n"))
         return workflow.main(self.base + ["approve", "--run", str(self.run), action, digest,
@@ -207,10 +212,11 @@ def test_editing_the_store_page_after_approval_invalidates_it(tmp_path, monkeypa
 def test_hand_edited_approval_record_fails_verification(tmp_path, monkeypatch):
     cli = CLI(tmp_path, make_run(tmp_path))
     cli.approve(monkeypatch, "rehearse_after_repeat", cli.gate_sha(), reject=True)
-    records = json.loads((tmp_path / "state" / "workflow_approvals.json").read_text())
-    records[-1]["decision"] = "approve"       # forge: flip the founder's rejection
-    (tmp_path / "state" / "workflow_approvals.json").write_text(json.dumps(records))
+    import sqlite3
+    with sqlite3.connect(cli.store.database) as db:
+        db.execute("UPDATE audit SET event='{}' WHERE sequence=(SELECT MAX(sequence) FROM audit)")
     assert cli("plan") == 3
+
 
 
 def test_approval_needs_the_typed_confirmation(tmp_path, monkeypatch):
@@ -427,6 +433,16 @@ def test_rerunning_plan_keeps_the_commercial_gate_consistent_with_approvals(tmp_
     assert full_flow(cli, monkeypatch) == 0
     assert cli("plan") == 0
     assert json.loads((cli.out / "phase4_gate_commercial.json").read_text())["decision"] == "REHEARSAL GO"
+
+
+def test_repeated_launch_replays_without_rewriting_or_delivering(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path))
+    assert full_flow(cli, monkeypatch) == 0
+    before = {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in cli.out.iterdir()}
+    monkeypatch.setattr(workflow, "MockPaymentProvider", lambda: pytest.fail("must not deliver again"))
+    assert cli("launch") == 0
+    assert before == {p.name: (p.read_bytes(), p.stat().st_mtime_ns) for p in cli.out.iterdir()}
+    assert any(e["action"] == "workflow_replay" for e in cli.log())
 
 
 @pytest.mark.parametrize("decision,expected", [("GO", "PERSEVERE"), ("STOP", "PIVOT OR STOP"), ("REPEAT", "REPEAT")])

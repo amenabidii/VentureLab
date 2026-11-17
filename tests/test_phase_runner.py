@@ -48,13 +48,13 @@ def approve_all(client, svc, key):
 def test_full_web_flow_with_founder_key(web):
     client, svc = web
     key = svc.approvals.founder_path.read_text()
-    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN).text  # rehearsal first
+    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text  # rehearsal first
     approve_all(client, svc, key)
-    assert "plan finished" in client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN).text
+    assert "plan finished" in client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text
     approve_all(client, svc, key)
-    assert "prepare-launch finished" in client.post(f"/phases/run/{RUN}/step/prepare-launch", headers=ORIGIN).text
+    assert "prepare-launch finished" in client.post(f"/phases/run/{RUN}/step/prepare-launch", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text
     approve_all(client, svc, key)
-    done = client.post(f"/phases/run/{RUN}/step/launch", headers=ORIGIN).text
+    done = client.post(f"/phases/run/{RUN}/step/launch", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text
     assert "Sale-to-cash checks passed: True" in done
     out = svc.runs_root.parent / "phases" / RUN
     assert (out / "payment_test_log.md").exists() and (out / "phase6_step3_persevere-or-pivot-memo.md").exists()
@@ -72,14 +72,14 @@ def test_wrong_key_and_cross_site_requests_are_refused(web):
     assert client.post(f"/phases/run/{RUN}/approve", data=dict(data, founder_key=key), headers=evil).status_code == 403
     assert client.post(f"/phases/run/{RUN}/step/plan", headers=evil).status_code == 403
     assert client.post(f"/phases/run/{RUN}/approve", data=dict(data, founder_key=key)).status_code == 403  # no origin
-    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN).text
+    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text
 
 
 def test_approval_for_a_changed_file_is_refused(web):
     client, svc = web
     key = svc.approvals.founder_path.read_text()
     approve_all(client, svc, key)
-    client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN)
+    client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN)
     page = client.get(f"/phases/run/{RUN}").text
     old = re.search(r"value='set_price'>\s*<input type='hidden' name='sha256' value='([0-9a-f]{64})'", page).group(1)
     pricing = svc.runs_root.parent / "phases" / RUN / "phase4_step1_pricing.json"
@@ -101,10 +101,19 @@ def test_stop_run_disables_steps(web):
     gate.write_text(json.dumps(dict(json.loads(gate.read_text()), decision="STOP", rule="STOP_PROHIBITED_CATEGORY")))
     page = client.get(f"/phases/run/{RUN}").text
     assert "phases 2–6 are blocked" in page and "<button disabled>" in page
-    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN).text
+    assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": svc.approvals.founder_path.read_text()}, headers=ORIGIN).text
 
 
 def test_form_pages_send_their_origin_and_null_origin_is_refused(web):
     client, _ = web
     assert client.get(f"/phases/run/{RUN}").headers["referrer-policy"] == "same-origin"
     assert client.post(f"/phases/run/{RUN}/step/plan", headers={"origin": "null"}).status_code == 403
+
+
+@pytest.mark.parametrize("key", ["", "wrong"])
+def test_execution_requires_founder_capability_even_with_same_origin(web, key):
+    client, svc = web
+    response = client.post(f"/phases/run/{RUN}/step/plan", data={"founder_key": key}, headers=ORIGIN)
+    assert response.status_code == 403
+    assert not (svc.runs_root.parent / "phases" / RUN / "phase2_step2_lean-canvas.json").exists()
+    assert svc.approvals.audit_events()[-1]["approved_by"] is None

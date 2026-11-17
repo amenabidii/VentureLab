@@ -57,5 +57,9 @@ docs/benchmarks.json
 
 # Local Builder approval state and independent run artifacts
 .venturelab/
+*.founder
+*.key
+*.sqlite3
+*.sqlite3-*
 outputs/*/
 !outputs/venturelab-m3/

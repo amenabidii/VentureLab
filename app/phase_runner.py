@@ -21,9 +21,10 @@ from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
+from starlette.concurrency import run_in_threadpool
 
 import workflow
-from app.api import Services, services
+from app.api import Services, services, mirror_builder_events
 from app.phases import HEADERS, NAME
 
 router = APIRouter()
@@ -50,7 +51,7 @@ def _ctx(svc: Services, run_id: str) -> workflow.Context:
         raise HTTPException(404, "This run has no Discover gate decision yet")
     out = svc.runs_root.parent / "phases" / run_id
     # The state folder is wherever the app keeps its approval store (same founder key, same root).
-    return workflow.Context(run_dir, out, svc.log_path, Path(svc.approvals.database).parent)
+    return workflow.Context(run_dir, out, svc.log_path, Path(svc.approvals.database).parent, store=svc.approvals)
 
 
 def pending(ctx: workflow.Context) -> list[dict[str, Any]]:
@@ -98,7 +99,7 @@ def _page(ctx: workflow.Context, message: str = "") -> HTMLResponse:
         forms.append(
             f"<form method='post' action='/phases/run/{rid}/approve' class='card'>"
             f"<p><b>{escape(item['what'])}</b>{view}<br><small>Action <code>{escape(item['action'])}</code> · "
-            f"fingerprint <code>{escape(item['sha'][:16])}…</code></small></p>"
+            f"fingerprint <code>{escape(item['sha'])}</code></small></p>"
             f"<input type='hidden' name='action' value='{escape(item['action'])}'>"
             f"<input type='hidden' name='sha256' value='{escape(item['sha'])}'>{choice}"
             f"<label>Founder key <input type='password' name='founder_key' required autocomplete='off'></label>"
@@ -107,7 +108,7 @@ def _page(ctx: workflow.Context, message: str = "") -> HTMLResponse:
             f"<button name='decision' value='reject'>Reject</button></form>")
     blocked = ("Discover decided STOP: phases 2–6 are blocked." if ctx.decision == "STOP" else
                "This decision was made by superseded gate rules: re-run Discover to continue." if ctx.superseded else "")
-    steps = "".join(f"<form method='post' action='/phases/run/{rid}/step/{s}'><button {'disabled' if blocked else ''}>"
+    steps = "".join(f"<form method='post' action='/phases/run/{rid}/step/{s}'><label>Founder key <input type='password' name='founder_key' required autocomplete='off'></label><button {'disabled' if blocked else ''}>"
                     f"{escape(label)}</button></form>" for s, label in STEPS)
     body = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Phases 2–6 · {rid}</title>
@@ -133,14 +134,22 @@ def run_page(run_id: str, svc: Services = Depends(services)) -> HTMLResponse:
 
 
 @router.post("/phases/run/{run_id}/step/{step}", response_class=HTMLResponse, include_in_schema=False)
-def run_step(run_id: str, step: str, request: Request, svc: Services = Depends(services)) -> HTMLResponse:
+async def run_step(run_id: str, step: str, request: Request, svc: Services = Depends(services)) -> HTMLResponse:
     _same_origin(request)
+    form = await _form(request)
+    token = form.get("founder_key", "").strip().encode("ascii", "replace")
+    if not svc.approvals.verify_founder(token):
+        from approval import ApprovalError
+        svc.approvals.record_failure("workflow_authentication", ApprovalError("Unauthorized"))
+        mirror_builder_events(svc, None)
+        raise HTTPException(403, "Founder key missing or wrong")
     ctx = _ctx(svc, run_id)
+    ctx.approvals.token = token
     fn = {"plan": workflow.plan, "prepare-launch": workflow.prepare_launch, "launch": workflow.launch}.get(step)
     if fn is None:
         raise HTTPException(404, "Unknown step")
     try:
-        result = fn(ctx)
+        result = await run_in_threadpool(fn, ctx)
         extra = f" Sale-to-cash checks passed: {result['payment_tests_passed']}; memo: {result['memo']}." \
             if isinstance(result, dict) else ""
         message = f"{step} finished.{extra}"
@@ -149,6 +158,7 @@ def run_step(run_id: str, step: str, request: Request, svc: Services = Depends(s
     except ValueError as exc:  # content rules refused a draft: explain, never a 500
         ctx.rec(3, "content_rule_block", str(exc))
         message = f"Blocked by the content rules: {exc}. Nothing more was written for this step."
+    ctx.approvals.mirror()
     return _page(ctx, message)
 
 
@@ -174,6 +184,9 @@ async def run_approve(run_id: str, request: Request, svc: Services = Depends(ser
     if decision not in ("approve", "reject") or not re.fullmatch(r"[0-9a-f]{64}", sha256):
         raise HTTPException(422, "Invalid decision")
     if not svc.approvals.verify_founder(founder_key.strip().encode("ascii", "replace")):
+        from approval import ApprovalError
+        svc.approvals.record_failure("workflow_authentication", ApprovalError("Unauthorized"))
+        mirror_builder_events(svc, None)
         ctx.log.record("approval", "founder_decision_refused", model=None, cost=0, approved_by=None,
                        outcome="refused: founder key missing or wrong", action_requested=action)
         return _page(ctx, "Refused: the founder key is missing or wrong. Nothing was approved.")
@@ -185,6 +198,7 @@ async def run_approve(run_id: str, request: Request, svc: Services = Depends(ser
         if option not in {v for v, _ in allowed[action]["choices"]}:
             return _page(ctx, "Refused: choose one of the listed price options.")
         full = f"set_price:{option}"
+    ctx.approvals.token = founder_key.strip().encode("ascii", "replace")
     ctx.approvals.record(full, sha256, decision, reason.strip() or "[No reason provided]")
     ctx.log.record("approval", f"founder_{decision}", model=None, cost=0,
                    approved_by="founder" if decision == "approve" else None, outcome=f"{decision}: {full}",

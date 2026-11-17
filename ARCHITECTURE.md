@@ -312,6 +312,21 @@ Application tests in this repository test VentureLab, not an automatically built
 
 ## Gates
 
+Builder and phases 2–6 share `approval.py:ApprovalStore`. Workflow decisions and
+launch claims live in its HMAC-chained SQLite audit, with `BEGIN IMMEDIATE` claims,
+exact action/run/file/SHA-256 binding, founder authentication for approve and
+execute, and persisted idempotent launch results. Pending and execution approvals
+expire after two hours; approved price and rehearsal choices persist only while
+their bound artifact is unchanged and no newer request supersedes them. Failed or
+interrupted launch attempts remain consumed. Legacy JSON approvals are inert;
+the founder may explicitly preview and apply a verified one-time import.
+See [approval semantics and migration](docs/approval-migration.md).
+
+The trust boundary is the local OS account and its key files: this detects
+unauthorized edits by processes/users without the key, not a fully privileged
+local attacker holding it or rolling back all trusted state. The JSON decision log
+is a display mirror; the authenticated SQLite journal governs authorization.
+
 Every phase ends in a gate: a founder approval, a threshold set in advance, or passing tests.
 Each phase gate file records an `outcome` (GO, REPEAT, PIVOT or STOP; none while it waits
 for the founder) and a `launch_recommendation`. Normal progression to phases 3–6 needs Discover GO **and** a passed Phase 2 validation gate;
