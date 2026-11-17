@@ -69,7 +69,11 @@ No research, gate or approval logic is duplicated: the API calls the existing mo
 
 - `docker compose up`, then open `http://localhost:8000`. The app container bind-mounts
   `.venturelab/` (run records, approval store, founder key), `outputs/` and
-  `decision_log.json`, so state survives container restarts.
+  `decision_log.json`, so state survives container restarts. `docker-entrypoint.sh`
+  starts as root only to create `.venturelab/` (Docker creates a missing bind-mount
+  source as root on Linux) and hand it to the runtime user, then drops privileges to
+  the owner of the mounted `outputs/` (UID 1000 when the mount reports root). See
+  [submission-compliance.md](submission-compliance.md#reproducibility-as-actually-run).
 - Background jobs: one worker thread, at most `VENTURELAB_MAX_QUEUED_RUNS` (3) runs queued
   or running. States: queued, running, completed, failed, blocked. Run records are durable
   in SQLite; the queue is in memory, so a run interrupted by a restart is marked failed
@@ -185,6 +189,6 @@ survived an application restart.
   reached GO.
 - The job queue is in memory; interrupted runs are reported, not resumed.
 - One founder, one machine: the founder key is a local capability, not an account system.
-- Bind mounts assume Docker Desktop on Windows or macOS; on Linux the container user (uid
-  1000) must be able to write the mounted folders.
+- Bind mounts were verified on Docker Desktop for Windows and with Linux bind-mount
+  semantics (checkouts owned by UID 0, 1000 and 1001); a physical Linux host was not used.
 - Validate-phase results entry, Commercial Setup, Launch and Operate & Learn remain STUBBED.

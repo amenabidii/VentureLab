@@ -31,6 +31,12 @@ Then open <http://localhost:8000>. The first start also runs a one-shot `model-p
 service that downloads the configured model (`qwen3:4b`, about 2.5 GB); until it
 finishes the header says the model is not ready and `/health/model` returns HTTP 503.
 
+State is kept in the checkout and survives restarts: `.venturelab/` (run records,
+approval store, founder key; created on first start), `outputs/` and
+`decision_log.json`. This works on Docker Desktop (Windows, macOS) and on Linux without
+manual permission changes: the container starts as root only to prepare these folders,
+then runs the app as the owner of your checkout (never as root).
+
 1. **Founder brief**: fill in the form, review it and submit. The backend validates it
    (errors appear next to the fields) and starts a real analysis in the background.
 2. **Agent workflow**: statuses come from the backend's progress records and refresh

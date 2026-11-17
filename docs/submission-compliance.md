@@ -80,6 +80,19 @@ Existing tests already cover these, so they were not duplicated here.
   here; recorded live runs (103–182 s each with `qwen3:4b`) are in `decision_log.json`.
 - **Merge rehearsal** of all branches: see
   [integration-handoff.md](integration-handoff.md).
+- **Persistent state from an empty checkout** (2026-11-17, after the integration was
+  merged): the app container starts as root only to prepare `.venturelab/`, then runs as
+  the owner of the mounted `outputs/` folder (UID 1000 when the mount reports root),
+  never as root. Isolated Compose projects with no `.venturelab/` were tested on Docker
+  Desktop for Windows (real relative bind mounts) and with Linux bind-mount semantics
+  (folders inside Docker Desktop's Linux VM, where Docker creates a missing mount source
+  as root) for checkouts owned by UID 0, 1000 and 1001. In every case: the app became
+  healthy; a run record and its outputs were written; the approval store and founder
+  key were created; execution with a wrong key or before approval was refused; a
+  SIMULATED approval on a synthetic fixture wrote the files once; run state survived a
+  container restart; and a replay after the restart was refused. Before the fix, the
+  Linux case crash-looped with `sqlite3.OperationalError: unable to open database file`.
+  The Docker layer cache was warm and no model was pulled in these tests.
 
 ## Contradictions found and how they were handled
 
@@ -97,6 +110,8 @@ Existing tests already cover these, so they were not duplicated here.
 2. No real run has produced GO or an evidence-based STOP; REPEAT and a category STOP are
    demonstrated live, GO and PIVOT only with constructed test fixtures. The landing page
    is therefore exercised only by tests.
-3. A cold, clean-clone build of the integrated tree (no Docker cache, fresh model pull)
-   has not been repeated.
-4. The integration branch is not merged into `main`; the submission is read from `main`.
+3. Startup from an empty checkout is verified (see above), but a fully cold build (no
+   Docker layer cache) with a fresh model pull has not been repeated.
+
+The integration is merged: on 2026-11-17 `main` and `integration/venturelab-complete`
+both pointed to `ac59e35`, and the submission is read from `main`.
