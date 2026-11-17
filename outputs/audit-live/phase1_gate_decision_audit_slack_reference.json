@@ -1,0 +1,205 @@
+{
+ "run_id": "run-2026-11-17T14:47:40Z-c9deba",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "gate": "phase1_evidence_gate",
+ "decision": "REPEAT",
+ "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+ "rule_meaning": "Nothing contradicts the idea strongly enough to stop or pivot, but there is not enough established, relevant evidence to go on.",
+ "checks": [
+  {
+   "rule": "STOP_PROHIBITED_CATEGORY",
+   "applies": false,
+   "inputs": {
+    "matches": {}
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_FAILED_VALIDATION_CONDITION",
+   "applies": false,
+   "inputs": {
+    "failed": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_CONTRADICTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 0,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "PIVOT_ALTERNATIVE_SUPPORTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 0,
+    "alternatives": 0,
+    "alternative_findings": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_MIXED_EVIDENCE",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 0,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_NO_READABLE_SOURCES",
+   "applies": false,
+   "inputs": {
+    "sources_total": 3,
+    "sources_readable": 2,
+    "sources_analysed": 1
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_CLARIFY_AVAILABILITY",
+   "applies": false,
+   "inputs": {
+    "hours_per_week": 8.0
+   },
+   "decided": false
+  },
+  {
+   "rule": "GO_TO_FURTHER_VALIDATION",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 0,
+    "alternatives": 0,
+    "not_counted": {
+     "needs_review": 2,
+     "partial": 1,
+     "off_topic": 1,
+     "assumptions": 0
+    }
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+   "applies": true,
+   "inputs": {},
+   "decided": true
+  }
+ ],
+ "evidence": {
+  "sources_total": 3,
+  "sources_readable": 2,
+  "sources_analysed": 1,
+  "supporting": [],
+  "supporting_sources": [],
+  "corroborating_checks": [],
+  "corroborating_sources": [],
+  "support_sources": [],
+  "alternatives": [],
+  "contradicting_checks": [],
+  "contradicting_sources": [],
+  "unsupported_checks": [
+   "H2"
+  ],
+  "needs_review": [
+   "F1",
+   "F4"
+  ],
+  "partial": [
+   "F2"
+  ],
+  "off_topic": [
+   "F3"
+  ],
+  "assumptions": [],
+  "established_other": [],
+  "demand_signals": [
+   "F4"
+  ]
+ },
+ "failed_conditions": [],
+ "unmeasured_conditions": [],
+ "feasibility_notes": [],
+ "thresholds": {
+  "min_supporting_findings": 2,
+  "min_supporting_sources": 2,
+  "min_contradicting_sources_for_stop": 2,
+  "low_availability_hours": 2.0
+ },
+ "counterfactual": {
+  "decision": "REPEAT",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing_evidence": [
+   "Independent sources supporting the problem statement: 0 of 2 needed (0 established findings, 0 people describing it in their own words).",
+   "2 needs-review and 1 partial findings do not count. A person may check them against their quotes; they never count automatically.",
+   "1 findings were off-topic for this brief and were not counted.",
+   "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
+   "Validation conditions: none set. Set pass marks before running any experiment."
+  ],
+  "alternative_hypothesis": null,
+  "feasibility_notes": [],
+  "experiments": [
+   {
+    "assumption": "A1",
+    "name": "Test Slack thread summarization",
+    "method": "Ask 5 remote workers to summarize a missed Slack thread in 5 minutes",
+    "support_if": "They complete it in under 5 minutes",
+    "weaken_if": "They take more than 10 minutes",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "assumption": "A2",
+    "name": "Identify target users",
+    "method": "Survey 20 remote software teams about their Slack thread habits",
+    "support_if": "At least 70% report missing important messages in Slack threads",
+    "weaken_if": "Less than 30% report missing messages",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "name": "Problem interviews",
+    "assumption": "A1",
+    "method": "Talk to people who match 'remote engineers and product managers on distributed teams' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.",
+    "support_if": "Most interviewees describe a recent, specific occurrence without being prompted. Write down the pass mark before you start, as a validation condition in the brief.",
+    "weaken_if": "Most cannot recall a recent occurrence, or say it is minor or already solved.",
+    "origin": "default"
+   },
+   {
+    "name": "Wider desk research",
+    "assumption": "A1",
+    "method": "Re-run the investigation with public pages where target customers discuss the problem (forums, communities, reviews of existing tools), added as source URLs in the brief.",
+    "support_if": "Several different people describe the problem in their own words; these become established, relevant findings.",
+    "weaken_if": "Relevant sources exist but people describe the problem as rare, minor or solved.",
+    "origin": "default"
+   }
+  ],
+  "reconsidered_by": "phase1_evidence_gate (run again with the new evidence)",
+  "no_guarantee": "New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income."
+ },
+ "timings_s": {
+  "model_load": 0.0,
+  "investigator": 118.1,
+  "challenger": 85.9,
+  "total": 204.2
+ },
+ "model_calls": 6,
+ "model_seconds": 201.6
+}

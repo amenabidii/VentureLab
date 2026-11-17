@@ -1,0 +1,240 @@
+{
+ "run_id": "run-2026-11-17T14:54:43Z-a30ff4",
+ "model": "qwen3:4b",
+ "assumptions": [
+  {
+   "id": "A1",
+   "field": "problem_statement",
+   "text": "Small restaurant managers waste time coordinating staff shift swaps through group chats.",
+   "stated": true,
+   "related_findings": [
+    "F1",
+    "F3",
+    "H1",
+    "H2"
+   ]
+  },
+  {
+   "id": "A2",
+   "field": "target_customer",
+   "text": "managers of small independent restaurants have this problem.",
+   "stated": true,
+   "related_findings": [
+    "H1",
+    "H2"
+   ]
+  },
+  {
+   "id": "A3",
+   "field": "idea",
+   "text": "This solves it: A simple web app for small restaurants to post, swap and approve staff shifts instead of using group chats.",
+   "stated": true,
+   "related_findings": [
+    "F1",
+    "F3",
+    "F4",
+    "H1",
+    "H2"
+   ]
+  },
+  {
+   "id": "A4",
+   "field": "market",
+   "text": "These customers can be reached in: online, English-speaking small businesses.",
+   "stated": true,
+   "related_findings": [
+    "F1"
+   ]
+  },
+  {
+   "id": "A5",
+   "field": "feasibility",
+   "text": "The founder can build and test it with: Python, web development; 10 hours a week; 200 EUR.",
+   "stated": true,
+   "related_findings": []
+  },
+  {
+   "id": "A6",
+   "field": "willingness_to_pay",
+   "text": "Enough of these customers would pay for it.",
+   "stated": false,
+   "related_findings": []
+  }
+ ],
+ "reviews": [
+  {
+   "assumption": "A1",
+   "assumption_text": "Small restaurant managers waste time coordinating staff shift swaps through group chats.",
+   "stated": true,
+   "stance": "untested",
+   "model_stance": "supported",
+   "reason": "H1 and H2 both state that small restaurant managers waste time coordinating staff shift swaps through group ch",
+   "reason_is_advisory": true,
+   "evidence": [
+    "H1",
+    "H2"
+   ],
+   "links": [
+    {
+     "finding": "H1",
+     "relationship": "indirect",
+     "why": "a check of the founder's statement that is unsupported, not established"
+    },
+    {
+     "finding": "H2",
+     "relationship": "indirect",
+     "why": "a check of the founder's statement that is unsupported, not established"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
+   "sources": [
+    "https://news.ycombinator.com/item?id=29829125",
+    "https://news.ycombinator.com/item?id=9996454"
+   ]
+  },
+  {
+   "assumption": "A2",
+   "assumption_text": "managers of small independent restaurants have this problem.",
+   "stated": true,
+   "stance": "untested",
+   "model_stance": "untested",
+   "reason": "No findings directly address whether managers of small independent restaurants have this problem",
+   "reason_is_advisory": true,
+   "evidence": [],
+   "links": [],
+   "basis": "ASSUMPTION",
+   "sources": []
+  },
+  {
+   "assumption": "A3",
+   "assumption_text": "This solves it: A simple web app for small restaurants to post, swap and approve staff shifts instead of using group chats.",
+   "stated": true,
+   "stance": "weakened",
+   "model_stance": "weakened",
+   "reason": "F3 states that Crew costs nothing but allows users to post shift schedules and coordinate swaps, which is a 1:",
+   "reason_is_advisory": true,
+   "evidence": [
+    "F3"
+   ],
+   "links": [
+    {
+     "finding": "F3",
+     "relationship": "indirect",
+     "why": "related but needs_review"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
+   "sources": [
+    "https://news.ycombinator.com/item?id=9996454"
+   ]
+  },
+  {
+   "assumption": "A4",
+   "assumption_text": "These customers can be reached in: online, English-speaking small businesses.",
+   "stated": true,
+   "stance": "untested",
+   "model_stance": "untested",
+   "reason": "F1 only mentions one user's frustration but does not specify online or English-speaking small businesses",
+   "reason_is_advisory": true,
+   "evidence": [
+    "F1"
+   ],
+   "links": [
+    {
+     "finding": "F1",
+     "relationship": "indirect",
+     "why": "related but needs_review"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
+   "sources": [
+    "https://news.ycombinator.com/item?id=9996454"
+   ]
+  },
+  {
+   "assumption": "A5",
+   "assumption_text": "The founder can build and test it with: Python, web development; 10 hours a week; 200 EUR.",
+   "stated": true,
+   "stance": "untested",
+   "model_stance": null,
+   "reason_is_advisory": true,
+   "reason": "no finding relates to it, so the Challenger did not review it",
+   "evidence": [],
+   "links": [],
+   "basis": "ASSUMPTION",
+   "sources": []
+  },
+  {
+   "assumption": "A6",
+   "assumption_text": "Enough of these customers would pay for it.",
+   "stated": false,
+   "stance": "untested",
+   "model_stance": "untested",
+   "reason": "No findings indicate whether enough customers would pay for this product",
+   "reason_is_advisory": true,
+   "evidence": [],
+   "links": [],
+   "basis": "ASSUMPTION",
+   "sources": []
+  }
+ ],
+ "new_hypotheses": [
+  {
+   "text": "Small restaurant managers might prefer using existing free tools like Crew over building a new app",
+   "raised_by": "challenger",
+   "evidence": [],
+   "basis": "ASSUMPTION",
+   "sources": []
+  }
+ ],
+ "risks": [
+  {
+   "assumption": "A3",
+   "kind": "market",
+   "text": "Crew is a free tool that already solves the problem, so customers might not need a new app",
+   "evidence": [],
+   "basis": "ASSUMPTION"
+  },
+  {
+   "assumption": "A6",
+   "kind": "market",
+   "text": "No evidence that customers would pay for a new solution when a free alternative exists",
+   "evidence": [],
+   "basis": "ASSUMPTION"
+  }
+ ],
+ "experiments": [
+  {
+   "assumption": "A3",
+   "name": "Test if customers prefer Crew over a new",
+   "method": "Ask 10 small restaurant managers if they would use Crew instead of building a new app",
+   "support_if": "More than 70% say they would use Crew",
+   "weaken_if": "More than 30% say they would build their own app",
+   "status": "proposed, not run"
+  },
+  {
+   "assumption": "A6",
+   "name": "Check willingness to pay",
+   "method": "Survey 20 small restaurant managers about their willingness to pay for a shift coordination tool",
+   "support_if": "At least 50% say they would pay 5 EUR/month",
+   "weaken_if": "Less than 20% say they would pay 5 EUR/month",
+   "status": "proposed, not run"
+  }
+ ],
+ "contradictions": [],
+ "removed": [
+  "A1: model said 'supported' but no cited finding can support it: H1 a check of the founder's statement that is unsupported, not established; H2 a check of the founder's statement that is unsupported, not established; stance set to 'untested'"
+ ],
+ "calls": [
+  {
+   "action": "challenge_assumptions",
+   "wall_s": 104.4,
+   "prompt_tokens": 874,
+   "output_tokens": 533
+  }
+ ],
+ "status": "ok",
+ "error": "",
+ "grounded_reviews": 3,
+ "elapsed_s": 104.4
+}

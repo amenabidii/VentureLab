@@ -88,9 +88,12 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 Recorded genuine runs of the integrated application are in [`decision_log.json`](decision_log.json)
 and `outputs/runs/`: a new brief (summaries of missed Slack threads) ended in **REPEAT**
 in 174 s, and a prohibited brief ended in **STOP**. The founder approved the resulting
-validation kit, which was written to `outputs/builder/`. Earlier command-line runs are in
-`outputs/phase1_*` with their log archived in `docs/history/`. No real run has reached
-GO yet; that is a result, not a fault.
+validation kit, which was written to `outputs/builder/`. Six further live runs on
+unfamiliar briefs ([docs/evaluation-runs.md](docs/evaluation-runs.md)) gave **GO** for one
+idea (accessible PDFs: two commenters describing the problem in their own words, each
+confirmed by a second check), once from the command line and once through the web
+workspace, and **REPEAT** for four others. Earlier command-line runs are in
+`outputs/phase1_*` with their log archived in `docs/history/`.
 
 ## Architecture
 

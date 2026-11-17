@@ -1,0 +1,205 @@
+{
+ "run_id": "run-2026-11-17T15:02:08Z-41e514",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "gate": "phase1_evidence_gate",
+ "decision": "REPEAT",
+ "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+ "rule_meaning": "Nothing contradicts the idea strongly enough to stop or pivot, but there is not enough established, relevant evidence to go on.",
+ "checks": [
+  {
+   "rule": "STOP_PROHIBITED_CATEGORY",
+   "applies": false,
+   "inputs": {
+    "matches": {}
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_FAILED_VALIDATION_CONDITION",
+   "applies": false,
+   "inputs": {
+    "failed": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_CONTRADICTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 1,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "PIVOT_ALTERNATIVE_SUPPORTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 1,
+    "alternatives": 0,
+    "alternative_findings": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_MIXED_EVIDENCE",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 1,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_NO_READABLE_SOURCES",
+   "applies": false,
+   "inputs": {
+    "sources_total": 3,
+    "sources_readable": 3,
+    "sources_analysed": 1
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_CLARIFY_AVAILABILITY",
+   "applies": false,
+   "inputs": {
+    "hours_per_week": 10.0
+   },
+   "decided": false
+  },
+  {
+   "rule": "GO_TO_FURTHER_VALIDATION",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 0,
+    "supporting_sources": 0,
+    "contradicting_sources": 1,
+    "alternatives": 0,
+    "not_counted": {
+     "needs_review": 3,
+     "partial": 0,
+     "off_topic": 0,
+     "assumptions": 0
+    }
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+   "applies": true,
+   "inputs": {},
+   "decided": true
+  }
+ ],
+ "evidence": {
+  "sources_total": 3,
+  "sources_readable": 3,
+  "sources_analysed": 1,
+  "supporting": [],
+  "supporting_sources": [],
+  "corroborating_checks": [],
+  "corroborating_sources": [],
+  "support_sources": [],
+  "alternatives": [],
+  "contradicting_checks": [
+   "H3"
+  ],
+  "contradicting_sources": [
+   "https://news.ycombinator.com/item?id=2138845"
+  ],
+  "unsupported_checks": [
+   "H4"
+  ],
+  "needs_review": [
+   "F1",
+   "F2",
+   "F3"
+  ],
+  "partial": [],
+  "off_topic": [],
+  "assumptions": [],
+  "established_other": [],
+  "demand_signals": [
+   "F3"
+  ]
+ },
+ "failed_conditions": [],
+ "unmeasured_conditions": [],
+ "feasibility_notes": [],
+ "thresholds": {
+  "min_supporting_findings": 2,
+  "min_supporting_sources": 2,
+  "min_contradicting_sources_for_stop": 2,
+  "low_availability_hours": 2.0
+ },
+ "counterfactual": {
+  "decision": "REPEAT",
+  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
+  "missing_evidence": [
+   "Independent sources supporting the problem statement: 0 of 2 needed (0 established findings, 0 people describing it in their own words).",
+   "3 needs-review and 0 partial findings do not count. A person may check them against their quotes; they never count automatically.",
+   "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
+   "Validation conditions: none set. Set pass marks before running any experiment."
+  ],
+  "alternative_hypothesis": null,
+  "feasibility_notes": [],
+  "experiments": [
+   {
+    "assumption": "A1",
+    "name": "Survey of freelance designers",
+    "method": "Ask 50 freelance designers about time spent on feedback collection",
+    "support_if": "More than 20% say they spend 2+ days on feedback collection",
+    "weaken_if": "More than 80% say they don't spend time on feedback collection",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "assumption": "A2",
+    "name": "Check segment size",
+    "method": "Find how many freelance designers work on projects requiring detailed specifications",
+    "support_if": "At least 500 designers work on such projects",
+    "weaken_if": "Fewer than 100 designers work on such projects",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "name": "Problem interviews",
+    "assumption": "A1",
+    "method": "Talk to people who match 'freelance graphic and web designers' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.",
+    "support_if": "Most interviewees describe a recent, specific occurrence without being prompted. Write down the pass mark before you start, as a validation condition in the brief.",
+    "weaken_if": "Most cannot recall a recent occurrence, or say it is minor or already solved.",
+    "origin": "default"
+   },
+   {
+    "name": "Wider desk research",
+    "assumption": "A1",
+    "method": "Re-run the investigation with public pages where target customers discuss the problem (forums, communities, reviews of existing tools), added as source URLs in the brief.",
+    "support_if": "Several different people describe the problem in their own words; these become established, relevant findings.",
+    "weaken_if": "Relevant sources exist but people describe the problem as rare, minor or solved.",
+    "origin": "default"
+   }
+  ],
+  "reconsidered_by": "phase1_evidence_gate (run again with the new evidence)",
+  "no_guarantee": "New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income."
+ },
+ "timings_s": {
+  "model_load": 0.0,
+  "investigator": 107.1,
+  "challenger": 108.5,
+  "total": 215.7
+ },
+ "model_calls": 7,
+ "model_seconds": 213.2
+}

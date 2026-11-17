@@ -1,0 +1,200 @@
+{
+ "run_id": "run-2026-11-17T14:57:58Z-6c4761",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "gate": "phase1_evidence_gate",
+ "decision": "GO",
+ "rule": "GO_TO_FURTHER_VALIDATION",
+ "rule_meaning": "At least 2 independent sources support the problem statement (established findings, or people describing it in their own verified words), and nothing contradicts it. This justifies experiments with customers; it is not proof of demand or of a market.",
+ "checks": [
+  {
+   "rule": "STOP_PROHIBITED_CATEGORY",
+   "applies": false,
+   "inputs": {
+    "matches": {}
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_FAILED_VALIDATION_CONDITION",
+   "applies": false,
+   "inputs": {
+    "failed": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "STOP_CONTRADICTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 2,
+    "supporting_sources": 2,
+    "contradicting_sources": 0,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "PIVOT_ALTERNATIVE_SUPPORTED",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 2,
+    "supporting_sources": 2,
+    "contradicting_sources": 0,
+    "alternatives": 0,
+    "alternative_findings": []
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_MIXED_EVIDENCE",
+   "applies": false,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 2,
+    "supporting_sources": 2,
+    "contradicting_sources": 0,
+    "alternatives": 0
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_NO_READABLE_SOURCES",
+   "applies": false,
+   "inputs": {
+    "sources_total": 3,
+    "sources_readable": 3,
+    "sources_analysed": 1
+   },
+   "decided": false
+  },
+  {
+   "rule": "REPEAT_CLARIFY_AVAILABILITY",
+   "applies": false,
+   "inputs": {
+    "hours_per_week": 10.0
+   },
+   "decided": false
+  },
+  {
+   "rule": "GO_TO_FURTHER_VALIDATION",
+   "applies": true,
+   "inputs": {
+    "supporting_findings": 0,
+    "corroborating_checks": 2,
+    "supporting_sources": 2,
+    "contradicting_sources": 0,
+    "alternatives": 0,
+    "not_counted": {
+     "needs_review": 3,
+     "partial": 0,
+     "off_topic": 1,
+     "assumptions": 0
+    }
+   },
+   "decided": true
+  }
+ ],
+ "evidence": {
+  "sources_total": 3,
+  "sources_readable": 3,
+  "sources_analysed": 1,
+  "supporting": [],
+  "supporting_sources": [],
+  "corroborating_checks": [
+   "H1",
+   "H2"
+  ],
+  "corroborating_sources": [
+   "https://news.ycombinator.com/item?id=13809215",
+   "https://news.ycombinator.com/item?id=6671934"
+  ],
+  "support_sources": [
+   "https://news.ycombinator.com/item?id=13809215",
+   "https://news.ycombinator.com/item?id=6671934"
+  ],
+  "alternatives": [],
+  "contradicting_checks": [],
+  "contradicting_sources": [],
+  "unsupported_checks": [],
+  "needs_review": [
+   "F1",
+   "F2",
+   "F4"
+  ],
+  "partial": [],
+  "off_topic": [
+   "F3"
+  ],
+  "assumptions": [],
+  "established_other": [],
+  "demand_signals": []
+ },
+ "failed_conditions": [],
+ "unmeasured_conditions": [],
+ "feasibility_notes": [],
+ "thresholds": {
+  "min_supporting_findings": 2,
+  "min_supporting_sources": 2,
+  "min_contradicting_sources_for_stop": 2,
+  "low_availability_hours": 2.0
+ },
+ "counterfactual": {
+  "decision": "GO",
+  "rule": "GO_TO_FURTHER_VALIDATION",
+  "missing_evidence": [
+   "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
+   "Validation conditions: none set. Set pass marks before running any experiment."
+  ],
+  "alternative_hypothesis": null,
+  "feasibility_notes": [],
+  "experiments": [
+   {
+    "assumption": "A3",
+    "name": "Test tool effectiveness",
+    "method": "Run the tool on 10 inaccessible PDFs and measure screen reader success rate",
+    "support_if": "Screen reader success rate > 80%",
+    "weaken_if": "Screen reader success rate < 50%",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "assumption": "A6",
+    "name": "Pilot pricing survey",
+    "method": "Ask 50 target users about willingness to pay for the tool",
+    "support_if": "At least 30 users indicate willingness to pay > 5 EUR",
+    "weaken_if": "All users indicate willingness to pay < 1 EUR",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "name": "Problem interviews",
+    "assumption": "A1",
+    "method": "Talk to people who match 'blind and low-vision people who use screen readers' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.",
+    "support_if": "Most interviewees describe a recent, specific occurrence without being prompted. Write down the pass mark before you start, as a validation condition in the brief.",
+    "weaken_if": "Most cannot recall a recent occurrence, or say it is minor or already solved.",
+    "origin": "default"
+   },
+   {
+    "name": "Honest interest test (Validate phase)",
+    "assumption": "A6",
+    "method": "A plain page that describes the planned product as not yet built and invites people to join a waitlist. No payment, no countdowns, no testimonials.",
+    "support_if": "Visitors from the target group join at a rate above the pass mark you set. Write down the pass mark before you start, as a validation condition in the brief.",
+    "weaken_if": "Few visitors join, or those who join are not in the target group.",
+    "origin": "default"
+   }
+  ],
+  "reconsidered_by": "phase2 validation gate, against the founder's predefined validation conditions",
+  "no_guarantee": "New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income."
+ },
+ "timings_s": {
+  "model_load": 0.0,
+  "investigator": 138.5,
+  "challenger": 108.1,
+  "total": 246.8
+ },
+ "model_calls": 8,
+ "model_seconds": 244.7
+}

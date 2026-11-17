@@ -1,0 +1,429 @@
+{
+ "run_id": "run-2026-11-17T14:51:08Z-3a5d27",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "lecture slides exam review",
+  "university slides study help",
+  "exam prep slide review"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=lecture+slides+exam+review&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"lecture slides exam review\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:51:14Z",
+   "items": 7
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=university+slides+study+help&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"university slides study help\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:51:14Z",
+   "items": 3
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=exam+prep+slide+review&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"exam prep slide review\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:51:15Z",
+   "items": 5
+  }
+ ],
+ "selection": {
+  "comments_seen": 14,
+  "off_topic_dropped": 1,
+  "relevant": 13,
+  "kept": 8,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=43532827",
+   "https://news.ycombinator.com/item?id=43891053",
+   "https://news.ycombinator.com/item?id=45532727",
+   "https://news.ycombinator.com/item?id=17040466",
+   "https://news.ycombinator.com/item?id=35181602",
+   "https://news.ycombinator.com/item?id=35513887",
+   "https://news.ycombinator.com/item?id=43530518",
+   "https://news.ycombinator.com/item?id=22645334"
+  ],
+  "topic_terms": [
+   "app",
+   "befor",
+   "effectively",
+   "exam",
+   "flashcard",
+   "into",
+   "lectur",
+   "prepar",
+   "repetition",
+   "review",
+   "slid",
+   "spac",
+   "struggl",
+   "student",
+   "turn",
+   "university",
+   "web"
+  ],
+  "problem_terms": [
+   "befor",
+   "effectively",
+   "lectur",
+   "review",
+   "slid",
+   "struggl"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they spend hours watching long video lectures before finals to understand sparse PDF slides and decipher friends' notes.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "befor",
+    "lectur",
+    "slid"
+   ],
+   "quotes": [
+    {
+     "text": "I was spending hours watching long video lectures before finals, trying to make sense of sparse PDF slides, or deciphering the ancient hieroglyphs in my friends' (or my own) notes.",
+     "url": "https://news.ycombinator.com/item?id=45532727",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "understand"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: understand"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they struggle to explain certain concepts during lectures because they didn't make the slides.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "lectur",
+    "slid",
+    "struggl"
+   ],
+   "quotes": [
+    {
+     "text": "During the lectures, they struggle to explain certain concepts since they didn't make the slides.",
+     "url": "https://news.ycombinator.com/item?id=43891053",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "because"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: because"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they treat actual exams as practice exams and sometimes pass them on the 'retry' but usually don't pass them the next year.",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "exam",
+    "university"
+   ],
+   "quotes": [
+    {
+     "text": "I did end up finishing high school at the highest level, and then got a university bachelors, but the whole process took about 1.5x as many years as it's supposed to, because I treated actual exams as practice exams, and I'd sometimes pass them on the \"retry\" (usually I did not, but I'd pass them the next year).",
+     "url": "https://news.ycombinator.com/item?id=43532827",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they hate laptops in class but students will run to Accommodative Services to get them if they try to ban laptops.",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "into",
+    "student"
+   ],
+   "quotes": [
+    {
+     "text": "> I hate laptops in class, but if I try to ban them the students will just run to Accommodative Services and get them to tell me that the student must use a laptop or they will explode into tiny pieces.",
+     "url": "https://news.ycombinator.com/item?id=43532827",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: University students struggle to review lecture slides effectively before exams.",
+   "standing": "unsupported",
+   "relevance": "statement",
+   "shared_terms": [
+    "befor",
+    "exam",
+    "review",
+    "slid"
+   ],
+   "quotes": [
+    {
+     "text": "Or maybe you’re asking if there’s a difference between slow, intentional note taking which you can augment with drawings, versus crib notes of whatever the slide says and probably won’t be reviewed until the week before exams.",
+     "url": "https://news.ycombinator.com/item?id=35181602",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "does_not_support",
+   "reason": "The quote compares two note-taking methods but doesn't directly address whether students struggle to review slides effectively before exams.",
+   "limitations": "Only one person's perspective on note-taking methods, not general student experience.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "university",
+    "students",
+    "struggle",
+    "effectively"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, university, students, struggle, effectively"
+   ],
+   "notes": []
+  },
+  {
+   "id": "H2",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: University students struggle to review lecture slides effectively before exams.",
+   "standing": "unsupported",
+   "relevance": "statement",
+   "shared_terms": [
+    "lectur",
+    "slid",
+    "struggl"
+   ],
+   "quotes": [
+    {
+     "text": "During the lectures, they struggle to explain certain concepts since they didn't make the slides.",
+     "url": "https://news.ycombinator.com/item?id=43891053",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "does_not_support",
+   "reason": "The quotes describe students struggling to explain concepts during lectures due to poor slide preparation, but the claim specifies 'review lecture slides effectively before exams', which the context does not address.",
+   "limitations": "Only one student's experience is mentioned, not general university students.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "university",
+    "lecture",
+    "effectively"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, university, lecture, effectively"
+   ],
+   "notes": []
+  },
+  {
+   "id": "H3",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: University students struggle to review lecture slides effectively before exams.",
+   "standing": "partial_evidence",
+   "relevance": "statement",
+   "shared_terms": [
+    "befor",
+    "lectur",
+    "slid"
+   ],
+   "quotes": [
+    {
+     "text": "I was spending hours watching long video lectures before finals, trying to make sense of sparse PDF slides, or deciphering the ancient hieroglyphs in my friends' (or my own) notes.",
+     "url": "https://news.ycombinator.com/item?id=45532727",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "partially_supports",
+   "reason": "The quote describes a specific student's experience with ineffective lecture slides, directly matching the claim's description of students struggling to review slides before exams.",
+   "limitations": "Limited to one student's experience, not generalizing to all university students.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "university",
+    "students",
+    "struggle",
+    "lecture",
+    "effectively",
+    "exams"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, university, students, struggle, lecture, effectively, exams"
+   ],
+   "notes": []
+  },
+  {
+   "id": "H4",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: University students struggle to review lecture slides effectively before exams.",
+   "standing": "partial_evidence",
+   "relevance": "statement",
+   "shared_terms": [
+    "lectur",
+    "review",
+    "slid"
+   ],
+   "quotes": [
+    {
+     "text": "With a provided syllabus, I probably spent 3-4 hours reviewing material and slides per lecture.",
+     "url": "https://news.ycombinator.com/item?id=17040466",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "partially_supports",
+   "reason": "The quote shows time spent reviewing slides per lecture, but doesn't address whether students struggle to review effectively.",
+   "limitations": "Only one student's experience, not generalizing to all students.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "university",
+    "students",
+    "struggle",
+    "effectively",
+    "exams"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, university, students, struggle, effectively, exams"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 6,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 5.4,
+   "prompt_tokens": 142,
+   "output_tokens": 34
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 47.6,
+   "prompt_tokens": 933,
+   "output_tokens": 213
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 12.4,
+   "prompt_tokens": 516,
+   "output_tokens": 61
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 12.7,
+   "prompt_tokens": 494,
+   "output_tokens": 72
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 14.6,
+   "prompt_tokens": 556,
+   "output_tokens": 67
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 11.7,
+   "prompt_tokens": 491,
+   "output_tokens": 59
+  }
+ ],
+ "model_seconds": 104.4,
+ "elapsed_s": 106.3
+}

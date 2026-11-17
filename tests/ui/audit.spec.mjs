@@ -538,3 +538,39 @@ test("slow status reads do not overlap or multiply on repeated workflow navigati
   await page.clock.fastForward(10000);
   expect(await page.evaluate(() => __qa.reads)).toBe(2);
 });
+test("the Builder's real landing-page markup is readable in the preview and stays inert", async ({
+  page,
+}) => {
+  // SYNTHETIC spec, rendered by the real landing_page.py renderer (see landing_fixture.json).
+  const { html } = JSON.parse(
+    fs.readFileSync(new URL("./landing_fixture.json", import.meta.url), "utf8"),
+  );
+  const data = clone();
+  data.artifacts[1].content =
+    html.replace(
+      "</main>",
+      '<section><script>alert(1)</script><style>body{display:none}</style><form action="/x"><input></form><a href="javascript:alert(1)">link text</a><img src="https://attacker.invalid/p"></section></main>',
+    );
+  const requests = [];
+  page.on("request", (r) => requests.push(r.url()));
+  let dialogs = 0;
+  page.on("dialog", async (d) => {
+    dialogs++;
+    await d.dismiss();
+  });
+  await mockService(page, data);
+  await go(page, "artifacts");
+  await page.getByRole("button", { name: "Read-only preview" }).nth(1).click();
+  const frame = page.frameLocator("iframe");
+  await expect(frame.getByRole("heading", { level: 1 })).toHaveText(
+    "Screen reader users struggle with PDFs",
+  );
+  await expect(frame.getByText("Convert PDFs to accessible HTML.")).toBeVisible();
+  await expect(frame.getByText("link text")).toBeVisible(); // links are flattened to text
+  await expect(
+    frame.locator("[src],[href],[style],[class],script,form,input,iframe,svg,img,a"),
+  ).toHaveCount(0);
+  await expect(frame.locator("style")).toHaveCount(0);
+  expect(requests.some((u) => u.includes("attacker.invalid"))).toBe(false);
+  expect(dialogs).toBe(0);
+});

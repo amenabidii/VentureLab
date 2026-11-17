@@ -1,0 +1,429 @@
+{
+ "run_id": "run-2026-11-17T14:57:58Z-6c4761",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "pdf accessibility screen reader",
+  "inaccessible pdf screen reader",
+  "pdf to screen reader friendly"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=pdf+accessibility+screen+reader&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"pdf accessibility screen reader\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:58:04Z",
+   "items": 10
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=inaccessible+pdf+screen+reader&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"inaccessible pdf screen reader\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:58:05Z",
+   "items": 9
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=pdf+to+screen+reader+friendly&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"pdf to screen reader friendly\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:58:05Z",
+   "items": 7
+  }
+ ],
+ "selection": {
+  "comments_seen": 25,
+  "off_topic_dropped": 1,
+  "relevant": 24,
+  "kept": 8,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=4610922",
+   "https://news.ycombinator.com/item?id=46176345",
+   "https://news.ycombinator.com/item?id=13809215",
+   "https://news.ycombinator.com/item?id=6671934",
+   "https://news.ycombinator.com/item?id=14574827",
+   "https://news.ycombinator.com/item?id=14545890",
+   "https://news.ycombinator.com/item?id=24467114",
+   "https://news.ycombinator.com/item?id=26216931"
+  ],
+  "topic_terms": [
+   "blind",
+   "convert",
+   "document",
+   "friendly",
+   "html",
+   "inaccessibl",
+   "into",
+   "low",
+   "pdf",
+   "read",
+   "reader",
+   "screen",
+   "struggl",
+   "tool",
+   "user",
+   "vision",
+   "web",
+   "who"
+  ],
+  "problem_terms": [
+   "document",
+   "inaccessibl",
+   "pdf",
+   "read",
+   "struggl",
+   "user"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says individuals with vision disabilities who use screen readers struggle to understand and navigate inaccessible PDF documents",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "document",
+    "inaccessibl",
+    "reader",
+    "screen"
+   ],
+   "quotes": [
+    {
+     "text": "Many documents were inaccessible to individuals with vision disabilities who use screen readers because the document was not formatted properly.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Individuals with vision disabilities who use screen readers would have a difficult time understanding and navigating the content.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "struggle",
+    "navigate",
+    "pdf"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: struggle, navigate, pdf"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says many documents are inaccessible to individuals with vision disabilities who use screen readers due to improper formatting",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "document",
+    "inaccessibl",
+    "reader",
+    "screen"
+   ],
+   "quotes": [
+    {
+     "text": "Many documents were inaccessible to individuals with vision disabilities who use screen readers because the document was not formatted properly.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "due",
+    "improper"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: due, improper"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says some links are not keyboard accessible and lack expandable/collapsible indicators, hindering screen reader users",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "reader",
+    "screen",
+    "vision",
+    "who"
+   ],
+   "quotes": [
+    {
+     "text": "Some links were not keyboard accessible and did not indicate whether they were expandable or collapsible, so individuals with vision disabilities who use screen readers may not understand the purpose of the links and individuals with manual disabilities would not be able to use the links.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "segment",
+   "model_type": "segment",
+   "claim": "Individuals with vision disabilities who use screen readers are the target group",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "document",
+    "inaccessibl",
+    "reader",
+    "screen"
+   ],
+   "quotes": [
+    {
+     "text": "Many documents were inaccessible to individuals with vision disabilities who use screen readers because the document was not formatted properly.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Individuals with vision disabilities who use screen readers would have a difficult time understanding and navigating the content.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Some links were not keyboard accessible and did not indicate whether they were expandable or collapsible, so individuals with vision disabilities who use screen readers may not understand the purpose of the links and individuals with manual disabilities would not be able to use the links.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "target",
+    "group"
+   ],
+   "attributed": false,
+   "review": [
+    "wording goes beyond the quoted text: target, group",
+    "a claim about people must be attributed to one person (\"One host says ...\")"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: Screen reader users struggle to read inaccessible PDF documents.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "document",
+    "inaccessibl",
+    "reader",
+    "screen"
+   ],
+   "quotes": [
+    {
+     "text": "Many documents were inaccessible to individuals with vision disabilities who use screen readers because the document was not formatted properly.",
+     "url": "https://news.ycombinator.com/item?id=13809215",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote describes specific accessibility issues in PDFs that screen readers face, directly supporting the claim about screen reader users struggling with inaccessible PDFs.",
+   "limitations": "Focuses on PDFs, not all document types, and lacks broader scope on how common this issue is.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "users",
+    "struggle",
+    "read",
+    "pdf"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, users, struggle, read, pdf"
+   ],
+   "notes": [
+    "second check skipped: this claim cannot be established whatever it says"
+   ]
+  },
+  {
+   "id": "H2",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: Screen reader users struggle to read inaccessible PDF documents.",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "document",
+    "inaccessibl",
+    "reader",
+    "screen"
+   ],
+   "quotes": [
+    {
+     "text": "(Another renderer is displaying it correctly.) Using character substitution as a standard technique is a really bad idea, and is the only thing that is preventing me from taking a deeper look at it with a view to using it as a backend for a play script/musical/opera libretti format that I wrote; it makes the document inaccessible to things like screen readers and prevents ready copying of text",
+     "url": "https://news.ycombinator.com/item?id=6671934",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote explicitly states that character substitution makes documents inaccessible to screen readers, directly supporting the claim about screen reader users struggling with inaccessible PDFs.",
+   "limitations": "Limited to one person's experience with specific PDF rendering issues.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "users",
+    "struggle",
+    "read"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, users, struggle, read"
+   ],
+   "notes": [
+    "second check skipped: this claim cannot be established whatever it says"
+   ]
+  },
+  {
+   "id": "H3",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: Screen reader users struggle to read inaccessible PDF documents.",
+   "standing": "partial_evidence",
+   "relevance": "statement",
+   "shared_terms": [
+    "pdf",
+    "read"
+   ],
+   "quotes": [
+    {
+     "text": "Think of the number of times you've flipped between pages of a PDF to read text and look at the figure described.",
+     "url": "https://news.ycombinator.com/item?id=4610922",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "partially_supports",
+   "reason": "The quote describes a personal experience with screen readers struggling with PDFs, directly matching the claim's specific example.",
+   "limitations": "Limited to one person's experience, not generalizing to all screen reader users.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "users",
+    "struggle",
+    "inaccessible"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, users, struggle, inaccessible"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 7,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 6.3,
+   "prompt_tokens": 138,
+   "output_tokens": 35
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 56.9,
+   "prompt_tokens": 947,
+   "output_tokens": 206
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 16.3,
+   "prompt_tokens": 516,
+   "output_tokens": 72
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 16.6,
+   "prompt_tokens": 360,
+   "output_tokens": 18
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 16.9,
+   "prompt_tokens": 596,
+   "output_tokens": 61
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 10.2,
+   "prompt_tokens": 440,
+   "output_tokens": 18
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 13.4,
+   "prompt_tokens": 501,
+   "output_tokens": 63
+  }
+ ],
+ "model_seconds": 136.6,
+ "elapsed_s": 138.5
+}

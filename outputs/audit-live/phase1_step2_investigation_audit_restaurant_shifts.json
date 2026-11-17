@@ -1,0 +1,372 @@
+{
+ "run_id": "run-2026-11-17T14:54:43Z-a30ff4",
+ "model": "qwen3:4b",
+ "effort": "full",
+ "queries": [
+  "restaurant shift coordination",
+  "staff schedule management",
+  "shift swap coordination"
+ ],
+ "query_origin": "model",
+ "sources": [
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=restaurant+shift+coordination&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"restaurant shift coordination\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:54:48Z",
+   "items": 4
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=staff+schedule+management&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"staff schedule management\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:54:49Z",
+   "items": 6
+  },
+  {
+   "kind": "hn_comments",
+   "url": "https://hn.algolia.com/api/v1/search?query=shift+swap+coordination&tags=comment&hitsPerPage=10",
+   "title": "Hacker News comments matching \"shift swap coordination\"",
+   "status": "available",
+   "error": "",
+   "retrieved_at": "2026-11-17T14:54:49Z",
+   "items": 4
+  }
+ ],
+ "selection": {
+  "comments_seen": 14,
+  "off_topic_dropped": 4,
+  "relevant": 10,
+  "kept": 8,
+  "kept_urls": [
+   "https://news.ycombinator.com/item?id=9996454",
+   "https://news.ycombinator.com/item?id=24726501",
+   "https://news.ycombinator.com/item?id=29834930",
+   "https://news.ycombinator.com/item?id=40841754",
+   "https://news.ycombinator.com/item?id=29829125",
+   "https://news.ycombinator.com/item?id=8122093",
+   "https://news.ycombinator.com/item?id=20218252",
+   "https://news.ycombinator.com/item?id=32283265"
+  ],
+  "topic_terms": [
+   "app",
+   "approv",
+   "chat",
+   "coordinat",
+   "group",
+   "independent",
+   "instead",
+   "manager",
+   "post",
+   "restaurant",
+   "shift",
+   "simpl",
+   "staff",
+   "swap",
+   "through",
+   "wast",
+   "web"
+  ],
+  "problem_terms": [
+   "chat",
+   "coordinat",
+   "group",
+   "shift",
+   "staff",
+   "swap",
+   "through",
+   "wast"
+  ]
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says coordinating staff shift swaps through group chats causes frustration",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "coordinat",
+    "shift"
+   ],
+   "quotes": [
+    {
+     "text": "Crew currently consists of multiple “modules”: Messaging — Before using Crew, many of our users were using a mix of text messages and emails, with some using consumer messaging apps like WhatsApp and GroupMe.",
+     "url": "https://news.ycombinator.com/item?id=9996454",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Scheduling — Coordination around shifts is one of the top concerns in the businesses of many of our customers.",
+     "url": "https://news.ycombinator.com/item?id=9996454",
+     "status": "verified",
+     "note": ""
+    },
+    {
+     "text": "Crew makes it easy to post the shift schedule and then coordinate shift swapping when necessary.",
+     "url": "https://news.ycombinator.com/item?id=9996454",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "coordinating",
+    "staff",
+    "swaps",
+    "through",
+    "group",
+    "chats",
+    "causes",
+    "frustration"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: coordinating, staff, swaps, through, group, chats, causes, frustration"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F2",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says using Excel for staff schedules and then emailing changes causes frustration",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "staff"
+   ],
+   "quotes": [
+    {
+     "text": "* Frustration using Excel for your staff's schedules and then emailing or texting them changes, or forgetting to email them changes?",
+     "url": "https://news.ycombinator.com/item?id=24726501",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": null,
+   "attributed": null,
+   "review": [
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
+   ],
+   "notes": [
+    "not sent to the model: off-topic for this brief"
+   ]
+  },
+  {
+   "id": "F3",
+   "origin": "extracted",
+   "type": "competitor",
+   "model_type": "competitor",
+   "claim": "Crew costs nothing but allows users to post shift schedules and coordinate swaps",
+   "standing": "needs_review",
+   "relevance": "statement",
+   "shared_terms": [
+    "coordinat",
+    "shift"
+   ],
+   "quotes": [
+    {
+     "text": "Crew makes it easy to post the shift schedule and then coordinate shift swapping when necessary.",
+     "url": "https://news.ycombinator.com/item?id=9996454",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "costs",
+    "nothing",
+    "allows",
+    "users",
+    "swaps"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: costs, nothing, allows, users, swaps"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "demand",
+   "model_type": "demand",
+   "claim": "One user says they want to test the product and share feedback for free usage",
+   "standing": "needs_review",
+   "relevance": "topic",
+   "shared_terms": [
+    "app",
+    "group"
+   ],
+   "quotes": [
+    {
+     "text": "As such, we need a group of people from the community who are eager to test the product, share their feedback to help us make this app that best fits businesses’ and employees’ needs.",
+     "url": "https://news.ycombinator.com/item?id=24726501",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": null,
+   "reason": "",
+   "limitations": "",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "want",
+    "free",
+    "usage"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: want, free, usage"
+   ],
+   "notes": [
+    "not sent to the model: the wording or attribution checks already rule out establishing it"
+   ]
+  },
+  {
+   "id": "H1",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: Small restaurant managers waste time coordinating staff shift swaps through group chats.",
+   "standing": "unsupported",
+   "relevance": "statement",
+   "shared_terms": [
+    "coordinat",
+    "shift"
+   ],
+   "quotes": [
+    {
+     "text": "Crew makes it easy to post the shift schedule and then coordinate shift swapping when necessary.",
+     "url": "https://news.ycombinator.com/item?id=9996454",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "does_not_support",
+   "reason": "The quote describes Crew's feature for managing shifts, but the context shows it's a solution to the problem of wasted time coordinating shifts, not evidence that managers waste time.",
+   "limitations": "Crew's feature is a tool, not direct evidence of current manager behavior.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "small",
+    "managers",
+    "waste",
+    "time",
+    "coordinating",
+    "staff",
+    "swaps",
+    "through",
+    "group",
+    "chats"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, small, managers, waste, time, coordinating, staff, swaps, through, group, chats"
+   ],
+   "notes": []
+  },
+  {
+   "id": "H2",
+   "origin": "hypothesis_check",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One commenter says they experience this problem: Small restaurant managers waste time coordinating staff shift swaps through group chats.",
+   "standing": "unsupported",
+   "relevance": "statement",
+   "shared_terms": [
+    "shift",
+    "swap"
+   ],
+   "quotes": [
+    {
+     "text": "It doesn't help at all that Windows' default layout-switcher switches using Ctrl+Shift so any key combo that includes that pair (including select-by-word!) will swap your keyboard layout too.",
+     "url": "https://news.ycombinator.com/item?id=29829125",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "does_not_support",
+   "reason": "The quotes describe keyboard layout issues with Windows, not restaurant staff coordination problems.",
+   "limitations": "Specific to Windows keyboard issues, not restaurant management.",
+   "second_check": null,
+   "second_check_note": "",
+   "unsourced_words": [
+    "experience",
+    "problem",
+    "small",
+    "restaurant",
+    "managers",
+    "waste",
+    "time",
+    "coordinating",
+    "staff",
+    "through",
+    "group",
+    "chats"
+   ],
+   "attributed": true,
+   "review": [
+    "wording goes beyond the quoted text: experience, problem, small, restaurant, managers, waste, time, coordinating, staff, through, group, chats"
+   ],
+   "notes": []
+  }
+ ],
+ "model_calls": 4,
+ "calls": [
+  {
+   "action": "plan_searches",
+   "wall_s": 5.6,
+   "prompt_tokens": 146,
+   "output_tokens": 30
+  },
+  {
+   "action": "extract_claims",
+   "wall_s": 49.2,
+   "prompt_tokens": 933,
+   "output_tokens": 180
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 14.8,
+   "prompt_tokens": 502,
+   "output_tokens": 73
+  },
+  {
+   "action": "check_founder_statement",
+   "wall_s": 15.2,
+   "prompt_tokens": 606,
+   "output_tokens": 49
+  }
+ ],
+ "model_seconds": 84.8,
+ "elapsed_s": 86.7
+}

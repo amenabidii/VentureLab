@@ -1,0 +1,27 @@
+{
+ "run_id": "run-2026-11-17T14:51:08Z-3a5d27",
+ "brief": {
+  "idea": "A web app that turns a student's lecture slides into spaced-repetition flashcards for exam review.",
+  "problem_statement": "University students struggle to review lecture slides effectively before exams.",
+  "target_customer": "university students preparing for exams",
+  "market": "online, English-speaking universities",
+  "founder_skills": [
+   "Python",
+   "web development"
+  ],
+  "hours_per_week": 10.0,
+  "budget_eur": 200.0,
+  "budget_currency": "EUR",
+  "values_and_constraints": [
+   "no dark patterns",
+   "privacy first"
+  ],
+  "source_urls": [],
+  "validation_conditions": [],
+  "experiment_results": {}
+ },
+ "category_screen": {
+  "allowed": true,
+  "matches": {}
+ }
+}
