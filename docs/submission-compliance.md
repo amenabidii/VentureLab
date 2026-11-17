@@ -1,10 +1,10 @@
 # Submission compliance matrix
 
-Checked on 2026-11-17 against the repository's `CLAUDE.md` (the conventions file;
-the hackathon case brief and slides are not in the repository and were not reviewed
-here). Scope: first written on branch `feature/milestone5-submission`; statuses updated
-on the integration branch `integration/venturelab-complete` after Milestones 2 to 5 were
-merged and the integrated application was run end to end.
+Checked on 2026-11-17 against the repository's `CLAUDE.md` (the conventions file). First
+written on branch `feature/milestone5-submission`, updated after integration, and updated
+again on `main` at the end of 2026-11-17 for phases 2–6 and the Phase 3 prototype. The
+case brief's core steps are mapped to code, outputs and status in
+[ARCHITECTURE.md → Phases](../ARCHITECTURE.md#phases).
 Statuses: PASS, FAIL, PENDING INTEGRATION, NOT VERIFIED, STUBBED, NOT APPLICABLE.
 "Automated" means `tests/test_submission_compliance.py`.
 
@@ -23,7 +23,7 @@ Statuses: PASS, FAIL, PENDING INTEGRATION, NOT VERIFIED, STUBBED, NOT APPLICABLE
 | At least one gate decision | CLAUDE.md | `outputs/phase1_gate_decision*.json` | automated | PASS |
 | STOP shown for a weak idea | CLAUDE.md | `phase1_gate_decision_prohibited_example.*` | the only recorded STOP is a prohibited-category STOP; all real ideas ended REPEAT | PASS for a STOP; evidence-based STOP is implemented and unit-tested but not demonstrated in a real run |
 | Market claims cite a URL or say ASSUMPTION | CLAUDE.md | Investigator outputs | quotes are copied by Python from retrieved text; standing per claim | PASS on recorded outputs; quality limits remain (ARCHITECTURE) |
-| `tests/` smoke tests, passing | CLAUDE.md | `tests/` | 418 Python tests pass (incl. 29 compliance and 21 API integration tests), 9 live-model, 20 Builder browser, 20 UI unit and 27 UI browser tests pass | PASS |
+| `tests/` smoke tests, passing | CLAUDE.md | `tests/` | Latest full Python run on `main`: 600 passed, 42 skipped (skipped = opt-in live-model and browser tests). The Phase 3 prototype's real-browser click-through test was run separately and passed. Earlier separate runs: 9 live-model, 20 Builder browser, 20 UI unit and 27 UI browser tests | PASS |
 | `ARCHITECTURE.md` with 7 sections and a text diagram | CLAUDE.md | `ARCHITECTURE.md` | automated | PASS (was missing on `main`) |
 | `.env.example`, placeholders only | CLAUDE.md | `.env.example` | automated; no keys needed at all | PASS |
 | `prompts/`, one file per agent prompt | CLAUDE.md | `prompts/` (5 files) | automated: every prompt is used by code and every referenced prompt exists | PASS |

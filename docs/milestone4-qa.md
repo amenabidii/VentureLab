@@ -1,5 +1,9 @@
 # Milestone 4 final QA and usability audit
 
+> Historical record, kept unchanged below. It describes an earlier state of the project: phases 2–6
+> now run through `workflow.py` (with a clickable Phase 3 prototype), and test counts have grown.
+> The current status is in the [README](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).
+
 Date: 2026-11-17. Audited foundation: `2aafd7f8c120aa14366d0d49d84d790f3c519c14`. Scope: the existing isolated `feature/milestone4-ui` worktree only. No M2/M3 integration was started.
 
 ## Verdict: CONDITIONAL PASS

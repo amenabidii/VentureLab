@@ -1,5 +1,9 @@
 # Milestone 3 verification — 2026-11-17
 
+> Historical record, kept unchanged below. It describes an earlier state of the project: phases 2–6
+> now run through `workflow.py` (with a clickable Phase 3 prototype), and test counts have grown.
+> The current status is in the [README](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).
+
 ## Implemented and exercised
 
 - Typed input/output contracts, deterministic experiment-kit generation, JSON/Markdown

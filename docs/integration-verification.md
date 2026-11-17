@@ -1,5 +1,9 @@
 # Integration verification (Milestone 6)
 
+> Historical record, kept unchanged below. It describes an earlier state of the project: phases 2–6
+> now run through `workflow.py` (with a clickable Phase 3 prototype), and test counts have grown.
+> The current status is in the [README](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).
+
 Branch `integration/venturelab-complete`, built in a separate worktree from `origin/main`.
 This document covers the integration; the project-wide README, ARCHITECTURE and
 submission documents come from Milestone 5 and were updated to the integrated state.

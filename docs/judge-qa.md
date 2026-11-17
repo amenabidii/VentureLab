@@ -42,8 +42,9 @@ withdrawn as superseded after review ([evaluation-runs.md](evaluation-runs.md)),
 Builder refuses them. The landing page was prepared for one of them but never approved.
 
 **Which phases are STUBBED?** None entirely. Phases 2–6 run through `workflow.py` behind
-founder approvals; what remains STUBBED is generating the MVP's own code and collecting real
-sign-ups. Publishing and the sale-to-cash path are MOCKED (no payments of any kind).
+founder approvals, and Phase 3 writes a clickable prototype whose user journey is checked by
+executed tests; what remains STUBBED is generating the MVP's production code and collecting
+real sign-ups. Publishing and the sale-to-cash path are MOCKED (no payments of any kind).
 
 **Why local open-weight models?** No API cost, no keys, founder briefs stay on the
 machine, and anyone can reproduce the results. The trade-off is speed (2–3 minutes per

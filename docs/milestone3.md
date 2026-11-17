@@ -1,5 +1,9 @@
 # Milestone 3: Builder and founder approvals
 
+> Historical record, kept unchanged below. It describes an earlier state of the project: phases 2–6
+> now run through `workflow.py` (with a clickable Phase 3 prototype), and test counts have grown.
+> The current status is in the [README](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md).
+
 This component is independent of Milestone 2. It does not implement an Investigator,
 Challenger, Judge, decision gate, workflow orchestrator, or full application UI.
 

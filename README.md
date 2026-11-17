@@ -21,7 +21,7 @@ written only after the founder approves the exact artifact.
 | 3 Build | **Build the product**: tested MVP and user docs | Clickable prototype of the core job, MVP scope, draft user guide, executed checks (user-journey walk through the prototype, real-browser click-through test) | **Working**; MVP production code **STUBBED** |
 | 4 Commercial setup | **Set the price and policies** | Price hypotheses (ASSUMPTION), price set only by founder approval, DRAFT terms/privacy/refund | **Working** (no payments of any kind) |
 | 5 Launch | **Open the store; deliver automatically** | Store page and post drafts; signed payment events, idempotent delivery, refunds, reconciliation | Drafts **Working**; publishing and sale to cash **MOCKED** |
-| 6 Operate & learn | **Operate & learn**: support, metrics, persevere-or-pivot memo | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
+| 6 Operate and learn | None (Phase 6 work: support, metrics, persevere-or-pivot memo) | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
 
 Each core step, with its code file and output file: [ARCHITECTURE.md → Phases](ARCHITECTURE.md#phases).
 
@@ -168,6 +168,6 @@ Not yet recorded. It will be linked here ([docs/demo-runbook.md](docs/demo-runbo
   (Builder, approvals, submission). Issues and pull requests on GitHub.
 - **Roadmap**: record real experiment results against the pass marks the founder set;
   improve evidence quality (semantic relevance, attribution); a human review queue for
-  NEEDS_REVIEW findings; then the design-only phases one at a time.
+  NEEDS_REVIEW findings; then MVP production code and real sign-up collection, the parts still STUBBED.
 - **Community**: MIT-licensed; contributions need tests and honest status labels.
 - **Funding**: none assumed. Running costs stay at zero API spend by design.
