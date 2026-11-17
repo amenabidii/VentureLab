@@ -14,3 +14,4 @@ venv
 env
 node_modules
 *.log
+**/node_modules

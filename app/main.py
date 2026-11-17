@@ -125,7 +125,7 @@ FEATURES = [
 ]
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/diagnostics", response_class=HTMLResponse)
 def index(client: OllamaClient = Depends(get_client)) -> str:
     status = model_status(client)
     if status["ready"]:
@@ -157,3 +157,7 @@ Checks: <a href="/health/model">/health/model</a>, <a href="/health/inference">/
 <h2>Status</h2>
 <table>{rows}</table>
 </body></html>"""
+
+# Isolated founder workspace; model health and domain endpoints remain unchanged.
+from app.ui.router import router as workspace_router
+app.include_router(workspace_router)
