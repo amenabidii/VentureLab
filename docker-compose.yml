@@ -1,0 +1,56 @@
+# VentureLab: one-command local stack.
+#   docker compose up
+# then open http://localhost:8000
+#
+# Services:
+#   ollama      local open-weight model server (CPU only, no GPU needed)
+#   model-pull  one-shot job that downloads the configured model into a volume
+#   app         FastAPI application
+name: venturelab
+
+services:
+  ollama:
+    image: ollama/ollama:0.40.15
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_NUM_PARALLEL: "1"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  model-pull:
+    image: ollama/ollama:0.40.15
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      VENTURELAB_MODEL: ${VENTURELAB_MODEL:-qwen3:4b}
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["echo \"Pulling $${VENTURELAB_MODEL} (first run only)\" && ollama pull \"$${VENTURELAB_MODEL}\""]
+    restart: "no"
+
+  app:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      VENTURELAB_MODEL: ${VENTURELAB_MODEL:-qwen3:4b}
+      VENTURELAB_FALLBACK_MODEL: ${VENTURELAB_FALLBACK_MODEL:-qwen3:1.7b}
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  ollama_models:

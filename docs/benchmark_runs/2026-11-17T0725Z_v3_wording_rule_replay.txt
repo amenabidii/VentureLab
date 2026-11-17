@@ -1,0 +1,23 @@
+Run 2026-11-17T07:25:29Z: pipeline claims recorded as established
+  qwen3:4b A forum_page rep 1: NEEDS_REVIEW: words not in text ['podcast', 'significant', 'limitations', 'handling', 'sounds']; not attributed to one person | Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.
+  qwen3:4b B forum_page rep 1: NEEDS_REVIEW: words not in text ['freelance', 'translator'] | One freelance translator says editing takes five hours per 50-minute interview
+  qwen3:4b B forum_page rep 1: NEEDS_REVIEW: words not in text ['solo', 'host', 'takes', 'due'] | A solo host reports editing takes eight hours per episode due to learning software
+  qwen3:4b B forum_page rep 1: NEEDS_REVIEW: words not in text ['costs'] | PodTrim's Pro plan costs 29 dollars per seat per month
+  qwen3:4b C forum_page rep 1: NEEDS_REVIEW: words not in text ['two', 'posters']; not attributed to one person | Two posters report AI tools cut breaths in strange places and cannot judge pacing
+  qwen3:4b C short_thread rep 2: NEEDS_REVIEW: words not in text ['freelance', 'translator', 'get'] | A freelance translator states that matching payments to invoices is the most common reason they get called at the end of the quarter.
+  qwen3:4b A forum_page rep 2: NEEDS_REVIEW: words not in text ['podcast', 'significant', 'limitations', 'handling', 'sounds']; not attributed to one person | Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.
+  qwen3:4b B forum_page rep 2: NEEDS_REVIEW: words not in text ['freelance', 'translator'] | One freelance translator says editing takes five hours per 50-minute interview
+  qwen3:4b B forum_page rep 2: NEEDS_REVIEW: words not in text ['solo', 'host', 'takes', 'due'] | A solo host reports editing takes eight hours per episode due to learning software
+  qwen3:4b B forum_page rep 2: NEEDS_REVIEW: words not in text ['costs'] | PodTrim's Pro plan costs 29 dollars per seat per month
+  qwen3:4b C forum_page rep 2: NEEDS_REVIEW: words not in text ['two', 'posters']; not attributed to one person | Two posters report AI tools cut breaths in strange places and cannot judge pacing
+evidence_cases.json: labelled `supports` cases that can still be established: 0/6 []
+  D1 held for review, words not in the text: ['each', 'checking']
+  D2 held for review, words not in the text: ['costs']
+  D3 held for review, words not in the text: ['cited']
+  D4 held for review, words not in the text: ['seller', 'fewer']
+  D5 held for review, words not in the text: ['flashcards']
+  V3 held for review, words not in the text: ['charges']
+evidence_cases_heldout.json: labelled `supports` cases that can still be established: 0/3 []
+  HD1 held for review, words not in the text: ['habit', 'tracker', 'app']
+  HD2 held for review, words not in the text: ['owner', 'many', 'hours']
+  HV2 held for review, words not in the text: ['offers', 'translation']

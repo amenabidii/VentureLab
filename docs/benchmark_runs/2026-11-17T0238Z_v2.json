@@ -1,0 +1,2858 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-17T02:38:26Z",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logical_cpus_visible": 12,
+    "memory_visible_gb": 7.6,
+    "gpu": "none (CPU inference)",
+    "ollama_version": "0.40.15",
+    "num_ctx": 4096,
+    "dev_cases_sha256": "3581781aab4007d58f202a87cb9a9eaddb7051b8f935227ab62bdfc9b2a259dc",
+    "heldout_cases_sha256": "04a515ebc2c37fa10924aa521e9b0f9e085b3c0c3684e036745f3b0327697bf4",
+    "v1_prompt_sha256": "768a3a68afe5a0cf4a5d045e51ab9aa4aecb0f167ceed1d5b91e3e62498c89f7"
+  },
+  "results": [
+    {
+      "model": "qwen3:4b",
+      "cold_load_ms": 12542,
+      "cold_first_request_ms": 13755,
+      "pipeline": [
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 48661,
+          "assess_ms": 48872,
+          "total_ms": 97533,
+          "claims": 4,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3,
+            "assumption": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1960,
+          "output_tokens": 538,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelance translators lose significant time manually checking paid invoices due to inconsistent payment landing in different bank accounts and remittance notes not including invoice numbers.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Sole traders frequently experience delays in identifying unpaid invoices, leading to financial discrepancies that require manual intervention.",
+              "quotes": [
+                {
+                  "status": "unverified",
+                  "text": "Last year I only noticed a 6.000 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+                  "note": "text not found in source"
+                }
+              ],
+              "verdict": null,
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Invoicing apps fail to automatically match payments from multiple bank accounts, requiring users to cancel subscriptions due to inadequate functionality.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Bookkeepers frequently receive calls from sole traders due to the challenge of matching payments to invoices at the end of the quarter.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 46051,
+          "assess_ms": 68414,
+          "total_ms": 114465,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3428,
+          "output_tokens": 559,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments landing in different bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers often miss unpaid invoices until months later due to poor tracking",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Last year I only noticed a 600 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "Existing invoicing apps require monthly subscriptions and cannot automatically match payments from multiple bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Post 4 (user mara_translates): I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Bookkeepers frequently handle unpaid invoice matching for sole traders at quarter-end",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Post 5 (user ben_bookkeeper): As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers with multiple clients experience payment tracking challenges across different bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 26585,
+          "assess_ms": 34479,
+          "total_ms": 61065,
+          "claims": 3,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1866,
+          "output_tokens": 322,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments in multiple bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers miss unpaid invoices for months until they are noticed",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Last year I only noticed a 600 euro invoice was unpaid after four months.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers cannot automatically match payments to invoices across bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 79676,
+          "assess_ms": 78023,
+          "total_ms": 157699,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 4,
+            "established": 1
+          },
+          "model_calls": 7,
+          "prompt_tokens": 3799,
+          "output_tokens": 738,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend excessive time editing episodes, leading to burnout and potential quitting.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I edit for nine shows as a freelancer. The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+                  "note": ""
+                }
+              ],
+              "verdict": "supports",
+              "confirmed": true,
+              "confirm_note": "none",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "New podcasters struggle with the learning curve of editing software, resulting in disproportionately high editing times.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I am on episode three and editing is taking me eight hours per episode because I am still learning the software.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Podcasters demand AI editing tools that reliably handle leveling and filler words without requiring extensive manual review.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "The podcasting community actively tests and compares AI editing tools for their effectiveness and cost efficiency.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 69785,
+          "assess_ms": 68825,
+          "total_ms": 138610,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3898,
+          "output_tokens": 585,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing a 50-minute interview weekly",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts underestimate editing time until they complete ten episodes",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes. The people who ask me for help usually come after episode eight or nine.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "CutCast's free tier removes filler words in four minutes for a 40-minute episode",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I tried CutCast on the free tier. It removed filler words in about four minutes for a 40-minute episode, which felt like magic. Then I spent an hour fixing words it had cut by mistake, so I am not sure I saved much time.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to $15 monthly for AI editing tools that handle leveling and filler words",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly interviews spend five hours editing per episode",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 31088,
+          "assess_ms": 38003,
+          "total_ms": 69091,
+          "claims": 3,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3
+          },
+          "model_calls": 4,
+          "prompt_tokens": 2132,
+          "output_tokens": 349,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing per episode to remove filler words and fix audio levels.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts underestimate editing time until they complete ten episodes.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to $15 per month for an AI tool that reliably handles leveling and filler words.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 39298,
+          "assess_ms": 40909,
+          "total_ms": 80207,
+          "claims": 4,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3,
+            "assumption": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1953,
+          "output_tokens": 533,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelance translators lose significant time manually checking paid invoices due to inconsistent payment landing in different bank accounts and remittance notes not including invoice numbers.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Sole traders frequently experience delays in identifying unpaid invoices, leading to financial losses.",
+              "quotes": [
+                {
+                  "status": "unverified",
+                  "text": "Last year I only noticed a 6.00 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+                  "note": "text not found in source"
+                }
+              ],
+              "verdict": null,
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Invoicing apps fail to automatically match payments from multiple bank accounts, requiring manual intervention.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Bookkeepers often receive calls from sole traders due to difficulties in matching payments to invoices at the end of the quarter.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 48277,
+          "assess_ms": 71926,
+          "total_ms": 120203,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3428,
+          "output_tokens": 559,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments landing in different bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers often miss unpaid invoices until months later due to poor tracking",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Last year I only noticed a 600 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "Existing invoicing apps require monthly subscriptions and cannot automatically match payments from multiple bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Post 4 (user mara_translates): I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Bookkeepers frequently handle unpaid invoice matching for sole traders at quarter-end",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?",
+                  "note": ""
+                },
+                {
+                  "status": "verified",
+                  "text": "Post 5 (user ben_bookkeeper): As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers with multiple clients experience payment tracking challenges across different bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 21004,
+          "assess_ms": 34985,
+          "total_ms": 55989,
+          "claims": 3,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1864,
+          "output_tokens": 317,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments in multiple bank accounts",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers miss unpaid invoices for months until they are noticed",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Last year I only noticed a 600 euro invoice was unpaid after four months.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle to match payments to invoices automatically",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 53270,
+          "assess_ms": 67163,
+          "total_ms": 120433,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 4,
+            "established": 1
+          },
+          "model_calls": 7,
+          "prompt_tokens": 3801,
+          "output_tokens": 749,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend excessive time editing episodes, leading to burnout and potential quitting.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I edit for nine shows as a freelancer. The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+                  "note": ""
+                }
+              ],
+              "verdict": "supports",
+              "confirmed": true,
+              "confirm_note": "none",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "New podcasters struggle with the learning curve of editing software, resulting in high time investment per episode.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I am on episode three and editing is taking me eight hours per episode because I am still learning the software.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Podcasters demand AI editing tools that reliably handle leveling and filler words without requiring extensive manual review.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "The podcasting community actively discusses and tests AI editing tools for their practical utility in production workflows.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 32632,
+          "assess_ms": 74095,
+          "total_ms": 106726,
+          "claims": 5,
+          "claims_verified": 5,
+          "standings": {
+            "partial_evidence": 4,
+            "established": 1
+          },
+          "model_calls": 7,
+          "prompt_tokens": 4188,
+          "output_tokens": 596,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing a 50-minute interview weekly",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "AI tools cut breaths in strange places and cannot judge pacing",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+                  "note": ""
+                }
+              ],
+              "verdict": "supports",
+              "confirmed": true,
+              "confirm_note": "none",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to $15 monthly for reliable AI editing tools",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly interviews spend significant time editing",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "CutCast's free tier removes filler words in four minutes for a 40-minute episode",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "It removed filler words in about four minutes for a 40-minute episode, which felt like magic.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 31152,
+          "assess_ms": 36324,
+          "total_ms": 67476,
+          "claims": 3,
+          "claims_verified": 3,
+          "standings": {
+            "partial_evidence": 3
+          },
+          "model_calls": 4,
+          "prompt_tokens": 2132,
+          "output_tokens": 333,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing per episode to remove filler words and fix audio levels.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts underestimate editing time until they complete ten episodes.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to $15 per month for an AI tool that reliably handles leveling and filler words.",
+              "quotes": [
+                {
+                  "status": "verified",
+                  "text": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+                  "note": ""
+                }
+              ],
+              "verdict": "partially_supports",
+              "confirmed": null,
+              "confirm_note": "",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        }
+      ],
+      "dev_v2": {
+        "correct": 33,
+        "total": 40,
+        "per_category": {
+          "direct_support": "4/5",
+          "partial_support": "4/5",
+          "unsupported": "4/5",
+          "contradictory": "5/5",
+          "irrelevant_source": "5/5",
+          "misleading_quote": "2/5",
+          "topic_mention": "5/5",
+          "competitor_vs_demand": "4/5"
+        },
+        "confusion": {
+          "supports": {
+            "partially_supports": 1,
+            "supports": 5
+          },
+          "partially_supports": {
+            "partially_supports": 4,
+            "does_not_support": 1,
+            "supports": 1
+          },
+          "does_not_support": {
+            "partially_supports": 1,
+            "does_not_support": 18
+          },
+          "contradicts": {
+            "contradicts": 6,
+            "does_not_support": 3
+          }
+        },
+        "errors": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states the claim about spending hours checking payments, with context confirming it's a personal experience."
+          },
+          {
+            "id": "P3",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states users include teachers from Germany but does not mention France or confirm usage of resume builders by teachers there."
+          },
+          {
+            "id": "U1",
+            "category": "unsupported",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote describes a personal habit of manually sending invoice reminders, which implies the speaker does not use automated subscription pricing for invoicing tools."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote shows the reviewer initially recommends the template pack but conditions it on it being unbroken, which they later rejected by asking for a refund."
+          },
+          {
+            "id": "M2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states AI writing tools will replace copywriters, but the context shows the author rejects this view by citing his doubled bookings."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states the team switched to TaskGrid, but context shows the plan was cancelled after a trial, so the switch didn't happen."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": true,
+            "reason": "The quote states PayMatch has 8,000 paying subscribers, mostly freelancers, directly supporting that freelancers pay for invoice-matching software."
+          }
+        ],
+        "verdict_critical": [
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": true,
+            "reason": "The quote states PayMatch has 8,000 paying subscribers, mostly freelancers, directly supporting that freelancers pay for invoice-matching software."
+          }
+        ],
+        "false_established": [
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": true,
+            "reason": "The quote states PayMatch has 8,000 paying subscribers, mostly freelancers, directly supporting that freelancers pay for invoice-matching software."
+          }
+        ],
+        "missed_established": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states the claim about spending hours checking payments, with context confirming it's a personal experience."
+          }
+        ],
+        "elapsed_ms": 405535,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states the claim about spending hours checking payments, with context confirming it's a personal experience.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "D2",
+            "predicted": "supports",
+            "reason": "The quote directly states the Basic plan costs $12 per month, matching the claim exactly.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "D3",
+            "predicted": "supports",
+            "reason": "The quote directly states the exact claim with the same numbers and context.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "D4",
+            "predicted": "supports",
+            "reason": "The quote states the exact refund rate (1.4%) for 2025, matching the claim's 'fewer than 2%'.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "D5",
+            "predicted": "supports",
+            "reason": "The quote directly states a user asking for CSV export, confirming at least one user requested it.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "P1",
+            "predicted": "partially_supports",
+            "reason": "The quote shows one person's experience with writing descriptions for 300 items taking two weeks, but the claim is about most small online shops.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P2",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states the planner's desire for an app that saves time on seating charts, indicating willingness to pay for such a tool.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P3",
+            "predicted": "does_not_support",
+            "reason": "The quote states users include teachers from Germany but does not mention France or confirm usage of resume builders by teachers there.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P4",
+            "predicted": "partially_supports",
+            "reason": "The quote shows one team's 40% reduction, but the claim states 'across all customer teams', so it's a single instance versus a general claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P5",
+            "predicted": "partially_supports",
+            "reason": "The quote states the speaker spends six hours editing per episode, which directly supports the claim that podcast hosts spend over five hours editing each episode.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U1",
+            "predicted": "partially_supports",
+            "reason": "The quote describes a personal habit of manually sending invoice reminders, which implies the speaker does not use automated subscription pricing for invoicing tools.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "The quotes state the app supports 14 languages and works offline, but do not mention download numbers or user adoption.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "The quote states a team switched meeting platforms but doesn't mention losing notes or any impact on note-taking.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "The quote states that selling digital planners means no physical shipping, so shipping labels aren't an issue for this seller.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "The quote states the redesign happened in March but doesn't mention retention results, so it doesn't establish increased retention.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C1",
+            "predicted": "contradicts",
+            "reason": "The quote states only 12% would pay, directly contradicting the claim that most would pay.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C2",
+            "predicted": "contradicts",
+            "reason": "The context states PodTrim does not offer a free plan, only a 7-day trial, directly contradicting the claim that it offers a free plan.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C3",
+            "predicted": "contradicts",
+            "reason": "The context states PDF export is unavailable, directly contradicting the claim that it supports PDF export.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C4",
+            "predicted": "contradicts",
+            "reason": "The context states that waitlist sign-ups fell in four months, contradicting the claim of growth every month.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C5",
+            "predicted": "contradicts",
+            "reason": "The quote states sync breaks constantly, directly contradicting the claim of reliable syncing.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a stadium opening, not yoga studios or class-booking software.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "The quote is a recipe instruction, not related to freelance designers or portfolio tools.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "The quotes are about a cookie policy, not podcast episode preferences.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I4",
+            "predicted": "does_not_support",
+            "reason": "The quote is a promotional offer, not a statement about online tutors needing tools for tracking homework.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "The quote describes a river flooding, not SaaS churn analysis, so it's irrelevant to the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M1",
+            "predicted": "does_not_support",
+            "reason": "The quote shows the reviewer initially recommends the template pack but conditions it on it being unbroken, which they later rejected by asking for a refund.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M2",
+            "predicted": "does_not_support",
+            "reason": "The quote states AI writing tools will replace copywriters, but the context shows the author rejects this view by citing his doubled bookings.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M3",
+            "predicted": "contradicts",
+            "reason": "The context states the results showed no significant difference, contradicting the claim that the app improved vocabulary scores.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "The quote states the team switched to TaskGrid, but context shows the plan was cancelled after a trial, so the switch didn't happen.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "The quote is a question posed by the speaker, not a statement about the claim being true or false.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T1",
+            "predicted": "does_not_support",
+            "reason": "The quotes describe the article's purpose but don't mention growing demand among small agencies.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T2",
+            "predicted": "does_not_support",
+            "reason": "The quotes mention comparing video hosting platforms but don't state that creators struggle with costs.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T3",
+            "predicted": "does_not_support",
+            "reason": "The quote states focus timer apps existed since Pomodoro technique popularity, but doesn't address whether remote workers want better ones.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "The context states that book cover design is a topic in the course, but doesn't link it to sales loss for indie authors.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T5",
+            "predicted": "does_not_support",
+            "reason": "The quote describes donor-management software's purpose but doesn't address affordability for small nonprofits.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "V1",
+            "predicted": "does_not_support",
+            "reason": "The quote describes PayMatch as an app matching bank payments to invoices but doesn't mention freelancers' demand for such a tool.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "V2",
+            "predicted": "supports",
+            "reason": "The quote states PayMatch has 8,000 paying subscribers, mostly freelancers, directly supporting that freelancers pay for invoice-matching software.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "V3",
+            "predicted": "supports",
+            "reason": "The quote states PayMatch costs 9 euros per month after a 14-day trial, matching the claim exactly.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "V4",
+            "predicted": "does_not_support",
+            "reason": "The quotes state there are six AI podcast editing tools, but don't indicate that podcast hosts want them.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "V5",
+            "predicted": "does_not_support",
+            "reason": "The quote states AgencyView raised funds to build dashboards, but doesn't specify that small agencies will pay for them.",
+            "confirmed": null,
+            "confirm_note": ""
+          }
+        ]
+      },
+      "heldout_v2": {
+        "correct": 14,
+        "total": 16,
+        "per_category": {
+          "direct_support": "1/2",
+          "partial_support": "1/2",
+          "unsupported": "2/2",
+          "contradictory": "2/2",
+          "irrelevant_source": "2/2",
+          "misleading_quote": "2/2",
+          "topic_mention": "2/2",
+          "competitor_vs_demand": "2/2"
+        },
+        "confusion": {
+          "supports": {
+            "supports": 2,
+            "partially_supports": 1
+          },
+          "partially_supports": {
+            "partially_supports": 1,
+            "does_not_support": 1
+          },
+          "does_not_support": {
+            "does_not_support": 7
+          },
+          "contradicts": {
+            "contradicts": 4
+          }
+        },
+        "errors": [
+          {
+            "id": "HD2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states that setting up abandoned-cart emails took the speaker many hours (most of a weekend), matching the claim exactly."
+          },
+          {
+            "id": "HP2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote shows one study group's consistent use of the free app, but doesn't prove students will pay for it."
+          }
+        ],
+        "verdict_critical": [],
+        "false_established": [],
+        "missed_established": [
+          {
+            "id": "HD2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states that setting up abandoned-cart emails took the speaker many hours (most of a weekend), matching the claim exactly."
+          }
+        ],
+        "elapsed_ms": 151236,
+        "predictions": [
+          {
+            "id": "HD1",
+            "predicted": "supports",
+            "reason": "The context states the yearly plan costs 30 dollars and includes all features, directly matching the claim.",
+            "confirmed": true,
+            "confirm_note": "none"
+          },
+          {
+            "id": "HD2",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states that setting up abandoned-cart emails took the speaker many hours (most of a weekend), matching the claim exactly.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HP1",
+            "predicted": "partially_supports",
+            "reason": "The quote shows one designer's experience with late payments, but the claim is about 'graphic designers across Europe' as a group.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HP2",
+            "predicted": "does_not_support",
+            "reason": "The quote shows one study group's consistent use of the free app, but doesn't prove students will pay for it.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HU1",
+            "predicted": "does_not_support",
+            "reason": "The quote describes a feature but doesn't mention meeting time reduction.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HU2",
+            "predicted": "does_not_support",
+            "reason": "The quote describes the speaker's translation focus but doesn't address billing preferences.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HC1",
+            "predicted": "contradicts",
+            "reason": "The quote states the extension is only available for Chrome and Edge, directly contradicting the claim that it works in Firefox.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HC2",
+            "predicted": "contradicts",
+            "reason": "The context states that 32 out of 50 beta testers found onboarding difficult, meaning 16 out of 50 (32%) found it easy, which contradicts the claim that most rated it easy.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HI1",
+            "predicted": "does_not_support",
+            "reason": "The quote about free parking after 6 pm is unrelated to music teachers needing online scheduling tools.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HI2",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions an office closure for a public holiday but does not address developers' desires regarding CI pipelines.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HM1",
+            "predicted": "contradicts",
+            "reason": "The context states the product has not yet reached profitability, contradicting the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HM2",
+            "predicted": "contradicts",
+            "reason": "The context shows the course is not worth its price because outdated software makes it unattractive, contradicting the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HT1",
+            "predicted": "does_not_support",
+            "reason": "The quote states loyalty programs are common in cafes, but doesn't address whether small cafes struggle to manage them.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HT2",
+            "predicted": "does_not_support",
+            "reason": "The quotes only mention listing platforms, not income loss from slow delivery.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HV1",
+            "predicted": "does_not_support",
+            "reason": "The quote states MenuLingo launched an AI menu-translation tool, but doesn't specify that restaurants want it.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HV2",
+            "predicted": "supports",
+            "reason": "The quote states MenuLingo translates menus into 30 languages, matching the claim exactly.",
+            "confirmed": true,
+            "confirm_note": "none"
+          }
+        ]
+      },
+      "heldout_v1": {
+        "correct": 12,
+        "total": 16,
+        "per_category": {
+          "direct_support": "2/2",
+          "partial_support": "2/2",
+          "unsupported": "2/2",
+          "contradictory": "0/2",
+          "irrelevant_source": "2/2",
+          "misleading_quote": "0/2",
+          "topic_mention": "2/2",
+          "competitor_vs_demand": "2/2"
+        },
+        "confusion": {
+          "supports": {
+            "supports": 3
+          },
+          "partially_supports": {
+            "partially_supports": 2
+          },
+          "does_not_support": {
+            "does_not_support": 7
+          },
+          "contradicts": {
+            "does_not_support": 4
+          }
+        },
+        "errors": [
+          {
+            "id": "HC1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "Quote states extension is only for Chrome and Edge, contradicting claim of working in Firefox."
+          },
+          {
+            "id": "HC2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "Quote states 32 out of 50 found onboarding difficult, not easy."
+          },
+          {
+            "id": "HM1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states the product has reached profitability, but context says they expect to break even next year, contradicting the claim."
+          },
+          {
+            "id": "HM2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states a conditional worth based on outdated content, not absolute worth."
+          }
+        ],
+        "verdict_critical": [],
+        "false_established": [],
+        "missed_established": [],
+        "elapsed_ms": 139004,
+        "predictions": [
+          {
+            "id": "HD1",
+            "predicted": "supports",
+            "reason": "The quote directly states the yearly plan costs 30 dollars, matching the claim exactly.",
+            "confirmed": null
+          },
+          {
+            "id": "HD2",
+            "predicted": "supports",
+            "reason": "The quote directly states the time spent setting up abandoned-cart emails for a Shopify store owner.",
+            "confirmed": null
+          },
+          {
+            "id": "HP1",
+            "predicted": "partially_supports",
+            "reason": "Personal experience of one designer doesn't represent all European graphic designers.",
+            "confirmed": null
+          },
+          {
+            "id": "HP2",
+            "predicted": "partially_supports",
+            "reason": "One group's daily use of free version doesn't prove widespread payment willingness.",
+            "confirmed": null
+          },
+          {
+            "id": "HU1",
+            "predicted": "does_not_support",
+            "reason": "Quote describes sync feature but claim is about reducing meeting time; context doesn't link sync to time reduction.",
+            "confirmed": null
+          },
+          {
+            "id": "HU2",
+            "predicted": "does_not_support",
+            "reason": "Quote only states translation focus, not billing preferences.",
+            "confirmed": null
+          },
+          {
+            "id": "HC1",
+            "predicted": "does_not_support",
+            "reason": "Quote states extension is only for Chrome and Edge, contradicting claim of working in Firefox.",
+            "confirmed": null
+          },
+          {
+            "id": "HC2",
+            "predicted": "does_not_support",
+            "reason": "Quote states 32 out of 50 found onboarding difficult, not easy.",
+            "confirmed": null
+          },
+          {
+            "id": "HI1",
+            "predicted": "does_not_support",
+            "reason": "Quote is about parking, not music teachers or scheduling tools.",
+            "confirmed": null
+          },
+          {
+            "id": "HI2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about office closure for a public holiday, not developers' desire for faster CI pipelines.",
+            "confirmed": null
+          },
+          {
+            "id": "HM1",
+            "predicted": "does_not_support",
+            "reason": "The quote states the product has reached profitability, but context says they expect to break even next year, contradicting the claim.",
+            "confirmed": null
+          },
+          {
+            "id": "HM2",
+            "predicted": "does_not_support",
+            "reason": "The quote states a conditional worth based on outdated content, not absolute worth.",
+            "confirmed": null
+          },
+          {
+            "id": "HT1",
+            "predicted": "does_not_support",
+            "reason": "Quote states loyalty programs are common but doesn't address struggle to manage them.",
+            "confirmed": null
+          },
+          {
+            "id": "HT2",
+            "predicted": "does_not_support",
+            "reason": "Quote only lists platforms without addressing income loss from slow delivery.",
+            "confirmed": null
+          },
+          {
+            "id": "HV1",
+            "predicted": "does_not_support",
+            "reason": "Quote states a product launched but doesn't indicate restaurant demand or desire for it.",
+            "confirmed": null
+          },
+          {
+            "id": "HV2",
+            "predicted": "supports",
+            "reason": "The quote directly states the number of languages and matches the claim exactly.",
+            "confirmed": null
+          }
+        ]
+      }
+    },
+    {
+      "model": "qwen3:1.7b",
+      "cold_load_ms": 3215,
+      "cold_first_request_ms": 3587,
+      "pipeline": [
+        {
+          "design": "A",
+          "source": "short_thread",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 455', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 455']"
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 471', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 471']"
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 439', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 439']"
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 401', 'attempt 2: Invalid JSON: EOF while parsing a value at line 3 column 1']"
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 456', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 456']"
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "rep": 1,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 472', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 472']"
+        },
+        {
+          "design": "A",
+          "source": "short_thread",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 455', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 455']"
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 471', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 471']"
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 446', 'attempt 2: Invalid JSON: EOF while parsing a value at line 3 column 0']"
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 427', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 427']"
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 439', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 439']"
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "rep": 2,
+          "error": "No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 468', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 468']"
+        }
+      ],
+      "dev_v2": {
+        "correct": 22,
+        "total": 40,
+        "per_category": {
+          "direct_support": "0/5",
+          "partial_support": "3/5",
+          "unsupported": "4/5",
+          "contradictory": "5/5",
+          "irrelevant_source": "5/5",
+          "misleading_quote": "3/5",
+          "topic_mention": "2/5",
+          "competitor_vs_demand": "0/5"
+        },
+        "confusion": {
+          "supports": {
+            "no_answer": 5,
+            "partially_supports": 1
+          },
+          "partially_supports": {
+            "partially_supports": 3,
+            "no_answer": 3
+          },
+          "does_not_support": {
+            "partially_supports": 5,
+            "does_not_support": 12,
+            "no_answer": 2
+          },
+          "contradicts": {
+            "contradicts": 7,
+            "partially_supports": 1,
+            "does_not_support": 1
+          }
+        },
+        "errors": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 466', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 466']"
+          },
+          {
+            "id": "D2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 425', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 425']"
+          },
+          {
+            "id": "D3",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 423', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 423']"
+          },
+          {
+            "id": "D4",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 431', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 431']"
+          },
+          {
+            "id": "D5",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that the user asked for a way to export decks to CSV, and the context shows that this request has been made twice. The reply indicates that the feature is on the roadmap, but the quote directly supports the claim that at least one user asked for this functionality."
+          },
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 443', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 443']"
+          },
+          {
+            "id": "P3",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 463', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 463']"
+          },
+          {
+            "id": "U1",
+            "category": "unsupported",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms the speaker's action of sending invoice reminders manually every Friday, but does not mention any preference for subscription pricing over one-off purchases. The claim is about preference, but the quote only shows a specific action, not a comparison or preference between pricing models."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states the reviewer's recommendation, but the context adds a condition (if half were broken) that weakens the recommendation. The quote does not fully support the claim because it is conditional and the reviewer is seeking a refund, indicating dissatisfaction."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote directly states that the team switched to TaskGrid, but the context shows that the plan was cancelled a week later after a trial, indicating the switch was not implemented. Thus, the quote does not fully support the claim as stated."
+          },
+          {
+            "id": "T1",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that the article explains what AI meeting summaries are and how they work, but does not provide evidence of growing demand. The context is neutral and does not indicate any trend or preference in usage."
+          },
+          {
+            "id": "T3",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that focus timer apps have been around since the Pomodoro technique, but it does not provide evidence that remote workers specifically want better focus-timer apps. The context is general, and the quote is neutral without addressing the claim directly."
+          },
+          {
+            "id": "T5",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that donor-management software is used by nonprofits to track gifts and contacts, but does not address whether small nonprofits can afford it. The context does not provide information about affordability, so the quote only supports the claim about usage, not affordability."
+          },
+          {
+            "id": "V1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states that PayMatch is an app that matches bank payments to invoices and connects to most European banks, which supports the claim that there is demand among freelancers for such a tool. The context confirms the tool's functionality and its target audience (European banks), which aligns with the claim about demand among freelancers."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 452', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 452']"
+          },
+          {
+            "id": "V3",
+            "category": "competitor_vs_demand",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 399', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 399']"
+          },
+          {
+            "id": "V4",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 437', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 437']"
+          },
+          {
+            "id": "V5",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 405', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 405']"
+          }
+        ],
+        "verdict_critical": [],
+        "false_established": [],
+        "missed_established": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 466', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 466']"
+          },
+          {
+            "id": "D2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 425', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 425']"
+          },
+          {
+            "id": "D3",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 423', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 423']"
+          },
+          {
+            "id": "D4",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 431', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 431']"
+          },
+          {
+            "id": "D5",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that the user asked for a way to export decks to CSV, and the context shows that this request has been made twice. The reply indicates that the feature is on the roadmap, but the quote directly supports the claim that at least one user asked for this functionality."
+          },
+          {
+            "id": "V3",
+            "category": "competitor_vs_demand",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 399', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 399']"
+          }
+        ],
+        "elapsed_ms": 432615,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 466', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 466']",
+            "confirmed": null
+          },
+          {
+            "id": "D2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 425', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 425']",
+            "confirmed": null
+          },
+          {
+            "id": "D3",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 423', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 423']",
+            "confirmed": null
+          },
+          {
+            "id": "D4",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 431', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 431']",
+            "confirmed": null
+          },
+          {
+            "id": "D5",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that the user asked for a way to export decks to CSV, and the context shows that this request has been made twice. The reply indicates that the feature is on the roadmap, but the quote directly supports the claim that at least one user asked for this functionality.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P1",
+            "predicted": "partially_supports",
+            "reason": "The quote shows that writing product descriptions for 300 items took two weeks, which supports the claim that most small online shops struggle to write product descriptions. However, the context only provides one person's experience, which may not represent the general situation.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 443', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 443']",
+            "confirmed": null
+          },
+          {
+            "id": "P3",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 463', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 463']",
+            "confirmed": null
+          },
+          {
+            "id": "P4",
+            "predicted": "partially_supports",
+            "reason": "The quote directly supports the claim that the code-review bot reduced review time by 40% for one customer team, but the context indicates that results for other teams are still being collected. This suggests the claim is only partially supported, as it refers to a single team's experience.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "P5",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that editing takes six hours per episode for the speaker, but does not provide evidence that they want to outsource it or that they spend over five hours editing each episode. The claim is about spending time on editing, but the quote only mentions the time spent, not the intention to outsource.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U1",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms the speaker's action of sending invoice reminders manually every Friday, but does not mention any preference for subscription pricing over one-off purchases. The claim is about preference, but the quote only shows a specific action, not a comparison or preference between pricing models.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "The quote confirms that the app supports 14 languages and works offline, but does not provide any information about the number of downloads. The context does not mention download counts, so the quote does not support the claim that the app has more than 1 million downloads.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "The quote directly states that the team switched from Zoom to Google Meet, but does not provide any information about whether they regularly lose meeting notes. The context only mentions the switch, not the outcome or the frequency of note loss.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "The quote confirms that the speaker sells digital planners on Etsy, so there is nothing to ship, but does not address the difficulty of printing shipping labels. The context highlights a different issue (file sharing) rather than the shipping label printing difficulty.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "The quote confirms the redesign occurred in March, but there is no evidence of increased user retention yet. The context indicates the analysis is pending, so the quote does not support the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C1",
+            "predicted": "contradicts",
+            "reason": "The quote shows that only 12% of respondents would pay for automated meeting summaries, which directly contradicts the claim that most respondents would pay. The context clarifies that the rest were unsure, further weakening the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C2",
+            "predicted": "contradicts",
+            "reason": "The quote directly contradicts the claim that PodTrim offers a free plan. The context confirms that PodTrim does not offer a free plan, only a 7-day trial, which explicitly refutes the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C3",
+            "predicted": "contradicts",
+            "reason": "The quote confirms that PDF export is not available, but the context explicitly states that Word files are the only option. This shows that the resume builder does not support PDF export, contradicting the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C4",
+            "predicted": "contradicts",
+            "reason": "The quote states that sign-ups fell in four months, which contradicts the claim that sign-ups grew every month. The context clarifies that sign-ups decreased, so the claim is not supported.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "C5",
+            "predicted": "contradicts",
+            "reason": "The quote 'Sync breaks constantly between my phone and laptop' directly contradicts the claim that the flashcard app syncs reliably. The context shows that multiple users are experiencing sync issues, which undermines the claim that it syncs reliably.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote about the new stadium does not relate to yoga studio class-booking software. It provides information about a different topic (stadium construction) and does not support or contradict the claim about yoga studio owners struggling with class-booking software.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "The quote provides a recipe instruction, which is unrelated to the claim about freelance designers wanting a portfolio tool with client proofing. The context is a recipe, not a discussion about design tools or client proofing, so the quote does not support the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "The quote provides information about a cookie policy, not about podcast listener preferences. It does not support the claim that podcast listeners prefer episodes under 30 minutes.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I4",
+            "predicted": "does_not_support",
+            "reason": "The quote promotes a discount for signing up, which is unrelated to the claim about online tutors needing tracking tools. The context does not support the claim, and the quote is about a promotional offer rather than a functional requirement.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "The quote about the flooded river is unrelated to the claim about SaaS founders and churn analysis. It is a separate event and does not provide any evidence regarding the difficulty of churn analysis for SaaS founders.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M1",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states the reviewer's recommendation, but the context adds a condition (if half were broken) that weakens the recommendation. The quote does not fully support the claim because it is conditional and the reviewer is seeking a refund, indicating dissatisfaction.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M2",
+            "predicted": "contradicts",
+            "reason": "The quote directly states that AI writing tools will replace copywriters, but the context refutes this claim by stating the speaker's own experience shows their bookings doubled, implying the speaker believes AI does not replace copywriters. The quote does not support the claim but contradicts it based on the context.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M3",
+            "predicted": "contradicts",
+            "reason": "The quote directly states that the app improved vocabulary scores, but the context clarifies that the study found no significant difference between groups, indicating that the app did not significantly improve vocabulary scores. Thus, the quote contradicts the claim because the study's results refute the hypothesis.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "The quote directly states that the team switched to TaskGrid, but the context shows that the plan was cancelled a week later after a trial, indicating the switch was not implemented. Thus, the quote does not fully support the claim as stated.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "The quote asks whether freelancers lose clients due to late invoices but does not provide evidence or data to support the claim. The context indicates the question is open-ended and the speaker is researching, not yet having data.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T1",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that the article explains what AI meeting summaries are and how they work, but does not provide evidence of growing demand. The context is neutral and does not indicate any trend or preference in usage.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T2",
+            "predicted": "does_not_support",
+            "reason": "The quote directly states that the guide compares five video hosting platforms for online courses, but does not provide specific information about the costs associated with hosting. Therefore, it does not support the claim that online course creators struggle with video hosting costs.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T3",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that focus timer apps have been around since the Pomodoro technique, but it does not provide evidence that remote workers specifically want better focus-timer apps. The context is general, and the quote is neutral without addressing the claim directly.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "The quote indicates that book cover design is covered in a self-publishing course, but it does not provide evidence that indie authors lose sales due to poor cover design. The context only states that cover design is a topic in the course, not that it causes sales loss.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "T5",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that donor-management software is used by nonprofits to track gifts and contacts, but does not address whether small nonprofits can afford it. The context does not provide information about affordability, so the quote only supports the claim about usage, not affordability.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "V1",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states that PayMatch is an app that matches bank payments to invoices and connects to most European banks, which supports the claim that there is demand among freelancers for such a tool. The context confirms the tool's functionality and its target audience (European banks), which aligns with the claim about demand among freelancers.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "V2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 452', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 452']",
+            "confirmed": null
+          },
+          {
+            "id": "V3",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 399', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 399']",
+            "confirmed": null
+          },
+          {
+            "id": "V4",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 437', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 437']",
+            "confirmed": null
+          },
+          {
+            "id": "V5",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 405', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 405']",
+            "confirmed": null
+          }
+        ]
+      },
+      "heldout_v2": {
+        "correct": 5,
+        "total": 16,
+        "per_category": {
+          "direct_support": "0/2",
+          "partial_support": "1/2",
+          "unsupported": "0/2",
+          "contradictory": "0/2",
+          "irrelevant_source": "2/2",
+          "misleading_quote": "1/2",
+          "topic_mention": "1/2",
+          "competitor_vs_demand": "0/2"
+        },
+        "confusion": {
+          "supports": {
+            "no_answer": 3
+          },
+          "partially_supports": {
+            "no_answer": 1,
+            "partially_supports": 1
+          },
+          "does_not_support": {
+            "partially_supports": 4,
+            "does_not_support": 3
+          },
+          "contradicts": {
+            "does_not_support": 1,
+            "no_answer": 1,
+            "contradicts": 1,
+            "partially_supports": 1
+          }
+        },
+        "errors": [
+          {
+            "id": "HD1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 411', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 411']"
+          },
+          {
+            "id": "HD2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 426', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 426']"
+          },
+          {
+            "id": "HP1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 447', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 447']"
+          },
+          {
+            "id": "HU1",
+            "category": "unsupported",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote confirms that the app syncs notes across devices, which supports the claim that it reduces meeting time by eliminating the need to take notes during meetings. However, the context does not provide evidence that the app actually reduces meeting time, only that it syncs notes."
+          },
+          {
+            "id": "HU2",
+            "category": "unsupported",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote indicates that the speaker translates mostly legal and technical documents, but it does not explicitly state that translators prefer annual billing. The context provides information about the speaker's work, but the claim about preference for annual billing is not directly supported by the quote."
+          },
+          {
+            "id": "HC1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states that the extension is available for Chrome and Edge, but the claim is that it works in Firefox. The context confirms the availability for other browsers, but does not mention Firefox. Thus, the quote does not support the claim that the extension works in Firefox."
+          },
+          {
+            "id": "HC2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 430', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 430']"
+          },
+          {
+            "id": "HM2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states that the course would be worth its price if the videos were updated, but the context highlights that the course is not worth its price due to outdated software. This shows that the reviewer's opinion is conditional on a specific improvement, but the overall assessment is negative, thus partially supports the claim that the reviewer found the course worth its price."
+          },
+          {
+            "id": "HT1",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote states that loyalty programmes are common in the cafe industry, which supports the claim that small cafes struggle to manage them. However, the context confirms the general trend, not specifically the struggle of small cafes."
+          },
+          {
+            "id": "HV1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "confirmed": null,
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which supports the claim that restaurants want an AI menu-translation tool. The context confirms the quote is about a product launch, which aligns with the claim that restaurants want such a tool."
+          },
+          {
+            "id": "HV2",
+            "category": "competitor_vs_demand",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 443', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 443']"
+          }
+        ],
+        "verdict_critical": [],
+        "false_established": [],
+        "missed_established": [
+          {
+            "id": "HD1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 411', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 411']"
+          },
+          {
+            "id": "HD2",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 426', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 426']"
+          },
+          {
+            "id": "HV2",
+            "category": "competitor_vs_demand",
+            "expected": "supports",
+            "predicted": null,
+            "confirmed": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 443', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 443']"
+          }
+        ],
+        "elapsed_ms": 188874,
+        "predictions": [
+          {
+            "id": "HD1",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 411', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 411']",
+            "confirmed": null
+          },
+          {
+            "id": "HD2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 426', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 426']",
+            "confirmed": null
+          },
+          {
+            "id": "HP1",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 447', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 447']",
+            "confirmed": null
+          },
+          {
+            "id": "HP2",
+            "predicted": "partially_supports",
+            "reason": "The quote directly supports the claim that students pay for the exam-flashcard app, as the entire study group uses the free version, implying they do not pay. However, the context does not provide evidence of actual payments, so the claim is not fully supported.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HU1",
+            "predicted": "partially_supports",
+            "reason": "The quote confirms that the app syncs notes across devices, which supports the claim that it reduces meeting time by eliminating the need to take notes during meetings. However, the context does not provide evidence that the app actually reduces meeting time, only that it syncs notes.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HU2",
+            "predicted": "partially_supports",
+            "reason": "The quote indicates that the speaker translates mostly legal and technical documents, but it does not explicitly state that translators prefer annual billing. The context provides information about the speaker's work, but the claim about preference for annual billing is not directly supported by the quote.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HC1",
+            "predicted": "does_not_support",
+            "reason": "The quote states that the extension is available for Chrome and Edge, but the claim is that it works in Firefox. The context confirms the availability for other browsers, but does not mention Firefox. Thus, the quote does not support the claim that the extension works in Firefox.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HC2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 430', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 430']",
+            "confirmed": null
+          },
+          {
+            "id": "HI1",
+            "predicted": "does_not_support",
+            "reason": "The quote about parking free after 6 pm on weekdays provides no information about music teachers needing online scheduling tools. It is unrelated and does not support the claim.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HI2",
+            "predicted": "does_not_support",
+            "reason": "The quote confirms that the office will be closed on Monday, but it does not provide any information about developers' preferences regarding CI pipelines. The context is about office closure, not developer workflow or pipeline speed.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HM1",
+            "predicted": "contradicts",
+            "reason": "The quote directly states that the product has not yet reached profitability, contradicting the claim. The context clarifies that profitability is expected next year, so the quote does not support the claim but instead negates it.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HM2",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states that the course would be worth its price if the videos were updated, but the context highlights that the course is not worth its price due to outdated software. This shows that the reviewer's opinion is conditional on a specific improvement, but the overall assessment is negative, thus partially supports the claim that the reviewer found the course worth its price.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HT1",
+            "predicted": "partially_supports",
+            "reason": "The quote states that loyalty programmes are common in the cafe industry, which supports the claim that small cafes struggle to manage them. However, the context confirms the general trend, not specifically the struggle of small cafes.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HT2",
+            "predicted": "does_not_support",
+            "reason": "The quote provides a list of photo-delivery platforms, but it does not mention income loss or the reasons behind it. It only discusses storage limits, so the evidence does not support the claim that freelance photographers lose income due to slow photo delivery.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HV1",
+            "predicted": "partially_supports",
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which supports the claim that restaurants want an AI menu-translation tool. The context confirms the quote is about a product launch, which aligns with the claim that restaurants want such a tool.",
+            "confirmed": null,
+            "confirm_note": ""
+          },
+          {
+            "id": "HV2",
+            "predicted": null,
+            "reason": "error: No valid JSON from qwen3:1.7b after 2 attempts: ['attempt 1: Invalid JSON: EOF while parsing a string at line 2 column 443', 'attempt 2: Invalid JSON: EOF while parsing a string at line 2 column 443']",
+            "confirmed": null
+          }
+        ]
+      },
+      "heldout_v1": {
+        "correct": 9,
+        "total": 16,
+        "per_category": {
+          "direct_support": "2/2",
+          "partial_support": "0/2",
+          "unsupported": "2/2",
+          "contradictory": "0/2",
+          "irrelevant_source": "2/2",
+          "misleading_quote": "0/2",
+          "topic_mention": "2/2",
+          "competitor_vs_demand": "1/2"
+        },
+        "confusion": {
+          "supports": {
+            "supports": 3
+          },
+          "partially_supports": {
+            "supports": 1,
+            "does_not_support": 1
+          },
+          "does_not_support": {
+            "does_not_support": 6,
+            "supports": 1
+          },
+          "contradicts": {
+            "does_not_support": 4
+          }
+        },
+        "errors": [
+          {
+            "id": "HP1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that two of the author's clients paid more than 60 days late, which supports the claim that graphic designers in Europe struggle to get paid on time. The context confirms the author's position and the scope of the claim."
+          },
+          {
+            "id": "HP2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote does not provide evidence that students will pay for the app; it only states that a study group uses the free version before exams."
+          },
+          {
+            "id": "HC1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states the extension is available for Chrome and Edge only, but the claim is that it works in Firefox. The quote does not mention Firefox or its functionality, so it does not support the claim."
+          },
+          {
+            "id": "HC2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote provides specific data about 50 testers, but it does not generalize to 'most' beta testers. The claim is about the majority of testers, while the quote refers to a specific sample size."
+          },
+          {
+            "id": "HM1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote states that the product has not yet reached profitability, contradicting the claim that it has reached profitability."
+          },
+          {
+            "id": "HM2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "confirmed": null,
+            "reason": "The quote mentions the course could be worth its price if videos were updated, but does not confirm that it is worth its price as stated. It also implies the reviewer would not buy it again, which contradicts the claim that it is worth its price."
+          },
+          {
+            "id": "HV1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which aligns with the claim that restaurants want such a tool. The context confirms the product news, making the quote relevant and supporting the claim exactly as stated."
+          }
+        ],
+        "verdict_critical": [
+          {
+            "id": "HP1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that two of the author's clients paid more than 60 days late, which supports the claim that graphic designers in Europe struggle to get paid on time. The context confirms the author's position and the scope of the claim."
+          },
+          {
+            "id": "HV1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which aligns with the claim that restaurants want such a tool. The context confirms the product news, making the quote relevant and supporting the claim exactly as stated."
+          }
+        ],
+        "false_established": [
+          {
+            "id": "HP1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that two of the author's clients paid more than 60 days late, which supports the claim that graphic designers in Europe struggle to get paid on time. The context confirms the author's position and the scope of the claim."
+          },
+          {
+            "id": "HV1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "confirmed": null,
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which aligns with the claim that restaurants want such a tool. The context confirms the product news, making the quote relevant and supporting the claim exactly as stated."
+          }
+        ],
+        "missed_established": [],
+        "elapsed_ms": 86751,
+        "predictions": [
+          {
+            "id": "HD1",
+            "predicted": "supports",
+            "reason": "The quote directly states that the yearly plan costs 30 dollars and includes all features, aligning exactly with the claim.",
+            "confirmed": null
+          },
+          {
+            "id": "HD2",
+            "predicted": "supports",
+            "reason": "The quote directly states that setting up abandoned-cart emails took the speaker 'most of a weekend,' which matches the claim that it took them 'many hours.'",
+            "confirmed": null
+          },
+          {
+            "id": "HP1",
+            "predicted": "supports",
+            "reason": "The quote directly states that two of the author's clients paid more than 60 days late, which supports the claim that graphic designers in Europe struggle to get paid on time. The context confirms the author's position and the scope of the claim.",
+            "confirmed": null
+          },
+          {
+            "id": "HP2",
+            "predicted": "does_not_support",
+            "reason": "The quote does not provide evidence that students will pay for the app; it only states that a study group uses the free version before exams.",
+            "confirmed": null
+          },
+          {
+            "id": "HU1",
+            "predicted": "does_not_support",
+            "reason": "The quote explains a feature of the app but does not provide evidence that it reduces meeting time. It is neutral regarding the claim's effectiveness.",
+            "confirmed": null
+          },
+          {
+            "id": "HU2",
+            "predicted": "does_not_support",
+            "reason": "The quote does not directly state that translators prefer annual billing; it only mentions the type of documents translated.",
+            "confirmed": null
+          },
+          {
+            "id": "HC1",
+            "predicted": "does_not_support",
+            "reason": "The quote states the extension is available for Chrome and Edge only, but the claim is that it works in Firefox. The quote does not mention Firefox or its functionality, so it does not support the claim.",
+            "confirmed": null
+          },
+          {
+            "id": "HC2",
+            "predicted": "does_not_support",
+            "reason": "The quote provides specific data about 50 testers, but it does not generalize to 'most' beta testers. The claim is about the majority of testers, while the quote refers to a specific sample size.",
+            "confirmed": null
+          },
+          {
+            "id": "HI1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about parking fees, not music scheduling tools. It does not support the claim about music teachers needing online scheduling tools.",
+            "confirmed": null
+          },
+          {
+            "id": "HI2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about office closure policy, not about developer preferences for CI pipelines.",
+            "confirmed": null
+          },
+          {
+            "id": "HM1",
+            "predicted": "does_not_support",
+            "reason": "The quote states that the product has not yet reached profitability, contradicting the claim that it has reached profitability.",
+            "confirmed": null
+          },
+          {
+            "id": "HM2",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions the course could be worth its price if videos were updated, but does not confirm that it is worth its price as stated. It also implies the reviewer would not buy it again, which contradicts the claim that it is worth its price.",
+            "confirmed": null
+          },
+          {
+            "id": "HT1",
+            "predicted": "does_not_support",
+            "reason": "The quote states that loyalty programmes are common in the cafe industry, but it does not provide evidence that small cafes struggle to manage them. The context is general and does not specify the scale or difficulty of managing loyalty programmes in small cafes.",
+            "confirmed": null
+          },
+          {
+            "id": "HT2",
+            "predicted": "does_not_support",
+            "reason": "The quote lists platforms for photo delivery, but does not provide evidence that freelance photographers lose income due to slow delivery. It is neutral on the claim and does not address the income loss directly.",
+            "confirmed": null
+          },
+          {
+            "id": "HV1",
+            "predicted": "supports",
+            "reason": "The quote directly states that MenuLingo launched an AI menu-translation tool, which aligns with the claim that restaurants want such a tool. The context confirms the product news, making the quote relevant and supporting the claim exactly as stated.",
+            "confirmed": null
+          },
+          {
+            "id": "HV2",
+            "predicted": "supports",
+            "reason": "The quote directly states that MenuLingo translates menus into 30 languages, which matches the claim exactly. The context also mentions charging per menu, which is consistent with the claim about translation into 30 languages.",
+            "confirmed": null
+          }
+        ]
+      }
+    }
+  ]
+}

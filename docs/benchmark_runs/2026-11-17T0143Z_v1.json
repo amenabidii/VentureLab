@@ -1,0 +1,3103 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-17T01:43:30Z",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logical_cpus_visible": 12,
+    "memory_visible_gb": 7.6,
+    "gpu": "none (CPU inference)",
+    "ollama_version": "0.40.15",
+    "num_ctx": 4096,
+    "evidence_cases_sha256": "3581781aab4007d58f202a87cb9a9eaddb7051b8f935227ab62bdfc9b2a259dc"
+  },
+  "results": [
+    {
+      "model": "qwen3:4b",
+      "cold_load_ms": 16800,
+      "cold_first_request_ms": 18189,
+      "pipeline": [
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 46919,
+          "assess_ms": 37476,
+          "total_ms": 84395,
+          "claims": 4,
+          "quotes_verified": 3,
+          "standings": {
+            "established": 3,
+            "assumption": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1699,
+          "output_tokens": 500,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelance translators lose significant time manually checking paid invoices due to inconsistent payment landing in different bank accounts and remittance notes not including invoice numbers.",
+              "quote_status": "verified",
+              "quote": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Sole traders frequently experience delays in identifying unpaid invoices, leading to financial discrepancies that require manual intervention.",
+              "quote_status": "unverified",
+              "quote": "Last year I only noticed a 6.000 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Invoicing apps fail to automatically match payments from multiple bank accounts, requiring users to cancel subscriptions due to inadequate functionality.",
+              "quote_status": "verified",
+              "quote": "I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Bookkeepers frequently receive calls from sole traders due to the challenge of matching payments to invoices at the end of the quarter.",
+              "quote_status": "verified",
+              "quote": "As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 42529,
+          "assess_ms": 33688,
+          "total_ms": 76217,
+          "claims": 5,
+          "quotes_verified": 3,
+          "standings": {
+            "established": 2,
+            "assumption": 2,
+            "unsupported": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1987,
+          "output_tokens": 396,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments landing in different bank accounts",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers often miss unpaid invoices until months later due to poor tracking",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 10, 11] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle to match payments to invoices because remittance notes rarely include invoice numbers",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers with multiple clients face challenges tracking unpaid invoices",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients.",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers forget to update calendar reminders for unpaid invoices",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 10, 12] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 28813,
+          "assess_ms": 65614,
+          "total_ms": 94427,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 3,
+            "partial_evidence": 1,
+            "unsupported": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1320,
+          "output_tokens": 552,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time tracking unpaid invoices due to payments in multiple bank accounts",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers miss unpaid invoices for months because payments land in different accounts",
+              "quote_status": "verified",
+              "quote": "Last year I only noticed a 600 euro invoice was unpaid after four months.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle to match payments to invoices due to remittance notes lacking invoice numbers",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers spend hours manually checking paid invoices across multiple bank accounts",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers cancel tools that don't automatically match payments from second bank accounts",
+              "quote_status": "verified",
+              "quote": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 80035,
+          "assess_ms": 63579,
+          "total_ms": 143613,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 4,
+            "partial_evidence": 1
+          },
+          "model_calls": 6,
+          "prompt_tokens": 2999,
+          "output_tokens": 655,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend excessive time editing episodes, leading to burnout and potential quitting.",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.",
+              "quote_status": "verified",
+              "quote": "I edit for nine shows as a freelancer. The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "New podcasters struggle with the learning curve of editing software, resulting in disproportionately high editing times.",
+              "quote_status": "verified",
+              "quote": "I am on episode three and editing is taking me eight hours per episode because I am still learning the software.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Podcasters demand AI editing tools that reliably handle leveling and filler words without requiring extensive manual review.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "The podcasting community actively tests and compares AI editing tools for their effectiveness and cost efficiency.",
+              "quote_status": "verified",
+              "quote": "We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 67547,
+          "assess_ms": 55515,
+          "total_ms": 123062,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3420,
+          "output_tokens": 488,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing a 50-minute interview weekly",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "AI tools cut breaths in strange places and cannot judge pacing",
+              "quote_status": "verified",
+              "quote": "The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to $15 monthly for reliable AI editing tools",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly shows spend significant time on editing",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "competitor",
+              "claim": "CutCast's free tier removes filler words in four minutes for a 40-minute episode",
+              "quote_status": "verified",
+              "quote": "It removed filler words in about four minutes for a 40-minute episode, which felt like magic.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 51275,
+          "assess_ms": 52027,
+          "total_ms": 103301,
+          "claims": 5,
+          "quotes_verified": 4,
+          "standings": {
+            "established": 2,
+            "partial_evidence": 2,
+            "assumption": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1416,
+          "output_tokens": 505,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing per episode to remove filler words and fix audio levels.",
+              "quote_status": "verified",
+              "quote": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts often underestimate editing time until they complete ten episodes.",
+              "quote_status": "verified",
+              "quote": "But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools remove filler words but cut breaths in unusual places and cannot judge pacing.",
+              "quote_status": "verified",
+              "quote": "The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to 15 dollars per month for an AI tool that reliably handles leveling and filler words.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly interview shows spend five hours editing per episode to remove filler words and fix audio levels.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [11, 9] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 40262,
+          "assess_ms": 35079,
+          "total_ms": 75341,
+          "claims": 4,
+          "quotes_verified": 3,
+          "standings": {
+            "established": 3,
+            "assumption": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1692,
+          "output_tokens": 497,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelance translators lose significant time manually checking paid invoices due to inconsistent payment landing in different bank accounts and remittance notes not including invoice numbers.",
+              "quote_status": "verified",
+              "quote": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Sole traders frequently experience delays in identifying unpaid invoices, leading to financial losses.",
+              "quote_status": "unverified",
+              "quote": "Last year I only noticed a 6.00 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Invoicing apps fail to automatically match payments from multiple bank accounts, requiring manual intervention.",
+              "quote_status": "verified",
+              "quote": "I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Bookkeepers often receive calls from sole traders due to difficulties in matching payments to invoices at the end of the quarter.",
+              "quote_status": "verified",
+              "quote": "As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 42337,
+          "assess_ms": 38136,
+          "total_ms": 80473,
+          "claims": 5,
+          "quotes_verified": 3,
+          "standings": {
+            "established": 2,
+            "assumption": 2,
+            "unsupported": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1987,
+          "output_tokens": 401,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time checking unpaid invoices due to payments landing in different bank accounts",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers often miss unpaid invoices until months later due to poor tracking",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 10, 11] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle to match payments to invoices because remittance notes rarely include invoice numbers",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers with multiple clients face challenges tracking unpaid invoices",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?\n\nPost 1 (user mara_translates): I work as a freelance translator with about twelve regular clients.",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            },
+            {
+              "type": "competitor",
+              "claim": "Existing invoicing apps require monthly subscriptions and cannot automatically match payments from multiple bank accounts",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 13, 14] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 30958,
+          "assess_ms": 67749,
+          "total_ms": 98706,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 3,
+            "partial_evidence": 1,
+            "unsupported": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1320,
+          "output_tokens": 552,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers lose time tracking unpaid invoices due to payments in multiple bank accounts",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers miss unpaid invoices for months because payments land in different accounts",
+              "quote_status": "verified",
+              "quote": "Last year I only noticed a 600 euro invoice was unpaid after four months.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle to match payments to invoices due to remittance notes lacking invoice numbers",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers spend hours manually checking paid invoices across multiple bank accounts",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers cancel tools that don't automatically match payments from second bank accounts",
+              "quote_status": "verified",
+              "quote": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 57055,
+          "assess_ms": 57307,
+          "total_ms": 114362,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 4,
+            "unsupported": 1
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3001,
+          "output_tokens": 665,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend excessive time editing episodes, leading to burnout and potential quitting.",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelance audio editors report that AI tools for podcast editing have significant limitations in handling breath sounds and pacing.",
+              "quote_status": "verified",
+              "quote": "I edit for nine shows as a freelancer. The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "New podcasters struggle with the learning curve of editing software, resulting in high time investment per episode.",
+              "quote_status": "verified",
+              "quote": "I am on episode three and editing is taking me eight hours per episode because I am still learning the software.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Podcasters demand AI editing tools that reliably handle leveling and filler words without requiring extensive manual review.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "The podcasting community actively discusses and tests AI editing tools for their practical utility in production workflows.",
+              "quote_status": "verified",
+              "quote": "We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat.",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 35009,
+          "assess_ms": 59961,
+          "total_ms": 94970,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "established": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 3473,
+          "output_tokens": 504,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing a 50-minute interview weekly",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "AI tools for podcast editing have issues with breath sounds and pacing",
+              "quote_status": "verified",
+              "quote": "The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts are willing to pay up to $15 monthly for reliable AI editing tools",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly shows spend significant time on editing",
+              "quote_status": "verified",
+              "quote": "I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "competitor",
+              "claim": "CutCast offers a free tier that removes filler words quickly but requires manual fixes",
+              "quote_status": "verified",
+              "quote": "I tried CutCast on the free tier. It removed filler words in about four minutes for a 40-minute episode, which felt like magic. Then I spent an hour fixing words it had cut by mistake, so I am not sure I saved much time.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 43080,
+          "assess_ms": 51565,
+          "total_ms": 94644,
+          "claims": 5,
+          "quotes_verified": 4,
+          "standings": {
+            "established": 2,
+            "partial_evidence": 2,
+            "assumption": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1415,
+          "output_tokens": 494,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend five hours editing per episode to remove filler words and fix audio levels.",
+              "quote_status": "verified",
+              "quote": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts underestimate editing time until they complete ten episodes.",
+              "quote_status": "verified",
+              "quote": "But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools remove filler words but cut breaths in unusual places and cannot judge pacing.",
+              "quote_status": "verified",
+              "quote": "The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Solo podcast hosts would pay up to 15 dollars per month for an AI tool that reliably handles leveling and filler words.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts with weekly interview shows spend five hours editing per episode.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [11, 9] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 2
+        }
+      ],
+      "eval_single": {
+        "correct": 28,
+        "total": 40,
+        "per_category": {
+          "direct_support": "5/5",
+          "partial_support": "3/5",
+          "unsupported": "5/5",
+          "contradictory": "0/5",
+          "irrelevant_source": "5/5",
+          "misleading_quote": "1/5",
+          "topic_mention": "5/5",
+          "competitor_vs_demand": "4/5"
+        },
+        "confusion": {
+          "supports": {
+            "supports": 6
+          },
+          "partially_supports": {
+            "partially_supports": 3,
+            "supports": 3
+          },
+          "does_not_support": {
+            "does_not_support": 19
+          },
+          "contradicts": {
+            "does_not_support": 8,
+            "supports": 1
+          }
+        },
+        "errors": [
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states a wedding planner's desire for an app that saves time on seating charts, indicating willingness to pay."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states the time spent editing per episode, matching the claim's scope."
+          },
+          {
+            "id": "C1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote directly contradicts claim by stating only 12% would pay, not most."
+          },
+          {
+            "id": "C2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote directly contradicts the claim that PodTrim offers a free plan."
+          },
+          {
+            "id": "C3",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote states PDF export is unavailable, contradicting the claim of support."
+          },
+          {
+            "id": "C4",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote states sign-ups fell in four months, contradicting monthly growth claim"
+          },
+          {
+            "id": "C5",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote describes personal sync issues, not general reliability of the app."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote expresses negative sentiment about the template pack, contradicting the recommendation."
+          },
+          {
+            "id": "M2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "supports",
+            "reason": "The quote directly states the claim without context, but the context shows the author disagrees with it."
+          },
+          {
+            "id": "M3",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote states the app improved scores, but context shows no significant difference, contradicting the claim."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote states a plan cancellation, not actual implementation of switching."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "Quote shows 8,000 paying subscribers, mostly freelancers, directly supporting willingness to pay."
+          }
+        ],
+        "critical": [
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states a wedding planner's desire for an app that saves time on seating charts, indicating willingness to pay."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states the time spent editing per episode, matching the claim's scope."
+          },
+          {
+            "id": "M2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "supports",
+            "reason": "The quote directly states the claim without context, but the context shows the author disagrees with it."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "Quote shows 8,000 paying subscribers, mostly freelancers, directly supporting willingness to pay."
+          }
+        ],
+        "false_established": 4,
+        "elapsed_ms": 337956,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": "supports",
+            "reason": "The quote directly states the time spent checking payments, matching the claim's scope exactly.",
+            "output_tokens": 50
+          },
+          {
+            "id": "D2",
+            "predicted": "supports",
+            "reason": "The quote directly states the Basic plan cost as $12 per month, matching the claim exactly.",
+            "output_tokens": 52
+          },
+          {
+            "id": "D3",
+            "predicted": "supports",
+            "reason": "The quote directly matches the claim's numbers and scope.",
+            "output_tokens": 40
+          },
+          {
+            "id": "D4",
+            "predicted": "supports",
+            "reason": "The quote directly states the exact percentage (1.4%) for 2025, matching the claim's 'fewer than 2%'.",
+            "output_tokens": 65
+          },
+          {
+            "id": "D5",
+            "predicted": "supports",
+            "reason": "The quote directly states a user asking for CSV export, matching the claim exactly.",
+            "output_tokens": 49
+          },
+          {
+            "id": "P1",
+            "predicted": "partially_supports",
+            "reason": "The quote shows one person's experience with 300 items taking two weeks, not most small shops.",
+            "output_tokens": 59
+          },
+          {
+            "id": "P2",
+            "predicted": "supports",
+            "reason": "The quote directly states a wedding planner's desire for an app that saves time on seating charts, indicating willingness to pay.",
+            "output_tokens": 60
+          },
+          {
+            "id": "P3",
+            "predicted": "partially_supports",
+            "reason": "Quote mentions German teachers but not French, so claim about both countries isn't fully supported.",
+            "output_tokens": 53
+          },
+          {
+            "id": "P4",
+            "predicted": "partially_supports",
+            "reason": "Quote describes one team's experience, not all teams.",
+            "output_tokens": 46
+          },
+          {
+            "id": "P5",
+            "predicted": "supports",
+            "reason": "The quote directly states the time spent editing per episode, matching the claim's scope.",
+            "output_tokens": 49
+          },
+          {
+            "id": "U1",
+            "predicted": "does_not_support",
+            "reason": "Quote describes manual process, not pricing preference.",
+            "output_tokens": 43
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "Quote only states features without mentioning download numbers.",
+            "output_tokens": 41
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "Quote only states tool change, not meeting note loss.",
+            "output_tokens": 44
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "The quote addresses a different issue (digital products) than physical shipping labels.",
+            "output_tokens": 54
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "Quote only states when redesign happened, not retention impact.",
+            "output_tokens": 43
+          },
+          {
+            "id": "C1",
+            "predicted": "does_not_support",
+            "reason": "Quote directly contradicts claim by stating only 12% would pay, not most.",
+            "output_tokens": 53
+          },
+          {
+            "id": "C2",
+            "predicted": "does_not_support",
+            "reason": "The quote directly contradicts the claim that PodTrim offers a free plan.",
+            "output_tokens": 60
+          },
+          {
+            "id": "C3",
+            "predicted": "does_not_support",
+            "reason": "Quote states PDF export is unavailable, contradicting the claim of support.",
+            "output_tokens": 46
+          },
+          {
+            "id": "C4",
+            "predicted": "does_not_support",
+            "reason": "Quote states sign-ups fell in four months, contradicting monthly growth claim",
+            "output_tokens": 48
+          },
+          {
+            "id": "C5",
+            "predicted": "does_not_support",
+            "reason": "Quote describes personal sync issues, not general reliability of the app.",
+            "output_tokens": 46
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a stadium, not yoga studios, so it's irrelevant to the claim.",
+            "output_tokens": 58
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "The quote is a cooking instruction, not related to freelance designers or portfolio tools.",
+            "output_tokens": 51
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "The quote is about cookie policy, not podcast episode preferences.",
+            "output_tokens": 49
+          },
+          {
+            "id": "I4",
+            "predicted": "does_not_support",
+            "reason": "The quote offers a discount promotion, not tools for tracking homework.",
+            "output_tokens": 48
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "Quote is about river flooding, not SaaS churn analysis.",
+            "output_tokens": 47
+          },
+          {
+            "id": "M1",
+            "predicted": "does_not_support",
+            "reason": "The quote expresses negative sentiment about the template pack, contradicting the recommendation.",
+            "output_tokens": 48
+          },
+          {
+            "id": "M2",
+            "predicted": "supports",
+            "reason": "The quote directly states the claim without context, but the context shows the author disagrees with it.",
+            "output_tokens": 51
+          },
+          {
+            "id": "M3",
+            "predicted": "does_not_support",
+            "reason": "The quote states the app improved scores, but context shows no significant difference, contradicting the claim.",
+            "output_tokens": 56
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "The quote states a plan cancellation, not actual implementation of switching.",
+            "output_tokens": 50
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "The quote is a question, not a statement, so it doesn't establish the claim.",
+            "output_tokens": 55
+          },
+          {
+            "id": "T1",
+            "predicted": "does_not_support",
+            "reason": "The quote only describes the article's content without addressing demand growth among small agencies.",
+            "output_tokens": 59
+          },
+          {
+            "id": "T2",
+            "predicted": "does_not_support",
+            "reason": "Quote only mentions comparing platforms, not that creators struggle with costs.",
+            "output_tokens": 47
+          },
+          {
+            "id": "T3",
+            "predicted": "does_not_support",
+            "reason": "Quote states apps have existed since Pomodoro technique became popular, but claim is about current desire for better apps.",
+            "output_tokens": 60
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "Quote only states course covers book cover design, not that poor design causes sales loss.",
+            "output_tokens": 53
+          },
+          {
+            "id": "T5",
+            "predicted": "does_not_support",
+            "reason": "Quote describes what donor-management software does but doesn't address affordability for small nonprofits.",
+            "output_tokens": 55
+          },
+          {
+            "id": "V1",
+            "predicted": "does_not_support",
+            "reason": "Quote describes PayMatch's function but doesn't address freelancer demand for such tools.",
+            "output_tokens": 51
+          },
+          {
+            "id": "V2",
+            "predicted": "supports",
+            "reason": "Quote shows 8,000 paying subscribers, mostly freelancers, directly supporting willingness to pay.",
+            "output_tokens": 57
+          },
+          {
+            "id": "V3",
+            "predicted": "supports",
+            "reason": "The quote directly states the monthly cost after trial, matching the claim exactly.",
+            "output_tokens": 56
+          },
+          {
+            "id": "V4",
+            "predicted": "does_not_support",
+            "reason": "Quote states tools exist but doesn't address podcast hosts' desires or needs.",
+            "output_tokens": 50
+          },
+          {
+            "id": "V5",
+            "predicted": "does_not_support",
+            "reason": "Quote mentions funding for building dashboards, not that small agencies will pay for them.",
+            "output_tokens": 57
+          }
+        ]
+      },
+      "eval_batch": {
+        "correct": 31,
+        "total": 40,
+        "per_category": {
+          "direct_support": "4/5",
+          "partial_support": "3/5",
+          "unsupported": "5/5",
+          "contradictory": "2/5",
+          "irrelevant_source": "5/5",
+          "misleading_quote": "3/5",
+          "topic_mention": "4/5",
+          "competitor_vs_demand": "5/5"
+        },
+        "confusion": {
+          "supports": {
+            "partially_supports": 1,
+            "supports": 5
+          },
+          "partially_supports": {
+            "supports": 2,
+            "partially_supports": 4
+          },
+          "does_not_support": {
+            "does_not_support": 18,
+            "partially_supports": 1
+          },
+          "contradicts": {
+            "does_not_support": 5,
+            "contradicts": 4
+          }
+        },
+        "errors": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "reason": "One translator's experience shows time spent checking payments, but claim is about 'at least one' which matches."
+          },
+          {
+            "id": "P1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote shows time spent writing descriptions for 300 items, indicating struggle for small shops."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote states six hours per episode, exceeding five hours, matching the claim exactly."
+          },
+          {
+            "id": "C1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Only 12% would pay, contradicting 'most' respondents paying for summaries."
+          },
+          {
+            "id": "C3",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote states PDF export unavailable, contradicting claim of support"
+          },
+          {
+            "id": "C4",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote states sign-ups fell in four months, contradicting monthly growth claim"
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions a recommendation but states the template is broken, contradicting the recommendation."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "Quote states switching was cancelled, so team didn't actually switch to TaskGrid."
+          },
+          {
+            "id": "T2",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "partially_supports",
+            "reason": "Quote compares platforms but doesn't address cost struggles directly"
+          }
+        ],
+        "critical": [
+          {
+            "id": "P1",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote shows time spent writing descriptions for 300 items, indicating struggle for small shops."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote states six hours per episode, exceeding five hours, matching the claim exactly."
+          }
+        ],
+        "false_established": 2,
+        "elapsed_ms": 424218,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": "partially_supports",
+            "reason": "One translator's experience shows time spent checking payments, but claim is about 'at least one' which matches."
+          },
+          {
+            "id": "D2",
+            "predicted": "supports",
+            "reason": "Quote explicitly states Basic plan costs $12 per month"
+          },
+          {
+            "id": "D3",
+            "predicted": "supports",
+            "reason": "Quote directly states 61% of 412 tutors named rescheduling as biggest admin task"
+          },
+          {
+            "id": "D4",
+            "predicted": "supports",
+            "reason": "The quote provides exact refund percentage (1.4%) for 2025, matching the claim's scope."
+          },
+          {
+            "id": "D5",
+            "predicted": "supports",
+            "reason": "The quote directly states a user asked for CSV export, matching the claim exactly."
+          },
+          {
+            "id": "P1",
+            "predicted": "supports",
+            "reason": "The quote shows time spent writing descriptions for 300 items, indicating struggle for small shops."
+          },
+          {
+            "id": "P2",
+            "predicted": "partially_supports",
+            "reason": "User expresses need for app but doesn't confirm payment willingness"
+          },
+          {
+            "id": "P3",
+            "predicted": "partially_supports",
+            "reason": "Quote mentions German teachers, but not French users or full scope of claim"
+          },
+          {
+            "id": "P4",
+            "predicted": "partially_supports",
+            "reason": "One team saw 40% reduction, but other teams' results pending"
+          },
+          {
+            "id": "P5",
+            "predicted": "supports",
+            "reason": "The quote states six hours per episode, exceeding five hours, matching the claim exactly."
+          },
+          {
+            "id": "U1",
+            "predicted": "does_not_support",
+            "reason": "Quote describes manual process, not preference for subscription pricing"
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "Quote describes features, not download numbers"
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "Switching apps doesn't prove meeting notes are lost; it's about platform change, not note retention."
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "Quote addresses digital planners with no shipping, not shipping labels for Etsy sellers"
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "Redesign happened but retention analysis hasn't been done, so no evidence of increased retention."
+          },
+          {
+            "id": "C1",
+            "predicted": "does_not_support",
+            "reason": "Only 12% would pay, contradicting 'most' respondents paying for summaries."
+          },
+          {
+            "id": "C2",
+            "predicted": "contradicts",
+            "reason": "Quote states PodTrim has no free plan, only trial, directly opposing claim"
+          },
+          {
+            "id": "C3",
+            "predicted": "does_not_support",
+            "reason": "Quote states PDF export unavailable, contradicting claim of support"
+          },
+          {
+            "id": "C4",
+            "predicted": "does_not_support",
+            "reason": "Quote states sign-ups fell in four months, contradicting monthly growth claim"
+          },
+          {
+            "id": "C5",
+            "predicted": "contradicts",
+            "reason": "User reports sync breaks, directly opposing reliable syncing between devices."
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a stadium opening, irrelevant to yoga studio software struggles."
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "Quote is a recipe, not related to portfolio tools or client proofing"
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "Quote is about cookie policy, irrelevant to podcast listener preferences"
+          },
+          {
+            "id": "I4",
+            "predicted": "does_not_support",
+            "reason": "Quote is a promotional offer, not evidence of need for tracking tools"
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "Quote describes river flooding, unrelated to SaaS churn analysis"
+          },
+          {
+            "id": "M1",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions a recommendation but states the template is broken, contradicting the recommendation."
+          },
+          {
+            "id": "M2",
+            "predicted": "contradicts",
+            "reason": "Author explicitly states AI writing tools won't replace copywriters"
+          },
+          {
+            "id": "M3",
+            "predicted": "contradicts",
+            "reason": "Results showed no significant difference, contradicting the improvement claim"
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "Quote states switching was cancelled, so team didn't actually switch to TaskGrid."
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "Quote is a question, not a statement about the claim"
+          },
+          {
+            "id": "T1",
+            "predicted": "does_not_support",
+            "reason": "Quote explains AI meeting summaries, not demand growth"
+          },
+          {
+            "id": "T2",
+            "predicted": "partially_supports",
+            "reason": "Quote compares platforms but doesn't address cost struggles directly"
+          },
+          {
+            "id": "T3",
+            "predicted": "does_not_support",
+            "reason": "Quote discusses historical existence, not current desires of remote workers"
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "Quote mentions book cover design as course topic, not cause of sales loss"
+          },
+          {
+            "id": "T5",
+            "predicted": "does_not_support",
+            "reason": "Quote describes software use but doesn't address affordability for small nonprofits"
+          },
+          {
+            "id": "V1",
+            "predicted": "does_not_support",
+            "reason": "The quote describes an app's function but doesn't address freelancer demand for it."
+          },
+          {
+            "id": "V2",
+            "predicted": "partially_supports",
+            "reason": "Quote shows paying subscribers but doesn't confirm willingness to pay for software"
+          },
+          {
+            "id": "V3",
+            "predicted": "supports",
+            "reason": "Quote directly states monthly cost after trial period"
+          },
+          {
+            "id": "V4",
+            "predicted": "does_not_support",
+            "reason": "Quote lists existing tools but doesn't state that podcast hosts want them."
+          },
+          {
+            "id": "V5",
+            "predicted": "does_not_support",
+            "reason": "Quote mentions funding for dashboards but doesn't state that small agencies pay for them."
+          }
+        ]
+      }
+    },
+    {
+      "model": "qwen3:1.7b",
+      "cold_load_ms": 7330,
+      "cold_first_request_ms": 7772,
+      "pipeline": [
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 28341,
+          "assess_ms": 27032,
+          "total_ms": 55374,
+          "claims": 5,
+          "quotes_verified": 3,
+          "standings": {
+            "partial_evidence": 3,
+            "assumption": 2
+          },
+          "model_calls": 4,
+          "prompt_tokens": 1726,
+          "output_tokens": 677,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with tracking unpaid invoices due to multiple bank accounts and unclear payment references.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users face challenges in efficiently managing unpaid invoices due to the lack of clear payment references and multiple bank accounts.",
+              "quote_status": "unverified",
+              "quote": "The payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users require a systematic way to track and manage unpaid invoices, especially when payments are received in different accounts.",
+              "quote_status": "verified",
+              "quote": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users find it difficult to keep track of unpaid invoices when payments are received in different bank accounts and there is no clear reference in the remittance notes.",
+              "quote_status": "unverified",
+              "quote": "The payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users need a reliable method to match payments to invoices, especially when dealing with multiple bank accounts and unclear payment references.",
+              "quote_status": "verified",
+              "quote": "I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 20106,
+          "assess_ms": 30441,
+          "total_ms": 50547,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "unsupported": 1,
+            "established": 2,
+            "partial_evidence": 2
+          },
+          "model_calls": 6,
+          "prompt_tokens": 2642,
+          "output_tokens": 598,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers face the challenge of tracking unpaid invoices and managing payments efficiently.",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            },
+            {
+              "type": "demand",
+              "claim": "There is a clear demand for a solution to track unpaid invoices and match payments.",
+              "quote_status": "verified",
+              "quote": "Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "competitor",
+              "claim": "Spreadsheets are a common solution for tracking unpaid invoices and payments.",
+              "quote_status": "verified",
+              "quote": "Post 2 (user dev_ollie): I just use a spreadsheet and it's fine.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with manually tracking payments across multiple bank accounts.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Bookkeepers and freelance professionals frequently encounter the problem of tracking unpaid invoices.",
+              "quote_status": "verified",
+              "quote": "Post 5 (user ben_bookkeeper): As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 12879,
+          "assess_ms": 14280,
+          "total_ms": 27159,
+          "claims": 4,
+          "quotes_verified": 2,
+          "standings": {
+            "assumption": 2,
+            "established": 1,
+            "partial_evidence": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 969,
+          "output_tokens": 354,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with tracking unpaid invoices due to multiple bank accounts and unclear payment details.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 6] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers spend significant time each month verifying which invoices have been paid.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Freelancers are seeking a solution to automatically match payments to invoices from multiple bank accounts.",
+              "quote_status": "verified",
+              "quote": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers who use multiple bank accounts and have unclear payment details are the primary users of this solution.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [6, 14] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 36505,
+          "assess_ms": 22114,
+          "total_ms": 58619,
+          "claims": 5,
+          "quotes_verified": 3,
+          "standings": {
+            "assumption": 2,
+            "partial_evidence": 2,
+            "established": 1
+          },
+          "model_calls": 4,
+          "prompt_tokens": 2152,
+          "output_tokens": 666,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Editing takes a significant amount of time, especially for solo hosts.",
+              "quote_status": "unverified",
+              "quote": "I edit a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "AI editing tools are not reliable for precise editing tasks.",
+              "quote_status": "unverified",
+              "quote": "The AI tools cannot judge pacing. My clients pay me between 60 and 120 dollars per episode depending on length. Two clients tried an AI tool for a month and came back, one stayed with it.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Editing is time-consuming and requires manual intervention.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "PodTrim and CutCast are tested by podcasters.",
+              "quote_status": "verified",
+              "quote": "We have six shows. We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat. We kept one seat for rough cuts, but final edits are still done by a person.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI tools have improved but still lack precision in editing.",
+              "quote_status": "verified",
+              "quote": "To be fair to the tools, they have improved a lot this year. But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 30201,
+          "assess_ms": 7660,
+          "total_ms": 37861,
+          "claims": 4,
+          "quotes_verified": 1,
+          "standings": {
+            "partial_evidence": 1,
+            "assumption": 3
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1682,
+          "output_tokens": 325,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend significant time editing podcasts, often spending five hours per episode.",
+              "quote_status": "verified",
+              "quote": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools like CutCast and PodTrim are available, but they have limitations such as poor breath detection and manual correction.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [14, 16, 20] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "demand",
+              "claim": "Many solo podcast hosts are willing to pay for a tool that can save time on editing, especially if it handles common tasks like filler word removal.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [17, 23, 27] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "segment",
+              "claim": "Solo podcast hosts, especially those with limited time and experience, are looking for efficient editing tools that can reduce their editing time.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [9, 10, 22] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 23564,
+          "assess_ms": 0,
+          "total_ms": 23564,
+          "claims": 4,
+          "quotes_verified": 0,
+          "standings": {
+            "assumption": 4
+          },
+          "model_calls": 1,
+          "prompt_tokens": 622,
+          "output_tokens": 251,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts often spend significant time on editing, including removing ums, fixing levels between themselves and guests, and cutting long pauses.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [11, 16, 19] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools are effective at removing filler words but still have issues with cutting breaths in strange places and judging pacing.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [16, 22] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "demand",
+              "claim": "Clients pay solo podcast hosts between 60 and 120 dollars per episode, depending on the length of the podcast.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [17, 27] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "segment",
+              "claim": "Hobby podcasters like kemi_pod and small podcast networks like daniel_mic recognize the time-consuming nature of editing and are willing to pay for tools or courses that improve their workflow.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [19, 38, 33] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 1
+        },
+        {
+          "design": "A",
+          "source": "short_thread",
+          "extract_ms": 22916,
+          "assess_ms": 37255,
+          "total_ms": 60171,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "partial_evidence": 5
+          },
+          "model_calls": 6,
+          "prompt_tokens": 2608,
+          "output_tokens": 855,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with tracking unpaid invoices due to multiple bank accounts and unclear payment references.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users face challenges in managing unpaid invoices due to the lack of clear payment references in remittance notes.",
+              "quote_status": "verified",
+              "quote": "the payments land in two different bank accounts and the remittance notes rarely mention the invoice number",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users require a systematic way to track and verify payments against invoices, especially when payments are received in different accounts.",
+              "quote_status": "verified",
+              "quote": "I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users find it difficult to manage unpaid invoices when payments are received in separate bank accounts and there is no clear reference in the remittance notes.",
+              "quote_status": "verified",
+              "quote": "the payments land in two different bank accounts and the remittance notes rarely mention the invoice number",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Users need a reliable method to track and verify payments against invoices, especially when payments are received in different accounts and there is no clear reference in the remittance notes.",
+              "quote_status": "verified",
+              "quote": "the payments land in two different bank accounts and the remittance notes rarely mention the invoice number",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "short_thread",
+          "extract_ms": 20056,
+          "assess_ms": 30323,
+          "total_ms": 50379,
+          "claims": 5,
+          "quotes_verified": 5,
+          "standings": {
+            "unsupported": 1,
+            "established": 2,
+            "partial_evidence": 2
+          },
+          "model_calls": 6,
+          "prompt_tokens": 2642,
+          "output_tokens": 598,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers face the challenge of tracking unpaid invoices and managing payments efficiently.",
+              "quote_status": "verified",
+              "quote": "Thread: How do you keep track of unpaid invoices?",
+              "note": "",
+              "verdict": "does_not_support",
+              "standing": "unsupported"
+            },
+            {
+              "type": "demand",
+              "claim": "There is a clear demand for a solution to track unpaid invoices and match payments.",
+              "quote_status": "verified",
+              "quote": "Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "competitor",
+              "claim": "Spreadsheets are a common solution for tracking unpaid invoices and payments.",
+              "quote_status": "verified",
+              "quote": "Post 2 (user dev_ollie): I just use a spreadsheet and it's fine.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with manually tracking payments across multiple bank accounts.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Bookkeepers and freelance professionals frequently encounter the problem of tracking unpaid invoices.",
+              "quote_status": "verified",
+              "quote": "Post 5 (user ben_bookkeeper): As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "short_thread",
+          "extract_ms": 13146,
+          "assess_ms": 14286,
+          "total_ms": 27433,
+          "claims": 4,
+          "quotes_verified": 2,
+          "standings": {
+            "assumption": 2,
+            "established": 1,
+            "partial_evidence": 1
+          },
+          "model_calls": 2,
+          "prompt_tokens": 969,
+          "output_tokens": 354,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers struggle with tracking unpaid invoices due to multiple bank accounts and unclear payment details.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [4, 6] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Freelancers spend significant time each month verifying which invoices have been paid.",
+              "quote_status": "verified",
+              "quote": "Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            },
+            {
+              "type": "demand",
+              "claim": "Freelancers are seeking a solution to automatically match payments to invoices from multiple bank accounts.",
+              "quote_status": "verified",
+              "quote": "Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "segment",
+              "claim": "Freelancers who use multiple bank accounts and have unclear payment details are the primary users of this solution.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [6, 14] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "A",
+          "source": "forum_page",
+          "extract_ms": 24380,
+          "assess_ms": 14866,
+          "total_ms": 39246,
+          "claims": 5,
+          "quotes_verified": 2,
+          "standings": {
+            "assumption": 3,
+            "partial_evidence": 1,
+            "established": 1
+          },
+          "model_calls": 3,
+          "prompt_tokens": 1733,
+          "output_tokens": 571,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Editing takes a significant amount of time, especially for solo hosts.",
+              "quote_status": "unverified",
+              "quote": "I edit a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "AI editing tools are not reliable for precise editing tasks.",
+              "quote_status": "unverified",
+              "quote": "The AI tools cannot judge pacing. My clients pay me between 60 and 120 dollars per episode depending on length. Two clients tried an AI tool for a month and came back, one stayed with it.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Editing is time-consuming and requires manual intervention.",
+              "quote_status": "verified",
+              "quote": "I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Sole hosts underestimate the time required for editing.",
+              "quote_status": "unverified",
+              "quote": "The people who ask me for help usually come after episode eight or nine. Most solo hosts underestimate how long editing takes until they have done ten episodes.",
+              "note": "text not found in source",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "customer_problem",
+              "claim": "Editing is a significant financial commitment for small podcasters.",
+              "quote_status": "verified",
+              "quote": "We have six shows. We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat. We kept one seat for rough cuts, but final edits are still done by a person.",
+              "note": "",
+              "verdict": "supports",
+              "standing": "established"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "B",
+          "source": "forum_page",
+          "extract_ms": 16341,
+          "assess_ms": 7618,
+          "total_ms": 23959,
+          "claims": 4,
+          "quotes_verified": 1,
+          "standings": {
+            "partial_evidence": 1,
+            "assumption": 3
+          },
+          "model_calls": 2,
+          "prompt_tokens": 1682,
+          "output_tokens": 328,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts spend significant time editing podcasts, often spending five hours per episode.",
+              "quote_status": "verified",
+              "quote": "Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter.",
+              "note": "",
+              "verdict": "partially_supports",
+              "standing": "partial_evidence"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools like CutCast and PodTrim are available, but they have limitations such as poor breath detection and manual correction.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [14, 16, 20] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "demand",
+              "claim": "Many solo podcast hosts are willing to pay for a tool that can save time on editing, especially if it handles common tasks like filler word removal.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [17, 23, 27] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "segment",
+              "claim": "Sole podcast hosts, especially those with limited time and experience, are the primary users of editing tools and are looking for time-saving solutions.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [9, 10, 22] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 2
+        },
+        {
+          "design": "C",
+          "source": "forum_page",
+          "extract_ms": 15897,
+          "assess_ms": 0,
+          "total_ms": 15897,
+          "claims": 4,
+          "quotes_verified": 0,
+          "standings": {
+            "assumption": 4
+          },
+          "model_calls": 1,
+          "prompt_tokens": 622,
+          "output_tokens": 251,
+          "retries": 0,
+          "items": [
+            {
+              "type": "customer_problem",
+              "claim": "Solo podcast hosts often spend significant time on editing, including removing ums, fixing levels between themselves and guests, and cutting long pauses.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [11, 16, 19] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "competitor",
+              "claim": "AI editing tools are effective at removing filler words but still have issues with cutting breaths in strange places and judging pacing.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [16, 22] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "demand",
+              "claim": "Clients pay solo podcast hosts between 60 and 120 dollars per episode, depending on the length of the podcast.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [17, 27] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            },
+            {
+              "type": "segment",
+              "claim": "Hobby podcasters like kemi_pod and small podcast networks like daniel_mic recognize the time-consuming nature of editing and are willing to pay for tools or courses that improve their workflow.",
+              "quote_status": "unverified",
+              "quote": "",
+              "note": "passages [19, 38, 33] are not contiguous",
+              "verdict": null,
+              "standing": "assumption"
+            }
+          ],
+          "rep": 2
+        }
+      ],
+      "eval_single": {
+        "correct": 26,
+        "total": 40,
+        "per_category": {
+          "direct_support": "5/5",
+          "partial_support": "3/5",
+          "unsupported": "5/5",
+          "contradictory": "1/5",
+          "irrelevant_source": "5/5",
+          "misleading_quote": "1/5",
+          "topic_mention": "5/5",
+          "competitor_vs_demand": "1/5"
+        },
+        "confusion": {
+          "supports": {
+            "supports": 5,
+            "partially_supports": 1
+          },
+          "partially_supports": {
+            "partially_supports": 3,
+            "supports": 3
+          },
+          "does_not_support": {
+            "does_not_support": 17,
+            "supports": 2
+          },
+          "contradicts": {
+            "does_not_support": 7,
+            "contradicts": 1,
+            "partially_supports": 1
+          }
+        },
+        "errors": [
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that wedding planners would pay for a seating-chart app, as it mentions saving time and the context of being a wedding planner."
+          },
+          {
+            "id": "P4",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that one customer team saw a 40% reduction in review time after adopting the bot, which matches the claim's scope and specificity."
+          },
+          {
+            "id": "C1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote provides specific data from a survey, but it does not indicate that most respondents would pay. The claim is about 'most,' while the quote shows only 12% would pay, which is not the majority."
+          },
+          {
+            "id": "C2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote directly contradicts the claim that PodTrim offers a free plan, as it states that PodTrim does not offer a free plan but instead provides a 7-day trial."
+          },
+          {
+            "id": "C3",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote states that PDF export is not available, but the claim is about the resume builder supporting PDF export. The quote does not confirm or demonstrate that the resume builder supports PDF export; it only mentions the current state of PDF export as not being available."
+          },
+          {
+            "id": "C5",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote describes a problem with syncing, but it does not provide evidence that the sync is reliable across all users. It only reflects a single user's experience."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote contradicts the claim because it states the reviewer asked for a refund, implying dissatisfaction, rather than recommending the template pack."
+          },
+          {
+            "id": "M2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "partially_supports",
+            "reason": "The quote states a belief, but the context includes the speaker's personal experience of increased bookings, which may contradict the claim."
+          },
+          {
+            "id": "M3",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote states that the app improved vocabulary scores, but the context clarifies that the study found no significant difference between groups, suggesting the app did not effectively improve vocabulary scores. The quote is about a hypothesis that was not supported by the results."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions a switch to TaskGrid, but the context shows the plan was cancelled after a trial, so the claim that the team switched to TaskGrid is not supported."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides specific data about PayMatch's subscriber base, which directly supports the claim that freelancers are willing to pay for invoice-matching software."
+          },
+          {
+            "id": "V3",
+            "category": "competitor_vs_demand",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "reason": "The quote mentions a 14-day trial, but the claim specifies a trial period of exactly 9 euros per month. The quote is about a trial period, not the actual pricing structure, so it only partially supports the claim."
+          },
+          {
+            "id": "V4",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that there are at least six AI podcast editing tools on the market, including PodTrim and CutCast, which aligns with the claim that podcast hosts want an AI editing tool. The context confirms the existence of these tools, supporting the claim about their availability and relevance to podcast hosts."
+          },
+          {
+            "id": "V5",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards."
+          }
+        ],
+        "critical": [
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that wedding planners would pay for a seating-chart app, as it mentions saving time and the context of being a wedding planner."
+          },
+          {
+            "id": "P4",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that one customer team saw a 40% reduction in review time after adopting the bot, which matches the claim's scope and specificity."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides specific data about PayMatch's subscriber base, which directly supports the claim that freelancers are willing to pay for invoice-matching software."
+          },
+          {
+            "id": "V4",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that there are at least six AI podcast editing tools on the market, including PodTrim and CutCast, which aligns with the claim that podcast hosts want an AI editing tool. The context confirms the existence of these tools, supporting the claim about their availability and relevance to podcast hosts."
+          },
+          {
+            "id": "V5",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards."
+          }
+        ],
+        "false_established": 5,
+        "elapsed_ms": 206469,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": "supports",
+            "reason": "The quote directly states that the speaker spends three hours each month checking which clients have paid, supporting the claim that at least one freelance translator reports spending hours each month checking which clients have paid.",
+            "output_tokens": 92
+          },
+          {
+            "id": "D2",
+            "predicted": "supports",
+            "reason": "The quote directly states the price of the Basic plan as $12 per month, matching the claim exactly.",
+            "output_tokens": 49
+          },
+          {
+            "id": "D3",
+            "predicted": "supports",
+            "reason": "The quote directly states the claim: 61% of the 412 tutors named rescheduling lessons as their single biggest admin task. The context confirms the numbers and the survey method, making the quote exactly support the claim.",
+            "output_tokens": 92
+          },
+          {
+            "id": "D4",
+            "predicted": "supports",
+            "reason": "The quote directly states that 9 out of 640 orders were refunded, which is approximately 1.4%, supporting the claim that the template seller refunded fewer than 2% of orders in 2025.",
+            "output_tokens": 90
+          },
+          {
+            "id": "D5",
+            "predicted": "supports",
+            "reason": "The quote directly states that the user asked for a way to export decks to CSV, and the context confirms this request was made in a thread about export options.",
+            "output_tokens": 72
+          },
+          {
+            "id": "P1",
+            "predicted": "partially_supports",
+            "reason": "The quote provides a specific example of time spent writing descriptions but does not generalize to most small online shops. It focuses on the speaker's experience, not a broader trend.",
+            "output_tokens": 78
+          },
+          {
+            "id": "P2",
+            "predicted": "supports",
+            "reason": "The quote directly states that wedding planners would pay for a seating-chart app, as it mentions saving time and the context of being a wedding planner.",
+            "output_tokens": 64
+          },
+          {
+            "id": "P3",
+            "predicted": "partially_supports",
+            "reason": "The quote mentions teachers from Germany, but does not provide evidence for teachers in France. It only supports the claim about Germany, not the entire statement about both countries.",
+            "output_tokens": 74
+          },
+          {
+            "id": "P4",
+            "predicted": "supports",
+            "reason": "The quote directly states that one customer team saw a 40% reduction in review time after adopting the bot, which matches the claim's scope and specificity.",
+            "output_tokens": 72
+          },
+          {
+            "id": "P5",
+            "predicted": "partially_supports",
+            "reason": "The quote provides specific evidence about the time spent editing for the speaker, but does not quantify the total time spent by podcast hosts or confirm that they want to outsource it.",
+            "output_tokens": 82
+          },
+          {
+            "id": "U1",
+            "predicted": "does_not_support",
+            "reason": "The quote does not provide any evidence about freelancers' preferences regarding invoicing tool pricing models. It only describes a personal practice of sending reminders manually.",
+            "output_tokens": 71
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions features but does not provide any data about the number of downloads.",
+            "output_tokens": 58
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "The quote only mentions the team's switch but does not provide evidence that remote teams regularly lose meeting notes.",
+            "output_tokens": 59
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "The quote does not address the difficulty of printing shipping labels; it focuses on a different issue (file sharing).",
+            "output_tokens": 61
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "The quote does not provide any evidence or analysis about user retention; it only states a fact about the redesign.",
+            "output_tokens": 63
+          },
+          {
+            "id": "C1",
+            "predicted": "does_not_support",
+            "reason": "The quote provides specific data from a survey, but it does not indicate that most respondents would pay. The claim is about 'most,' while the quote shows only 12% would pay, which is not the majority.",
+            "output_tokens": 94
+          },
+          {
+            "id": "C2",
+            "predicted": "does_not_support",
+            "reason": "The quote directly contradicts the claim that PodTrim offers a free plan, as it states that PodTrim does not offer a free plan but instead provides a 7-day trial.",
+            "output_tokens": 76
+          },
+          {
+            "id": "C3",
+            "predicted": "does_not_support",
+            "reason": "The quote states that PDF export is not available, but the claim is about the resume builder supporting PDF export. The quote does not confirm or demonstrate that the resume builder supports PDF export; it only mentions the current state of PDF export as not being available.",
+            "output_tokens": 95
+          },
+          {
+            "id": "C4",
+            "predicted": "contradicts",
+            "reason": "The quote states that sign-ups fell in four months, contradicting the claim that sign-ups grew every month.",
+            "output_tokens": 60
+          },
+          {
+            "id": "C5",
+            "predicted": "does_not_support",
+            "reason": "The quote describes a problem with syncing, but it does not provide evidence that the sync is reliable across all users. It only reflects a single user's experience.",
+            "output_tokens": 65
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a new stadium opening, which is unrelated to yoga studio class-booking software.",
+            "output_tokens": 61
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "The quote is unrelated to the claim about freelance designers and portfolio tools. It is a recipe instruction and does not support the claim.",
+            "output_tokens": 75
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "The quote is about cookie policy and analytics cookies, which is unrelated to podcast episode lengths.",
+            "output_tokens": 57
+          },
+          {
+            "id": "I4",
+            "predicted": "does_not_support",
+            "reason": "The quote promotes a discount for newsletter sign-up, which is unrelated to the claim about tracking homework tools.",
+            "output_tokens": 57
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a natural event, not about SaaS founder challenges. It is irrelevant to the claim about churn analysis.",
+            "output_tokens": 69
+          },
+          {
+            "id": "M1",
+            "predicted": "does_not_support",
+            "reason": "The quote contradicts the claim because it states the reviewer asked for a refund, implying dissatisfaction, rather than recommending the template pack.",
+            "output_tokens": 64
+          },
+          {
+            "id": "M2",
+            "predicted": "partially_supports",
+            "reason": "The quote states a belief, but the context includes the speaker's personal experience of increased bookings, which may contradict the claim.",
+            "output_tokens": 62
+          },
+          {
+            "id": "M3",
+            "predicted": "does_not_support",
+            "reason": "The quote states that the app improved vocabulary scores, but the context clarifies that the study found no significant difference between groups, suggesting the app did not effectively improve vocabulary scores. The quote is about a hypothesis that was not supported by the results.",
+            "output_tokens": 93
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions a switch to TaskGrid, but the context shows the plan was cancelled after a trial, so the claim that the team switched to TaskGrid is not supported.",
+            "output_tokens": 81
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "The quote is a question without any evidence or data to support the claim that freelancers lose clients due to late invoices.",
+            "output_tokens": 72
+          },
+          {
+            "id": "T1",
+            "predicted": "does_not_support",
+            "reason": "The quote merely explains what AI meeting summaries are and how they work, but does not provide evidence of growing demand among small agencies.",
+            "output_tokens": 62
+          },
+          {
+            "id": "T2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about comparing video hosting platforms, but it does not provide any information about the costs associated with them. It is neutral and does not support the claim that online course creators struggle with video hosting costs.",
+            "output_tokens": 83
+          },
+          {
+            "id": "T3",
+            "predicted": "does_not_support",
+            "reason": "The quote provides historical context but does not indicate that remote workers want better focus-timer apps. It only states factually that focus timer apps have been around since the Pomodoro technique, which is unrelated to current preferences of remote workers.",
+            "output_tokens": 85
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions book cover design as a topic in a course but does not provide evidence that indie authors lose sales due to poor cover design. It is neutral and does not establish the claim directly.",
+            "output_tokens": 86
+          },
+          {
+            "id": "T5",
+            "predicted": "does_not_support",
+            "reason": "The quote simply states a fact about donor-management software without asserting that it is unaffordable for small nonprofits. It does not provide evidence or implication about affordability.",
+            "output_tokens": 75
+          },
+          {
+            "id": "V1",
+            "predicted": "does_not_support",
+            "reason": "The quote merely states the function of PayMatch without providing evidence of demand among freelancers.",
+            "output_tokens": 61
+          },
+          {
+            "id": "V2",
+            "predicted": "supports",
+            "reason": "The quote provides specific data about PayMatch's subscriber base, which directly supports the claim that freelancers are willing to pay for invoice-matching software.",
+            "output_tokens": 73
+          },
+          {
+            "id": "V3",
+            "predicted": "partially_supports",
+            "reason": "The quote mentions a 14-day trial, but the claim specifies a trial period of exactly 9 euros per month. The quote is about a trial period, not the actual pricing structure, so it only partially supports the claim.",
+            "output_tokens": 89
+          },
+          {
+            "id": "V4",
+            "predicted": "supports",
+            "reason": "The quote directly states that there are at least six AI podcast editing tools on the market, including PodTrim and CutCast, which aligns with the claim that podcast hosts want an AI editing tool. The context confirms the existence of these tools, supporting the claim about their availability and relevance to podcast hosts.",
+            "output_tokens": 102
+          },
+          {
+            "id": "V5",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards.",
+            "output_tokens": 77
+          }
+        ]
+      },
+      "eval_batch": {
+        "correct": 20,
+        "total": 40,
+        "per_category": {
+          "direct_support": "3/5",
+          "partial_support": "1/5",
+          "unsupported": "5/5",
+          "contradictory": "1/5",
+          "irrelevant_source": "4/5",
+          "misleading_quote": "1/5",
+          "topic_mention": "4/5",
+          "competitor_vs_demand": "1/5"
+        },
+        "confusion": {
+          "supports": {
+            "partially_supports": 1,
+            "supports": 4,
+            "does_not_support": 1
+          },
+          "partially_supports": {
+            "partially_supports": 1,
+            "supports": 5
+          },
+          "does_not_support": {
+            "does_not_support": 14,
+            "supports": 5
+          },
+          "contradicts": {
+            "does_not_support": 7,
+            "contradicts": 1,
+            "supports": 1
+          }
+        },
+        "errors": [
+          {
+            "id": "D1",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "partially_supports",
+            "reason": "The quote provides personal experience but does not generalize to all freelance translators."
+          },
+          {
+            "id": "D5",
+            "category": "direct_support",
+            "expected": "supports",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a feature request, but the claim is about a user asking for a way to export flashcards to CSV. The quote does not directly address the claim."
+          },
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about wedding planners paying for a seating-chart app."
+          },
+          {
+            "id": "P3",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that the resume builder is used by teachers from Germany, supporting the claim that teachers in Germany and France use the resume builder."
+          },
+          {
+            "id": "P4",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides evidence that the code-review bot reduced review time by 40% across all customer teams."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that editing takes six hours per episode, which matches the claim exactly."
+          },
+          {
+            "id": "C1",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote is about survey results, not about paying for meeting summaries."
+          },
+          {
+            "id": "C2",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a trial period, not a free plan, so it does not support the claim about a free plan."
+          },
+          {
+            "id": "C3",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions PDF export is not available, but the claim is about the resume builder supporting PDF export. The quote does not confirm or deny the claim, as PDF export is not available."
+          },
+          {
+            "id": "C5",
+            "category": "contradictory",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote is about sync issues, not reliability."
+          },
+          {
+            "id": "I4",
+            "category": "irrelevant_source",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about online tutors needing tools for tracking homework."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "supports",
+            "reason": "The quote directly states the reviewer recommends the template pack, which matches the claim exactly."
+          },
+          {
+            "id": "M2",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote states that AI writing tools will replace copywriters, but the claim is that the author believes this will happen. The quote is in agreement with the claim, but the context suggests the author is skeptical."
+          },
+          {
+            "id": "M3",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote is about the results of a study, not about the effectiveness of the app."
+          },
+          {
+            "id": "M4",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "does_not_support",
+            "reason": "The quote is about switching to TaskGrid, not about the poster's team's actions."
+          },
+          {
+            "id": "T1",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim that demand for AI meeting summaries is growing among small agencies."
+          },
+          {
+            "id": "V1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about demand for an automated invoice-matching tool."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides specific data (8,000 paying subscribers) that directly supports the claim about freelancers paying for invoice-matching software."
+          },
+          {
+            "id": "V4",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote states that there are at least six AI podcast editing tools, supporting the claim that podcast hosts want an AI editing tool."
+          },
+          {
+            "id": "V5",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards."
+          }
+        ],
+        "critical": [
+          {
+            "id": "P2",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about wedding planners paying for a seating-chart app."
+          },
+          {
+            "id": "P3",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that the resume builder is used by teachers from Germany, supporting the claim that teachers in Germany and France use the resume builder."
+          },
+          {
+            "id": "P4",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides evidence that the code-review bot reduced review time by 40% across all customer teams."
+          },
+          {
+            "id": "P5",
+            "category": "partial_support",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote directly states that editing takes six hours per episode, which matches the claim exactly."
+          },
+          {
+            "id": "I4",
+            "category": "irrelevant_source",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about online tutors needing tools for tracking homework."
+          },
+          {
+            "id": "M1",
+            "category": "misleading_quote",
+            "expected": "contradicts",
+            "predicted": "supports",
+            "reason": "The quote directly states the reviewer recommends the template pack, which matches the claim exactly."
+          },
+          {
+            "id": "T1",
+            "category": "topic_mention",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim that demand for AI meeting summaries is growing among small agencies."
+          },
+          {
+            "id": "V1",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about demand for an automated invoice-matching tool."
+          },
+          {
+            "id": "V2",
+            "category": "competitor_vs_demand",
+            "expected": "partially_supports",
+            "predicted": "supports",
+            "reason": "The quote provides specific data (8,000 paying subscribers) that directly supports the claim about freelancers paying for invoice-matching software."
+          },
+          {
+            "id": "V4",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote states that there are at least six AI podcast editing tools, supporting the claim that podcast hosts want an AI editing tool."
+          },
+          {
+            "id": "V5",
+            "category": "competitor_vs_demand",
+            "expected": "does_not_support",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards."
+          }
+        ],
+        "false_established": 11,
+        "elapsed_ms": 223394,
+        "predictions": [
+          {
+            "id": "D1",
+            "predicted": "partially_supports",
+            "reason": "The quote provides personal experience but does not generalize to all freelance translators."
+          },
+          {
+            "id": "D2",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about the pricing of the Basic plan, including the monthly cost and billing method."
+          },
+          {
+            "id": "D3",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about the survey results, including the percentage and the ranking of tasks."
+          },
+          {
+            "id": "D4",
+            "predicted": "supports",
+            "reason": "The quote directly states that the user asked for a way to export decks to CSV, which matches the claim exactly."
+          },
+          {
+            "id": "D5",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a feature request, but the claim is about a user asking for a way to export flashcards to CSV. The quote does not directly address the claim."
+          },
+          {
+            "id": "P1",
+            "predicted": "partially_supports",
+            "reason": "The quote provides an individual experience but does not generalize to most small online shops."
+          },
+          {
+            "id": "P2",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about wedding planners paying for a seating-chart app."
+          },
+          {
+            "id": "P3",
+            "predicted": "supports",
+            "reason": "The quote directly states that the resume builder is used by teachers from Germany, supporting the claim that teachers in Germany and France use the resume builder."
+          },
+          {
+            "id": "P4",
+            "predicted": "supports",
+            "reason": "The quote provides evidence that the code-review bot reduced review time by 40% across all customer teams."
+          },
+          {
+            "id": "P5",
+            "predicted": "supports",
+            "reason": "The quote directly states that editing takes six hours per episode, which matches the claim exactly."
+          },
+          {
+            "id": "U1",
+            "predicted": "does_not_support",
+            "reason": "The quote does not provide any evidence about freelancers' preferences regarding invoicing tool pricing models."
+          },
+          {
+            "id": "U2",
+            "predicted": "does_not_support",
+            "reason": "The quote does not provide any evidence about the number of downloads of the language app."
+          },
+          {
+            "id": "U3",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a team switch, not about meeting note loss."
+          },
+          {
+            "id": "U4",
+            "predicted": "does_not_support",
+            "reason": "The quote is irrelevant to the claim about shipping labels. It discusses digital planners and file sharing, not shipping labels."
+          },
+          {
+            "id": "U5",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a redesign but no retention data is provided."
+          },
+          {
+            "id": "C1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about survey results, not about paying for meeting summaries."
+          },
+          {
+            "id": "C2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a trial period, not a free plan, so it does not support the claim about a free plan."
+          },
+          {
+            "id": "C3",
+            "predicted": "does_not_support",
+            "reason": "The quote mentions PDF export is not available, but the claim is about the resume builder supporting PDF export. The quote does not confirm or deny the claim, as PDF export is not available."
+          },
+          {
+            "id": "C4",
+            "predicted": "contradicts",
+            "reason": "The quote states that sign-ups fell in four months, which directly contradicts the claim that sign-ups grew every month."
+          },
+          {
+            "id": "C5",
+            "predicted": "does_not_support",
+            "reason": "The quote is about sync issues, not reliability."
+          },
+          {
+            "id": "I1",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a new stadium opening, which is unrelated to the claim about yoga studio owners and class-booking software."
+          },
+          {
+            "id": "I2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a recipe, not a portfolio tool with client proofing."
+          },
+          {
+            "id": "I3",
+            "predicted": "does_not_support",
+            "reason": "The quote is about cookie policy and analytics, not podcast listeners or episode lengths."
+          },
+          {
+            "id": "I4",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about online tutors needing tools for tracking homework."
+          },
+          {
+            "id": "I5",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a natural event, not about SaaS founders and churn analysis."
+          },
+          {
+            "id": "M1",
+            "predicted": "supports",
+            "reason": "The quote directly states the reviewer recommends the template pack, which matches the claim exactly."
+          },
+          {
+            "id": "M2",
+            "predicted": "does_not_support",
+            "reason": "The quote states that AI writing tools will replace copywriters, but the claim is that the author believes this will happen. The quote is in agreement with the claim, but the context suggests the author is skeptical."
+          },
+          {
+            "id": "M3",
+            "predicted": "does_not_support",
+            "reason": "The quote is about the results of a study, not about the effectiveness of the app."
+          },
+          {
+            "id": "M4",
+            "predicted": "does_not_support",
+            "reason": "The quote is about switching to TaskGrid, not about the poster's team's actions."
+          },
+          {
+            "id": "M5",
+            "predicted": "does_not_support",
+            "reason": "The quote is a question, not a statement that supports the claim about clients being lost due to late invoices."
+          },
+          {
+            "id": "T1",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim that demand for AI meeting summaries is growing among small agencies."
+          },
+          {
+            "id": "T2",
+            "predicted": "does_not_support",
+            "reason": "The quote is about a guide to video hosting platforms, not about the struggles of course creators."
+          },
+          {
+            "id": "T3",
+            "predicted": "does_not_support",
+            "reason": "The quote discusses the history of focus timer apps, but the claim is about remote workers wanting better focus-timer apps. The quote does not address the claim directly."
+          },
+          {
+            "id": "T4",
+            "predicted": "does_not_support",
+            "reason": "The quote is about book cover design, which is unrelated to the claim about sales loss due to poor design."
+          },
+          {
+            "id": "T5",
+            "predicted": "does_not_support",
+            "reason": "The quote is a general statement about software use, not a specific claim about nonprofits unable to afford it."
+          },
+          {
+            "id": "V1",
+            "predicted": "supports",
+            "reason": "The quote directly supports the claim about demand for an automated invoice-matching tool."
+          },
+          {
+            "id": "V2",
+            "predicted": "supports",
+            "reason": "The quote provides specific data (8,000 paying subscribers) that directly supports the claim about freelancers paying for invoice-matching software."
+          },
+          {
+            "id": "V3",
+            "predicted": "supports",
+            "reason": "The quote directly states that PayMatch costs 9 euros per month after a 14-day trial, supporting the claim that PayMatch charges 9 euros per month after its trial."
+          },
+          {
+            "id": "V4",
+            "predicted": "supports",
+            "reason": "The quote states that there are at least six AI podcast editing tools, supporting the claim that podcast hosts want an AI editing tool."
+          },
+          {
+            "id": "V5",
+            "predicted": "supports",
+            "reason": "The quote directly states that AgencyView raised $4 million to build client-reporting dashboards, which supports the claim that small agencies will pay for such dashboards."
+          }
+        ]
+      }
+    }
+  ]
+}

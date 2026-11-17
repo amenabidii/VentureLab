@@ -1,0 +1,13 @@
+SYNTHETIC BENCHMARK INPUT. Written for the latency and output-format benchmark only. It is not market evidence and is never used as a source.
+
+Thread: How do you keep track of unpaid invoices?
+
+Post 1 (user mara_translates): I work as a freelance translator with about twelve regular clients. Every month I lose at least two hours checking which invoices have been paid, because the payments land in two different bank accounts and the remittance notes rarely mention the invoice number.
+
+Post 2 (user dev_ollie): I just use a spreadsheet and it's fine. One row per invoice, a column for the date it was paid. Takes me ten minutes a month.
+
+Post 3 (user kat_illustrates): Same problem as mara here. Last year I only noticed a 600 euro invoice was unpaid after four months. I now set calendar reminders, but I forget to update them.
+
+Post 4 (user mara_translates): I tried two invoicing apps. Both wanted a monthly subscription and still could not match payments from my second bank automatically, so I cancelled.
+
+Post 5 (user ben_bookkeeper): As a bookkeeper I see this a lot with sole traders. Matching payments to invoices is the most common reason they call me at the end of the quarter.

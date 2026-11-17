@@ -1,0 +1,47 @@
+SYNTHETIC BENCHMARK INPUT. An invented web page used to measure speed and extraction behaviour on a realistic page size. It is not market evidence and is never used as a source.
+
+Home | Forums | Podcasting | Gear | Marketplace | Log in | Register
+We use cookies to improve your experience. Accept all | Manage preferences
+
+Forum > Podcasting > Production
+Thread: How long does editing take you, and have you tried the AI editors?
+
+Post 1 by lena_talks (solo host, weekly interview show):
+I record a 50-minute interview every week. Editing usually takes me about five hours: removing ums, fixing levels between me and the guest, cutting the long pauses and adding the intro and outro. I do it on Sunday evenings and honestly it is the reason I almost quit last winter. Has anyone tried the AI editing tools that keep showing up in my feed?
+
+Post 2 by rob_audio (freelance audio editor):
+I edit for nine shows as a freelancer. The AI tools are decent at removing filler words, but they still cut breaths in strange places and they cannot judge pacing. My clients pay me between 60 and 120 dollars per episode depending on length. Two clients tried an AI tool for a month and came back, one stayed with it.
+
+Post 3 by kemi_pod (hobby podcast, monthly):
+I tried CutCast on the free tier. It removed filler words in about four minutes for a 40-minute episode, which felt like magic. Then I spent an hour fixing words it had cut by mistake, so I am not sure I saved much time. I would not pay for it yet.
+
+Post 4 by lena_talks:
+Thanks, that is helpful. Five hours a week is a lot, so even saving two hours would matter to me. I would pay something like 15 dollars a month if it reliably handled levelling and filler words, but I am not paying for something I have to double-check line by line.
+
+Post 5 by daniel_mic (runs a small podcast network):
+We have six shows. We tested PodTrim and CutCast. PodTrim's Pro plan is 29 dollars a month per seat. We kept one seat for rough cuts, but final edits are still done by a person. The biggest win for us was automatic transcripts for show notes, not the editing itself.
+
+Post 6 by anon_listener:
+Off topic, but does anyone know when the next season of the mystery show comes out? I miss it.
+
+Post 7 by rob_audio:
+To be fair to the tools, they have improved a lot this year. But in my experience most solo hosts underestimate how long editing takes until they have done ten episodes. The people who ask me for help usually come after episode eight or nine.
+
+Post 8 by sara_learns (new podcaster):
+I am on episode three and editing is taking me eight hours per episode because I am still learning the software. I would happily pay for a course or a tool that teaches me a faster workflow. Right now I mostly watch free videos.
+
+Post 9 by moderator:
+Reminder: no affiliate links in this thread. Posts that link to referral codes will be removed.
+
+Sidebar: Trending now
+- Best budget microphones this year
+- Ten tips for better guest interviews
+- Win a free headset: enter our giveaway
+
+Related threads
+- Is a soundproof booth worth it?
+- Hosting platforms compared
+- How do you find guests?
+
+Footer: About us | Contact | Advertise with us | Privacy policy | Cookie policy | Terms of use
+Copyright notice. All rights reserved.

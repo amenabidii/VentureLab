@@ -1,0 +1,3 @@
+# Keep LF everywhere: the benchmark fixtures are frozen by SHA-256, and the
+# container reads files exactly as checked out.
+* text=auto eol=lf
