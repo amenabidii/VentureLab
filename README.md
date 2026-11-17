@@ -19,6 +19,16 @@ written only after the founder approves the exact artifact.
 - **Insufficient evidence → REPEAT:** the recorded Slack-thread run has **0 of 2 required independent supporting sources** ([gate record](outputs/phase1_gate_decision.md)).
 - **Phases 2–6 → REHEARSAL:** founder-approved local outputs demonstrate the workflow; the gate still says **DO NOT LAUNCH**.
 
+**Implementation and execution records**
+
+| Capability | Implementation and recorded evidence | Limits |
+|---|---|---|
+| Local working product | [Thread digest](mvp/thread_digest.py), [functional tests](tests/test_mvp.py); open `/mvp` | Supported product type only; arbitrary app generation **STUBBED** |
+| Evidence-based decisions | [Recorded Discover decision](outputs/phase1_gate_decision.md), [agent audit log](decision_log.json), [deterministic rules](gates.py) | Recorded demo is REPEAT; a policy STOP is not an evidence-based STOP |
+| Founder control | [Approval backend](approval.py), [tampering and replay tests](tests/test_workflow_approval_store.py), [approval semantics](docs/approval-migration.md) | Local single-founder capability; test approvals are SIMULATED |
+| Six-phase workflow | [Architecture and gates](ARCHITECTURE.md#phases), [sale-to-cash execution log](outputs/payment_test_log.md) | Later demo phases are REHEARSAL; publishing and delivery are **MOCKED**, with no real or sandbox payments |
+| Reproducible open-source setup | [Docker Compose](docker-compose.yml), [MIT license](LICENSE), [repository convention checks](tests/test_submission_compliance.py) | First model download needs internet; local hardware determines runtime |
+
 **All six phases run, each ending in a gate.** Status on `main`, from real runs:
 
 | Phase | Core step (case brief) | What VentureLab does | Status |
