@@ -371,3 +371,36 @@ def test_a_run_is_blocked_with_an_explanation_if_the_model_never_arrives(tmp_pat
     svc.jobs.model_poll_s = 0.05
     run_id, run = start(api, svc)
     assert run["status"] == "blocked" and "one-time model download" in run["error"] and model.calls == []
+
+
+@pytest.mark.parametrize("choice", ["approve", "reject"])
+@pytest.mark.parametrize("reason", [None, "", "  Exact founder words: café.  "])
+def test_optional_reason_preserved_with_real_authorization(pending, choice, reason):
+    api, svc, run_id, request, key = pending
+    body = {"run_id": run_id, "fingerprint": request["fingerprint"],
+            "decision": choice, "founder_key": key}
+    if reason is not None:
+        body["reason"] = reason
+    assert api.post(f"/api/approvals/{request['id']}/decision", json=body).status_code == 200
+    events = [e for e in svc.approvals.audit_events() if e["action"] == "approval_decision"]
+    status = "approved" if choice == "approve" else "rejected"
+    assert events[-1]["outcome"] == f"{status}: " + (reason if reason else "[No reason provided]")
+    assert events[-1]["approved_by"] == "founder"
+    mirrored = api.get(f"/api/runs/{run_id}/audit").json()
+    assert any(e.get("outcome") == events[-1]["outcome"] and e["action"] == "approval_decision" for e in mirrored)
+    execute = lambda: api.post(f"/api/approvals/{request['id']}/execute", json={"run_id": run_id, "founder_key": key})
+    if choice == "reject":
+        assert execute().status_code == 409
+    else:
+        assert execute().status_code == 200
+        assert execute().status_code == 409
+
+
+def test_blank_reason_does_not_bypass_identity_or_fingerprint(pending):
+    api, svc, run_id, request, key = pending
+    body = {"run_id": run_id, "fingerprint": "0" * 64, "decision": "approve", "reason": "", "founder_key": key}
+    endpoint = f"/api/approvals/{request['id']}/decision"
+    assert api.post(endpoint, json=body).status_code == 409
+    body.update(fingerprint=request["fingerprint"], founder_key="invalid")
+    assert api.post(endpoint, json=body).status_code == 403
+    assert api.get(f"/api/runs/{run_id}/approvals").json()[0]["status"] == "Pending"

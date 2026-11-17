@@ -362,7 +362,7 @@ export function approvals(s) {
       ? s.data.approvals
           .map(
             (a) =>
-              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl>${a.expiresAt ? `<p class="muted">Must be decided and executed before ${e(a.expiresAt)}.</p>` : ""}<div class="notice">${e(a.status === "Approved" ? "Approved. The files are written only when you execute this exact request." : approvalReason(s, a) || "Review the exact scope and the artifact preview before responding.")}</div>${a.status === "Pending" && !s.demo ? `<label class="field full">Reason for your decision<input id="reason-${e(a.id)}" maxlength="500" value="Reviewed the exact kit and fingerprint"></label>` : ""}<div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button>${a.status === "Approved" && s.service.capabilities.builder && !s.demo ? `<button data-action="execute" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Write the approved files locally</button>` : ""}</div></article>`,
+              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl>${a.expiresAt ? `<p class="muted">Must be decided and executed before ${e(a.expiresAt)}.</p>` : ""}<div class="notice">${e(a.status === "Approved" ? "Approved. The files are written only when you execute this exact request." : approvalReason(s, a) || "Review the exact scope and the artifact preview before responding.")}</div>${a.status === "Pending" && !s.demo ? `<label class="field full">Reason for your decision (optional)<input id="reason-${e(a.id)}" maxlength="500" value="" placeholder="Optional explanation"></label>` : ""}<div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button>${a.status === "Approved" && s.service.capabilities.builder && !s.demo ? `<button data-action="execute" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Write the approved files locally</button>` : ""}</div></article>`,
           )
           .join("")
       : empty(
@@ -379,7 +379,7 @@ export function history(s) {
     heading(
       "09 / KEEP A CLEAR RECORD",
       "Every decision leaves a trail.",
-      "Inspect recorded actions, sources and founder approvals without invented activity.",
+      "Inspect recorded actions, sources and founder approvals without invented activity. Saved explanations are audit text; older records may contain a pre-filled default and do not establish independent authorship.",
     ) +
     `<div class="filters"><label>Agent<select id="audit-agent"><option value="">All agents</option>${[...new Set(s.data.audit.map((a) => a.agent))].map((v) => `<option ${s.auditAgent === v ? "selected" : ""}>${e(v)}</option>`).join("")}</select></label></div>` +
     (rows.length
@@ -419,13 +419,19 @@ export function quoteDetails(f) {
     ? f.quotations
         .map(
           (q) =>
-            `<blockquote>${e(q.text)}</blockquote>${source(q.url, q.sourceName)}`,
+            `<blockquote>${e(q.text)}</blockquote>${source(q.url, q.sourceName)}${attributionDetails()}`,
         )
         .join("")
-    : `<blockquote>${e(f.quote || "No supporting quotation provided.")}</blockquote>${source(f.url, f.sourceName)}`;
+    : `<blockquote>${e(f.quote || "No supporting quotation provided.")}</blockquote>${source(f.url, f.sourceName)}${attributionDetails()}`;
 }
 export function gateTrace(d) {
   if (!d.trace?.length)
     return '<p class="muted">No rule trace was recorded for this decision.</p>';
   return `<details class="gate-trace"><summary>Inspect the recorded rule checks and thresholds</summary><p>Checks run in order. The first matching rule decides; later rules are not evaluated. These are recorded inputs, not an explanation invented by a model.</p><p>Recorded rule version: ${e(d.rulesetVersion ?? "Not recorded")} · Current version: ${e(d.currentRulesetVersion ?? "Not provided")}</p><div class="table-wrap"><table><caption>Recorded deterministic gate trace</caption><thead><tr><th scope="col">Rule</th><th scope="col">Matched?</th><th scope="col">Decision trigger?</th><th scope="col">Recorded inputs</th></tr></thead><tbody>${d.trace.map((c) => `<tr><td>${e(c.rule)}</td><td>${c.applies ? "Yes" : "No"}</td><td>${c.decided ? "Yes" : "No"}</td><td><pre>${e(c.inputs)}</pre></td></tr>`).join("")}</tbody></table></div><h3>Recorded thresholds</h3><pre>${e(d.thresholds)}</pre></details>`;
+}
+
+// The persisted quote contract contains text, URL and verification status, not
+// independently verified authorship. Never infer a speaker from first-person text.
+export function attributionDetails() {
+  return `<dl class="quote-attribution"><dt>Source poster</dt><dd>Not recorded in the saved quotation metadata</dd><dt>Original author</dt><dd>Original author not verified</dd><dt>Third-party material</dt><dd>Unknown — this quotation may include someone else's words</dd><dt>Independent attribution verification</dt><dd>Not recorded. Exact-text verification does not verify authorship or personal experience.</dd></dl>`;
 }

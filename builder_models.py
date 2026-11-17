@@ -209,7 +209,7 @@ class ApprovalDecision(Contract):
     artifact_sha256: Digest
     decision: Literal["approve", "reject"]
     actor: Literal["founder"]
-    reason: Text
+    reason: str = Field(default="", max_length=500)
     _safe = field_validator("reason")(check_content)
 
 

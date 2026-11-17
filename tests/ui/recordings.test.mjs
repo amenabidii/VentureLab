@@ -35,3 +35,22 @@ test("each exact quotation retains its own source and hostile content stays iner
   assert.ok(!html.includes("<script>"));
   assert.ok(!html.includes('href="javascript:'));
 });
+
+
+for (const [scenario, text] of [
+  ["own words", "I spend two hours doing this."],
+  ["government report", "> The Department of Justice found documents inaccessible."],
+  ["another individual", 'Alice said, "I could not read it."'],
+  ["missing author", "Documents need accessible formatting."],
+  ["ambiguous attribution", "We found this difficult, according to the article."],
+]) {
+  test(`attribution stays uncertain without recorded provenance: ${scenario}`, () => {
+    const html = quoteDetails({quotations: [{text, url: "https://example.org/comment", sourceName: "Source comment"}]});
+    assert.match(html, /Source poster/);
+    assert.match(html, /Original author not verified/);
+    assert.match(html, /Third-party material/);
+    assert.match(html, /Unknown/);
+    assert.match(html, /does not verify authorship or personal experience/);
+    assert.match(html, /href="https:\/\/example.org\/comment"/);
+  });
+}

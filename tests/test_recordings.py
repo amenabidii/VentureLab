@@ -74,3 +74,26 @@ def test_bad_index_is_explicit_error(api, monkeypatch, tmp_path):
 
 def test_unknown_execution_is_not_synthesized(api):
     assert api.get('/api/recordings/record-0000000000000000').status_code == 404
+
+
+def test_replay_preserves_historical_bytes_quotes_and_saved_approval_text(api):
+    index = recordings._index()
+    paths = {recordings.ROOT / name for entry in index.values() for name in entry["files"]}
+    log_path = recordings.ROOT / "decision_log.json"
+    paths.add(log_path)
+    before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+    log = json.loads(log_path.read_text(encoding="utf-8"))
+    quote_count = 0
+    for key, entry in index.items():
+        data = api.get('/api/recordings/' + key).json()
+        expected_events = [e for e in log if e.get("run_id") == entry["execution_id"]]
+        assert [(e["action"], e.get("outcome")) for e in data["audit"]] == [(e["action"], e.get("outcome")) for e in expected_events]
+        if "investigation" not in entry["outputs"]:
+            continue
+        investigation = json.loads((recordings.ROOT / entry["outputs"]["investigation"]).read_text(encoding="utf-8"))
+        for recorded, shown in zip(investigation["findings"], data["findings"]):
+            quotes = [q for q in recorded["quotes"] if q["status"] == "verified"]
+            assert [(q["text"], q["url"]) for q in quotes] == [(q["text"], q["url"]) for q in shown["quotations"]]
+            quote_count += len(quotes)
+    assert quote_count == 56
+    assert before == {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}

@@ -5,6 +5,16 @@ import fs from "node:fs";
 const clone = () => structuredClone(demo);
 // Test-only mock transport: never shipped as a production integration.
 async function mockService(page, data = clone(), options = {}) {
+  // Opt-in mutation check: alter only the test-served script, never production files.
+  if (options.badConfirmation && process.env.VENTURELAB_TEST_DISABLE_CONFIRMATION === "1") {
+    await page.route("**/app.js", async route => {
+      const response = await route.fetch();
+      const body = await response.text();
+      const guard = 'throw new Error("Mismatched confirmation");';
+      if (!body.includes(guard)) throw new Error("Mutation target missing");
+      await route.fulfill({response, body: body.replace(guard, "void 0;")});
+    });
+  }
   await page.route("**/service.js", (route) =>
     route.fulfill({
       contentType: "text/javascript",
@@ -14,7 +24,7 @@ async function mockService(page, data = clone(), options = {}) {
  globalThis.__qa={calls:[],reads:0,fail:!!options.fail,mode:'live'};
  export class WorkspaceService {
  constructor(mode='live'){this.mode=mode;}
- get capabilities(){return {createRun:!!options.createRun,approvals:!!options.approvals,workflow:!!options.workflow};}
+ get capabilities(){return {createRun:!!options.createRun,approvals:!!options.approvals,workflow:!!options.workflow,builder:!!options.builder};}
  async listRuns(){__qa.reads++;if(options.delay)await new Promise(r=>setTimeout(r,options.delay));__qa.completed=(__qa.completed||0)+1;if(options.emptyLive && this.mode==='live')return [];return structuredClone(data.runs);}
  async getRunStatus(){return structuredClone(data.agents);}
  async getFindings(){if(options.badFindings)throw new Error('MOCKED failed evidence read');return structuredClone(data.findings);}
@@ -25,7 +35,7 @@ async function mockService(page, data = clone(), options = {}) {
  async getApprovals(){return structuredClone(data.approvals);}
  async getAudit(){return structuredClone(data.audit);}
  async createRun(brief){__qa.calls.push({brief});await new Promise(r=>setTimeout(r,200));if(options.validation)throw new BriefValidationError({market:'MOCKED backend: specify a reachable market.'});if(__qa.fail)throw new Error('MOCKED network failure');return options.badRun?{}:options.unlistedRun?{...data.runs[0],id:'new-unlisted'}:data.runs[0];}
- async decideApproval(request,choice,options){__qa.calls.push({request,choice,options});await new Promise(r=>setTimeout(r,200));if(__qa.fail)throw new Error('MOCKED network failure');const row=data.approvals.find(a=>a.id===request.id);row.status=choice==='approve'?'Approved':'Rejected';return {...row,fingerprint:options.badConfirmation?'changed':row.fingerprint};}
+ async decideApproval(request,choice,decisionOptions){__qa.calls.push({request,choice,options:decisionOptions});await new Promise(r=>setTimeout(r,200));if(__qa.fail)throw new Error('MOCKED network failure');const row=data.approvals.find(a=>a.id===request.id);row.status=choice==='approve'?'Approved':'Rejected';const response={...row,fingerprint:options.badConfirmation?'changed':row.fingerprint};__qa.response=response;return response;}
  }
  export async function getModelStatus(){return {ready:false,model:'MOCKED QA model'};}
  `,
@@ -193,11 +203,14 @@ test("mismatched approval acknowledgment never displays success", async ({
   await mockService(page, pending(), {
     approvals: true,
     badConfirmation: true,
+    builder: true,
   });
   await go(page, "approvals");
   await page.getByRole("button", { name: "Approve this action" }).click();
   await expect(page.locator("[role=alert]")).toContainText("did not confirm");
   await expect(page.getByText("Approved", { exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => __qa.response.fingerprint)).toBe("changed");
+  await expect(page.getByRole("button", {name: "Write the approved files locally"})).toHaveCount(0);
 });
 test("rejected approval response is rendered only after authoritative refresh", async ({
   page,
@@ -618,4 +631,16 @@ test("genuine recordings load without a model, remain read-only and fit mobile",
   await expect(page.locator("#recordings-toggle")).toHaveText("Recorded executions");
   expect(mutations).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+
+test("blank optional reason stays blank for explicit rejection", async ({page}) => {
+  await mockService(page, pending(), {approvals: true});
+  await go(page, "approvals");
+  await expect(page.locator('[id^="reason-"]').first()).toHaveValue("");
+  expect(await page.evaluate(() => __qa.calls.length)).toBe(0);
+  await page.getByRole("button", {name: "Reject", exact: true}).click();
+  await expect(page.getByText("Rejected", {exact: true})).toBeVisible();
+  expect(await page.evaluate(() => __qa.calls[0].options.reason)).toBe("");
+  expect(await page.evaluate(() => __qa.calls[0].choice)).toBe("reject");
 });

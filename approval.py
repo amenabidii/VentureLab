@@ -253,7 +253,7 @@ class ApprovalStore:
                     raise ApprovalError("Draft or renderer changed; prepare a new request")
                 status = ApprovalStatus.APPROVED if decision.decision == "approve" else ApprovalStatus.REJECTED
                 self._transition(db, row, status, 0)
-                self._event(db, "approval_decision", f"{status.value}: {decision.reason}", request, founder=True)
+                self._event(db, "approval_decision", f"{status.value}: {decision.reason}" if decision.reason else f"{status.value}: [No reason provided]", request, founder=True)
             except (ApprovalError, ValueError) as exc:
                 error = str(exc) if isinstance(exc, ApprovalError) else "Invalid stored artifact"
                 self._event(db, "approval_decision", error, request, action_id=decision.action_id, founder=authenticated)
