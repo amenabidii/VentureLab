@@ -45,7 +45,7 @@ docker compose up
 
 Then open <http://localhost:8000>. The first start downloads the model (about 2.5 GB);
 until then `/health/model` returns HTTP 503. Submit a founder brief in the workspace
-(a run takes about 2–4 minutes on a CPU laptop), or choose **Recorded executions** to
+(a run takes about 2–5 minutes on a CPU laptop), or choose **Recorded executions** to
 browse genuine past runs without a model. Then open **Phases 1–6** in the header, choose
 your finished run and click through phases 2–6 (plan, approve, prepare launch, approve, launch);
 each approval asks for the founder key in `.venturelab/approvals.sqlite3.founder`. The same
@@ -135,7 +135,7 @@ inventory are in [ARCHITECTURE.md](ARCHITECTURE.md); integration details are in
 About **$0.00 per run** in API or service charges: local model, free public sources, no
 paid services (5 model calls in the measured web run; token counts are recorded per run
 in `outputs/runs/<run>/phase1_step2_investigation.json`). What it does cost: local CPU
-time (about 2 to 4 minutes per run), the electricity for it, about 2.5 GB of disk and
+time (about 2 to 5 minutes per run; 279 s in a fresh-clone check on 2026-11-17), the electricity for it, about 2.5 GB of disk and
 one download for `qwen3:4b`, and a little bandwidth for retrieval.
 
 ## Demo video

@@ -47,7 +47,7 @@ executed tests; what remains STUBBED is generating the MVP's production code and
 real sign-ups. Publishing and the sale-to-cash path are MOCKED (no payments of any kind).
 
 **Why local open-weight models?** No API cost, no keys, founder briefs stay on the
-machine, and anyone can reproduce the results. The trade-off is speed (2–3 minutes per
+machine, and anyone can reproduce the results. The trade-off is speed (2–5 minutes per
 run on CPU) and smaller-model quality.
 
 **What does a run cost?** About $0.00 in service fees, plus local CPU time and
