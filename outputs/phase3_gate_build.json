@@ -1,0 +1,51 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "phase": 3,
+ "decision": "ARTIFACTS PASSED (MVP code STUBBED)",
+ "checks": [
+  {
+   "check": "user guide marked DRAFT and code STUBBED",
+   "passed": true,
+   "detail": "phase3_step3_user-guide-draft.md"
+  },
+  {
+   "check": "user guide passes content rules",
+   "passed": true,
+   "detail": "builder_models.check_content"
+  },
+  {
+   "check": "terms policy is a labelled draft",
+   "passed": true,
+   "detail": "phase4_step2_terms-policy-draft.md"
+  },
+  {
+   "check": "privacy policy is a labelled draft",
+   "passed": true,
+   "detail": "phase4_step2_privacy-policy-draft.md"
+  },
+  {
+   "check": "refund policy is a labelled draft",
+   "passed": true,
+   "detail": "phase4_step2_refund-policy-draft.md"
+  },
+  {
+   "check": "store page has no form, script or external asset",
+   "passed": true,
+   "detail": "phase5_step1_store-page.html"
+  },
+  {
+   "check": "store page checkout disabled and MOCKED",
+   "passed": true,
+   "detail": "phase5_step1_store-page.html"
+  },
+  {
+   "check": "store page has no social proof or urgency",
+   "passed": true,
+   "detail": "phase5_step1_store-page.html"
+  }
+ ],
+ "founder_approvals": [],
+ "discover_decision": "REPEAT",
+ "rehearsal": true,
+ "decided_by": "fixed rules in workflow.py"
+}

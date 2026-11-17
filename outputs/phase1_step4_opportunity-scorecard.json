@@ -1,0 +1,61 @@
+{
+ "run_id": "run-64fdee373f244b81",
+ "discover_decision": "REPEAT",
+ "rubric": {
+  "problem_evidence": "2 = at least one ESTABLISHED finding cited; 1 = only NEEDS_REVIEW or partial findings with verified quotes; 0 = no sourced finding",
+  "founder_fit": "2 = the founder's own idea built with the stated skills; 1 = plausible with the stated skills but unconfirmed (ASSUMPTION); 0 = no product to build",
+  "open_risks": "minus 1 for each unresolved Challenger market risk; market risks apply equally to every product option, not to the status quo (total not below 0)"
+ },
+ "options": [
+  {
+   "option": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+   "origin": "founder's idea (FOUNDER-PROVIDED)",
+   "evidence_ids": [
+    "F1",
+    "F2",
+    "H1"
+   ],
+   "fit": 2,
+   "risk_count": 2,
+   "problem_evidence": 1,
+   "sources": [
+    "https://news.ycombinator.com/item?id=36434999",
+    "https://news.ycombinator.com/item?id=20896857",
+    "https://news.ycombinator.com/item?id=25056920"
+   ],
+   "score": 1
+  },
+  {
+   "option": "Remote teams might prefer a Slack integration over a browser extension to avoid disrupting their workflow.",
+   "origin": "raised by the Challenger (UNCONFIRMED (needs review))",
+   "evidence_ids": [
+    "F2"
+   ],
+   "fit": 1,
+   "risk_count": 2,
+   "problem_evidence": 1,
+   "sources": [
+    "https://news.ycombinator.com/item?id=20896857"
+   ],
+   "score": 0
+  },
+  {
+   "option": "Status quo: target customers keep their current workaround",
+   "origin": "baseline",
+   "evidence_ids": [],
+   "fit": 0,
+   "risk_count": 0,
+   "problem_evidence": 0,
+   "sources": [],
+   "score": 0
+  }
+ ],
+ "test_first": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+ "conclusion": "No option has established evidence; the ranking only orders what to test first.",
+ "market": {
+  "definition": "Online, English-speaking remote software teams",
+  "customer": "remote engineers and product managers on distributed teams",
+  "label": "FOUNDER-PROVIDED",
+  "size": "UNKNOWN — no sourced market-size figure; none is estimated"
+ }
+}
