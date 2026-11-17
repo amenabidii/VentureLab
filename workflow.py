@@ -34,14 +34,15 @@ from pathlib import Path
 from agents.commercial import pricing_hypotheses, pricing_markdown, policy_drafts, product_name
 from agents.launcher import launch_posts, store_page_html
 from agents.operator import memo_markdown, mocked_metrics, persevere_or_pivot, triage_support
-from agents.strategist import build_lean_canvas, lean_canvas_markdown
+from agents.product import acceptance_checks, mvp_scope, user_guide
+from agents.strategist import build_lean_canvas, lean_canvas_markdown, score_opportunities, scorecard_markdown
 from audit import AuditLog
 from config import get_settings
 from delivery import DeliveryService
 from payments import MockPaymentProvider, Order
 from reconcile import reconcile
 
-AGENTS = {2: "strategist", 4: "commercial", 5: "launcher", 6: "operator"}
+AGENTS = {1: "strategist", 2: "strategist", 3: "product", 4: "commercial", 5: "launcher", 6: "operator"}
 
 
 class GateBlocked(RuntimeError):
@@ -165,7 +166,12 @@ class Context:
 # --- commands -------------------------------------------------------------------------------
 
 def plan(ctx: Context) -> list[str]:
-    """Phase 2 Lean Canvas, then Phase 4 drafts. Writes drafts only; nothing is chosen."""
+    """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
+    card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
+    ctx.write("phase1_step4_opportunity-scorecard.json", card)
+    ctx.write("phase1_step4_opportunity-scorecard.md", scorecard_markdown(card))
+    ctx.rec(1, "score_against_alternatives", f"{len(card['options'])} options; test first: {card['test_first'][:80]}",
+            sources=sorted({u for r in card["options"] for u in r["sources"]}))
     canvas = build_lean_canvas(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge)
     sources = [s for box in canvas["canvas"].values() for e in box for s in e["sources"]]
     ctx.write("phase2_step2_lean-canvas.json", canvas)
@@ -179,6 +185,10 @@ def plan(ctx: Context) -> list[str]:
     ctx.rec(2, "lean_canvas_gate", "founder review required; demand not evidenced")
 
     ctx.require_rehearsal_approval()
+    scope = mvp_scope(ctx.brief, canvas)
+    ctx.write("phase3_step2_mvp-scope.json", scope)
+    ctx.write("phase3_step3_user-guide-draft.md", user_guide(ctx.brief, scope))
+    ctx.rec(3, "define_mvp_scope_and_guide", "drafted; MVP code generation STUBBED")
     pricing = pricing_hypotheses(ctx.brief, ctx.decision)
     _, p_sha = ctx.write("phase4_step1_pricing.json", pricing)
     ctx.write("phase4_step1_pricing.md", pricing_markdown(pricing))
@@ -216,6 +226,12 @@ def prepare_launch(ctx: Context) -> list[str]:
                f"product a buyer receives after a (MOCKED) payment. It contains no real product yet.\n\n"
                f"Price option: `{choice}`. Rehearsal: {ctx.rehearsal}.\n")
     _, prod_sha = ctx.write("phase5_step2_mock-product.md", package)
+    checks = acceptance_checks(ctx.out, "phase3_step3_user-guide-draft.md")
+    ctx.write("phase3_step4_acceptance-checks.json", {"run_id": ctx.run_id, "checks": checks,
+                                                      "scope": "VentureLab's generated artifacts; MVP code STUBBED"})
+    passed = all(c["passed"] for c in checks)
+    ctx.gate_file(3, "build", "ARTIFACTS PASSED (MVP code STUBBED)" if passed else "REPEAT", checks, [])
+    ctx.rec(3, "run_acceptance_checks", f"{sum(c['passed'] for c in checks)}/{len(checks)} passed")
     return [f"publish_store_page {page_sha}", f"enable_mock_delivery {prod_sha}"]
 
 
@@ -225,6 +241,10 @@ def launch(ctx: Context) -> dict:
     product_file = ctx.out / "phase5_step2_mock-product.md"
     if not page.exists() or not product_file.exists():
         raise GateBlocked("Run prepare-launch first")
+    build_gate = ctx.out / "phase3_gate_build.json"
+    if not build_gate.exists() or not all(c["passed"] for c in json.loads(build_gate.read_text(encoding="utf-8"))["checks"]):
+        ctx.rec(5, "launch_gate", "blocked: Phase 3 acceptance checks have not all passed")
+        raise GateBlocked("Phase 3 acceptance checks must pass before launch")
     page_sha, prod_sha = sha256(page.read_bytes()), sha256(product_file.read_bytes())
     missing = [a for a, d in (("publish_store_page", page_sha), ("enable_mock_delivery", prod_sha))
                if not ctx.approvals.approved(a, d)]

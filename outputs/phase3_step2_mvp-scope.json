@@ -1,0 +1,38 @@
+{
+ "core_job": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+ "for": "remote engineers and product managers on distributed teams",
+ "label": "FOUNDER-PROVIDED scope",
+ "in_scope": [
+  "The single core job: A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message."
+ ],
+ "out_of_scope": [
+  "Accounts, payments and integrations beyond the core job",
+  "Any feature not needed to test the riskiest assumption"
+ ],
+ "constraints": [
+  "Value: Respect privacy",
+  "Value: no dark patterns",
+  "Constraint: Messages are only read in workspaces that install the extension"
+ ],
+ "acceptance_criteria": [
+  {
+   "id": "AC1",
+   "text": "A target customer completes the core job unaided in one session.",
+   "label": "ASSUMPTION (threshold set by the founder before testing)"
+  },
+  {
+   "id": "AC2",
+   "text": "The output links every point back to its original source.",
+   "label": "FOUNDER-PROVIDED (from the idea)"
+  },
+  {
+   "id": "AC3",
+   "text": "No data is read outside what the user explicitly installs it for.",
+   "label": "FOUNDER-PROVIDED (from values/constraints)"
+  }
+ ],
+ "riskiest_assumption_first": [
+  "A1"
+ ],
+ "code_generation": "STUBBED — VentureLab does not yet generate the MVP's application code."
+}

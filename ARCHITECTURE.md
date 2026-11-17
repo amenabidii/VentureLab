@@ -42,7 +42,7 @@ founder's machine except inside a decision the founder submits.
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
 | 2 Validate | Lean Canvas; design an experiment that could disprove the assumption, then judge its results | Strategist (canvas), Builder (kit and its canvas), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (canvas, plan, kit, founder-reported results and validation gate); landing-page demand test **STUBBED** |
-| 3 Build | Local landing-page prototype for the concept | Builder | Approve exact page fingerprint | **Working** after a GO decision; local files only |
+| 3 Build | Landing page; MVP scope, user guide and executed checks | Builder, Product | Approve exact page fingerprint | **Working** (landing page after GO; scope, guide, checks); MVP code **STUBBED** |
 | 4 Commercial Setup | Pricing hypotheses and draft policies | Commercial | Founder chooses the price (fingerprint-bound) | **Working** (drafts; no payments of any kind) |
 | 5 Launch | Store page, launch posts, automatic delivery | Launcher; `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py` | Publish page and enable delivery, each bound to the exact file | Drafts **Working**; publishing and sale to cash **MOCKED** |
 | 6 Operate & Learn | Support, metrics, persevere-or-pivot memo | Operator, Judge rules | Required for any real-world change | **Working** on real inputs; rehearsal metrics **MOCKED** and never evidence |
@@ -72,8 +72,15 @@ its checks, and every action is appended to `decision_log.json`.
   (command-line runs write the same files to `outputs/`).
 - **Gate**: phase 1 evidence gate (below).
 
+**Opportunity scorecard (Working, `agents/strategist.py`, `phase1_step4_opportunity-scorecard.*`):**
+the founder's idea is scored against the alternatives the run itself produced (the
+Challenger's new hypotheses, alternative problems with established findings) and the
+status quo, with a fixed published rubric (problem evidence, founder fit, market risks
+applied equally). Market size stays UNKNOWN unless sourced. The ranking orders what to
+test first; it is never evidence of demand.
+
 **Remaining Discover design (STUBBED):** the Investigator would turn an ambiguous
-starting idea into candidate problem/customer pairs, compare alternatives using
+starting idea into candidate problem/customer pairs, compare them using
 explicit founder-weighted criteria (pain, reachable customers, feasibility, cost,
 and ethical fit), and preserve sources or ASSUMPTION labels for every score.
 The founder chooses the pair; a high score alone cannot satisfy the evidence gate.
@@ -139,6 +146,13 @@ The current passive local page has no form or tracking and cannot measure demand
 - **Outputs**: `phase3_step1_landing-spec.json` and `phase3_step1_landing-page.html` in the
   same approved folder; the workspace previews HTML only through an inert sandbox.
 - **Gate**: generation approval. It never authorizes publishing or sending.
+
+**MVP scope, guide and checks (Working, `agents/product.py`):** a scope and acceptance
+criteria from the brief (thresholds labelled ASSUMPTION), a DRAFT user guide, and
+acceptance checks that actually execute against the generated artifacts
+(`phase3_step2_mvp-scope.json`, `phase3_step3_user-guide-draft.md`,
+`phase3_step4_acceptance-checks.json`, `phase3_gate_build.json`). Launch refuses to run
+unless every check passed. The MVP's own code is not generated.
 
 **Remaining Build design (STUBBED):** the Builder would derive a narrowly scoped
 MVP specification and acceptance criteria from validated needs, produce application

@@ -85,6 +85,90 @@ def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, chall
     }
 
 
+RUBRIC = {
+    "problem_evidence": "2 = at least one ESTABLISHED finding cited; 1 = only NEEDS_REVIEW or partial findings "
+                        "with verified quotes; 0 = no sourced finding",
+    "founder_fit": "2 = the founder's own idea built with the stated skills; 1 = plausible with the stated "
+                   "skills but unconfirmed (ASSUMPTION); 0 = no product to build",
+    "open_risks": "minus 1 for each unresolved Challenger market risk; market risks apply equally to every "
+                  "product option, not to the status quo (total not below 0)",
+}
+
+
+def _evidence_points(ids: list[str], findings: dict[str, dict]) -> tuple[int, list[str]]:
+    cited = [findings[i] for i in ids if i in findings and _verified_urls(findings[i])]
+    urls = list(dict.fromkeys(u for f in cited for u in _verified_urls(f)))
+    if any(f.get("standing") == "established" for f in cited):
+        return 2, urls
+    return (1 if cited else 0), urls
+
+
+def score_opportunities(brief: dict, gate: dict, investigation: dict | None, challenge: dict | None) -> dict:
+    """Phase 1 core step: score the founder's idea against alternatives found in the run.
+
+    Alternatives come only from the run's own records: the Challenger's new hypotheses,
+    the gate's alternative problems (established findings about a different problem), and
+    the status quo. A score ranks what to test first; it is never evidence of demand.
+    """
+    findings = {f["id"]: f for f in (investigation or {}).get("findings", [])}
+    problem_ids = [f["id"] for f in findings.values() if f.get("type") == "customer_problem"]
+    risks = (challenge or {}).get("risks", [])
+    options = [{"option": brief["idea"], "origin": "founder's idea (FOUNDER-PROVIDED)", "evidence_ids": problem_ids,
+                "fit": 2, "risk_count": len(risks)}]
+    for h in (challenge or {}).get("new_hypotheses", []):
+        options.append({"option": h["text"], "origin": f"raised by the Challenger ({h.get('basis', 'ASSUMPTION')})",
+                        "evidence_ids": h.get("evidence", []), "fit": 1, "risk_count": len(risks)})
+    for alt in (gate.get("evidence") or {}).get("alternatives", []):
+        text = alt.get("claim") or alt.get("text") or str(alt)
+        options.append({"option": text, "origin": "alternative problem from an established finding",
+                        "evidence_ids": alt.get("findings", alt.get("ids", [])), "fit": 1, "risk_count": len(risks)})
+    options.append({"option": "Status quo: target customers keep their current workaround",
+                    "origin": "baseline", "evidence_ids": [], "fit": 0, "risk_count": 0})
+    rows = []
+    for o in options:
+        ev, urls = _evidence_points(o["evidence_ids"], findings)
+        total = max(0, ev + o["fit"] - o["risk_count"])
+        rows.append({**o, "problem_evidence": ev, "sources": urls, "score": total})
+    rows.sort(key=lambda r: -r["score"])
+    best = rows[0]
+    any_established = any(r["problem_evidence"] == 2 for r in rows)
+    return {"run_id": gate.get("run_id"), "discover_decision": gate.get("decision"), "rubric": RUBRIC,
+            "options": rows, "test_first": best["option"],
+            "conclusion": ("No option has established evidence; the ranking only orders what to test first."
+                           if not any_established else
+                           "At least one option has established evidence; it is still not proof of demand."),
+            "market": {"definition": brief["market"], "customer": brief["target_customer"], "label": FOUNDER,
+                       "size": "UNKNOWN — no sourced market-size figure; none is estimated"}}
+
+
+def scorecard_markdown(data: dict) -> str:
+    rows = "\n".join(f"| {i} | {r['option']} | {r['origin']} | {r['problem_evidence']} | {r['fit']} | "
+                     f"{r['risk_count']} | **{r['score']}** | {', '.join(r['sources']) or '—'} |"
+                     for i, r in enumerate(data["options"], 1))
+    rubric = "\n".join(f"- `{k}`: {v}" for k, v in data["rubric"].items())
+    m = data["market"]
+    return f"""# Phase 1, step 4: Opportunity scorecard
+
+Discover gate: **{data['discover_decision']}** (run `{data['run_id']}`). {data['conclusion']}
+
+| # | Option | Origin | Evidence | Founder fit | Open risks | Score | Sources |
+|---|---|---|---|---|---|---|---|
+{rows}
+
+Test first: **{data['test_first']}**
+
+## Rubric (fixed, deterministic)
+
+{rubric}
+
+## Market definition
+
+- Customer: {m['customer']} ({m['label']})
+- Market: {m['definition']} ({m['label']})
+- Size: {m['size']}
+"""
+
+
 def lean_canvas_markdown(data: dict) -> str:
     lines = ["# Phase 2, step 2: Lean Canvas", "",
              f"Discover gate for this run: **{data['discover_decision']}** (run `{data['run_id']}`).",

@@ -100,9 +100,10 @@ def test_full_rehearsal_writes_every_phase_with_named_outputs(tmp_path, monkeypa
     cli = CLI(tmp_path, make_run(tmp_path))
     assert full_flow(cli, monkeypatch) == 0
     names = {p.name for p in cli.out.iterdir()}
-    for phase in (2, 4, 5, 6):
-        assert any(re.match(rf"phase{phase}_gate_", n) for n in names)
-        assert any(re.match(rf"phase{phase}_step\d+_", n) for n in names)
+    for phase in (1, 2, 3, 4, 5, 6):
+        assert any(re.match(rf"phase{phase}_step\d+_", n) for n in names), phase
+        gate_dir = cli.run if phase == 1 else cli.out   # Phase 1's gate is the Discover run's own file
+        assert any(re.match(rf"phase{phase}_gate_", p.name) for p in gate_dir.iterdir()), phase
     assert "payment_test_log.md" in names
     gate5 = json.loads((cli.out / "phase5_gate_launch.json").read_text())
     assert gate5["decision"] == "REHEARSAL PASSED" and all(c["passed"] for c in gate5["checks"])
@@ -267,3 +268,37 @@ def test_only_real_results_meeting_preset_pass_marks_can_say_persevere():
     assert persevere_or_pivot(go, passed, None)["recommendation"] == "PERSEVERE"
     failed = dict(BRIEF, validation_conditions=cond, experiment_results={"interviewees_confirming": 2})
     assert persevere_or_pivot(go, failed, None)["recommendation"] == "PIVOT OR STOP"
+
+
+def test_scorecard_compares_alternatives_from_the_run_only(tmp_path):
+    from agents.strategist import score_opportunities
+    run = make_run(tmp_path)
+    load = lambda n: json.loads((run / n).read_text())  # noqa: E731
+    challenge = dict(load("phase1_step3_challenge.json"), new_hypotheses=[
+        {"text": "A chat integration instead", "evidence": ["F1"], "basis": "UNCONFIRMED"}], risks=[{"x": 1}])
+    card = score_opportunities(BRIEF, load("phase1_gate_decision.json"), load("phase1_step2_investigation.json"), challenge)
+    origins = [r["origin"] for r in card["options"]]
+    assert any("founder" in o for o in origins) and any("Challenger" in o for o in origins) and "baseline" in origins
+    assert all(r["problem_evidence"] < 2 for r in card["options"])      # nothing established in the fixture
+    assert "No option has established evidence" in card["conclusion"]
+    assert card["market"]["size"].startswith("UNKNOWN")
+
+
+def test_phase3_checks_execute_and_mvp_code_is_labelled_stubbed(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path))
+    assert full_flow(cli, monkeypatch) == 0
+    checks = json.loads((cli.out / "phase3_step4_acceptance-checks.json").read_text())
+    assert checks["checks"] and all(c["passed"] for c in checks["checks"])
+    assert "STUBBED" in json.loads((cli.out / "phase3_step2_mvp-scope.json").read_text())["code_generation"]
+
+
+def test_launch_refused_when_a_phase3_check_fails(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path))
+    cli.approve(monkeypatch, "rehearse_after_repeat", cli.gate_sha())
+    cli("plan")
+    cli.approve(monkeypatch, "set_price:pro-4", cli.sha("phase4_step1_pricing.json"))
+    (cli.out / "phase3_step3_user-guide-draft.md").write_text("# guide without labels")
+    cli("prepare-launch")
+    cli.approve(monkeypatch, "publish_store_page", cli.sha("phase5_step1_store-page.html"))
+    cli.approve(monkeypatch, "enable_mock_delivery", cli.sha("phase5_step2_mock-product.md"))
+    assert cli("launch") == 3
