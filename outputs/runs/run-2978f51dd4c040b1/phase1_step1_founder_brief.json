@@ -1,0 +1,32 @@
+{
+ "run_id": "run-2978f51dd4c040b1",
+ "brief": {
+  "idea": "A paid newsletter that sends daily crypto trading signals to beginners.",
+  "problem_statement": "Beginners do not know when to buy and sell cryptocurrency.",
+  "target_customer": "beginner retail investors",
+  "market": "Online, worldwide",
+  "founder_skills": [
+   "writing"
+  ],
+  "hours_per_week": 15.0,
+  "budget_eur": 100.0,
+  "budget_currency": "USD",
+  "values_and_constraints": [
+   "Value: None",
+   "Constraint: None"
+  ],
+  "source_urls": [],
+  "validation_conditions": [],
+  "experiment_results": {}
+ },
+ "category_screen": {
+  "allowed": false,
+  "matches": {
+   "financial_investment_or_crypto": [
+    "crypto",
+    "cryptocurrency",
+    "trading signals"
+   ]
+  }
+ }
+}

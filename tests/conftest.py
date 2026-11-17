@@ -12,6 +12,16 @@ from collections.abc import Callable
 import httpx
 import pytest
 
+import os
+import tempfile
+
+# Tests never touch a running application's run records, approvals or audit log:
+# any code path that builds the default services uses a throwaway directory.
+_TEST_STATE = tempfile.mkdtemp(prefix="venturelab-tests-")
+os.environ["VENTURELAB_STATE_DIR"] = os.path.join(_TEST_STATE, "state")
+os.environ["VENTURELAB_OUTPUT_DIR"] = os.path.join(_TEST_STATE, "outputs")
+os.environ["VENTURELAB_DECISION_LOG"] = os.path.join(_TEST_STATE, "decision_log.json")
+
 from config import Settings
 from llm import OllamaClient
 

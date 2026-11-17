@@ -1,20 +1,55 @@
 import { demo } from "./fixtures.js";
-import { modelStatus } from "./normalize.js";
+import { modelStatus, BriefValidationError } from "./normalize.js";
 export class UnavailableError extends Error {}
-/** Override this adapter at integration. No speculative HTTP endpoints are called.
- * Each method returns a Promise; binding implementations must normalize to contracts.js.
- * createRun returns a persisted Run, never a locally fabricated completion.
- * decideApproval must bind request + run + artifact + fingerprint on the server.
+/** Error returned by the local backend, carrying its explanation. */
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  let body = null;
+  try {
+    body = await response.json();
+  } catch {
+    body = null;
+  }
+  if (!response.ok) {
+    if (response.status === 422 && body && body.fields)
+      throw new BriefValidationError(body.fields);
+    const detail =
+      body && typeof body.detail === "string"
+        ? body.detail
+        : `The backend refused the request (HTTP ${response.status}).`;
+    throw new ApiError(detail, response.status);
+  }
+  return body;
+}
+const run = (id, part) => `/api/runs/${encodeURIComponent(id)}/${part}`;
+/** Live mode calls the integrated backend (Milestones 2 and 3). Demo mode reads the
+ * MOCKED fixtures only and can never create runs, approve or execute anything.
+ * Every result is normalized against contracts.js before it is rendered.
  */
 export class WorkspaceService {
   constructor(mode = "live") {
     this.mode = mode;
   }
+  get live() {
+    return this.mode !== "demo";
+  }
   get capabilities() {
-    return { createRun: false, approvals: false, workflow: false };
+    return this.live
+      ? { createRun: true, approvals: true, workflow: true, builder: true }
+      : { createRun: false, approvals: false, workflow: false, builder: false };
   }
   async listRuns() {
-    return this.mode === "demo" ? structuredClone(demo.runs) : [];
+    return this.live ? api("/api/runs") : structuredClone(demo.runs);
   }
   async getRunStatus(id) {
     return this.read(id, "agents");
@@ -40,20 +75,37 @@ export class WorkspaceService {
   async getAudit(id) {
     return this.read(id, "audit");
   }
-  read(id, key, empty = []) {
-    return this.mode === "demo" && id === demo.runs[0].id
-      ? structuredClone(demo[key])
-      : empty;
+  async read(id, key, empty = []) {
+    if (this.live) {
+      const path = { agents: "agents", findings: "findings", challenges: "challenges", decision: "decision",
+        counterfactual: "counterfactual", artifacts: "artifacts", approvals: "approvals", audit: "audit" }[key];
+      return api(run(id, path));
+    }
+    return id === demo.runs[0].id ? structuredClone(demo[key]) : empty;
   }
-  async createRun(_brief) {
-    throw new UnavailableError(
-      "STUBBED — Milestone 2 run creation is not connected. No research was started.",
-    );
+  async createRun(brief) {
+    if (!this.live) throw new UnavailableError("Demo mode never starts research.");
+    const body = await api("/api/runs", { method: "POST", body: JSON.stringify(brief) });
+    return body.run;
   }
-  async decideApproval(_request, _decision) {
-    throw new UnavailableError(
-      "STUBBED — Milestone 3 approval backend is not connected. No approval was granted.",
-    );
+  async prepareBuilder(runId) {
+    if (!this.live) throw new UnavailableError("Demo mode never prepares artifacts.");
+    return api(run(runId, "builder"), { method: "POST" });
+  }
+  async decideApproval(request, decision, { key, reason } = {}) {
+    if (!this.live) throw new UnavailableError("Demo mode can never grant approval.");
+    return api(`/api/approvals/${encodeURIComponent(request.id)}/decision`, {
+      method: "POST",
+      body: JSON.stringify({ run_id: request.runId, fingerprint: request.fingerprint, decision,
+        reason: reason || "", founder_key: key || "" }),
+    });
+  }
+  async executeApproval(request, key) {
+    if (!this.live) throw new UnavailableError("Demo mode can never execute an action.");
+    return api(`/api/approvals/${encodeURIComponent(request.id)}/execute`, {
+      method: "POST",
+      body: JSON.stringify({ run_id: request.runId, founder_key: key || "" }),
+    });
   }
 }
 /** Real, existing M1 endpoint. This check never starts inference. */

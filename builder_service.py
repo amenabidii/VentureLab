@@ -24,7 +24,9 @@ class ArtifactBundle(Contract):
     artifact_identity: Identifier
     brief: BuilderInput
     kit: ExperimentKit
-    landing_page: LandingPageSpec
+    # Integration: a landing page is only part of the bundle when the upstream gate
+    # says GO (Milestone 3's rule). REPEAT and PIVOT may still get the experiment kit.
+    landing_page: LandingPageSpec | None = None
     model: str | None = None
     generator: str = Field(pattern=r"^(deterministic-template|ollama)$")
 
@@ -32,9 +34,14 @@ class ArtifactBundle(Contract):
     def consistent_bundle(self):
         if self.run_id != self.brief.run_id:
             raise ValueError("Bundle and brief run IDs differ")
-        if self.brief.gate_context and self.brief.gate_context.outcome != "GO":
+        gate = self.brief.gate_context
+        if gate and gate.outcome == "STOP":
+            raise ValueError("A STOP gate decision blocks every Builder action")
+        if gate and gate.outcome != "GO" and self.landing_page is not None:
             raise ValueError("Upstream gate does not admit a landing-page build")
-        if self.landing_page.target_audience != self.brief.target_customer:
+        if self.landing_page is None and not (gate and gate.outcome in ("REPEAT", "PIVOT")):
+            raise ValueError("A kit-only bundle requires a REPEAT or PIVOT gate decision")
+        if self.landing_page is not None and self.landing_page.target_audience != self.brief.target_customer:
             raise ValueError("Landing-page audience must match the brief target customer")
         if self.kit != assemble_kit(self.brief, self.kit.assumption_index):
             raise ValueError("Experiment kit is inconsistent with the validated brief and design")
@@ -43,12 +50,14 @@ class ArtifactBundle(Contract):
         return self
 
     def files(self) -> dict[str, bytes]:
-        return {
+        files = {
             "phase2_step1_validation-kit.json": (self.kit.model_dump_json(indent=2) + "\n").encode(),
             "phase2_step1_validation-kit.md": kit_markdown(self.kit).encode(),
-            "phase3_step1_landing-spec.json": (self.landing_page.model_dump_json(indent=2) + "\n").encode(),
-            "phase3_step1_landing-page.html": render_landing_page(self.landing_page).encode(),
         }
+        if self.landing_page is not None:
+            files["phase3_step1_landing-spec.json"] = (self.landing_page.model_dump_json(indent=2) + "\n").encode()
+            files["phase3_step1_landing-page.html"] = render_landing_page(self.landing_page).encode()
+        return files
 
     def fingerprint(self) -> str:
         return self.snapshot()[1]
@@ -62,10 +71,10 @@ class ArtifactBundle(Contract):
         return files, digest
 
 
-def prepare(brief: BuilderInput, spec: LandingPageSpec, client: OllamaClient | None = None) -> ArtifactBundle:
+def prepare(brief: BuilderInput, spec: LandingPageSpec | None, client: OllamaClient | None = None) -> ArtifactBundle:
     # Revalidate even if a caller used model_construct or model_copy(update=...).
     brief = BuilderInput.model_validate(brief.model_dump())
-    spec = LandingPageSpec.model_validate(spec.model_dump())
+    spec = LandingPageSpec.model_validate(spec.model_dump()) if spec is not None else None
     # Provenance records "ollama" only when the model actually made the selection.
     used_model = model_selects(brief, client)
     return ArtifactBundle(run_id=brief.run_id, artifact_identity="validation-artifacts", brief=brief,

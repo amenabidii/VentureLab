@@ -77,10 +77,12 @@ def run_discover(
     suffix: str = "",
     effort: Effort = FULL,
     warm: bool = False,
+    run_id: str | None = None,
+    listener=None,
 ) -> RunResult:
     started = time.perf_counter()
-    run_id = f"run-{utc_now()}-{uuid.uuid4().hex[:6]}"
-    log = AuditLog(log_path, run_id)
+    run_id = run_id or f"run-{utc_now()}-{uuid.uuid4().hex[:6]}"
+    log = AuditLog(log_path, run_id, listener=listener)
     out = Path(out_dir)
     files: list[Path] = []
     timings: dict[str, float] = {}

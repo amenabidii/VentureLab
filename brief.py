@@ -13,6 +13,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 
@@ -38,6 +40,9 @@ class FounderBrief(BaseModel):
     founder_skills: list[str] = Field(min_length=1, max_length=10)
     hours_per_week: float = Field(ge=0, le=100)
     budget_eur: float = Field(ge=0, le=1_000_000)
+    # The amount above is in this currency (the field name predates multi-currency input).
+    # No exchange rate is applied anywhere: converting would invent a number.
+    budget_currency: Literal["EUR", "USD", "EGP"] = "EUR"
     values_and_constraints: list[str] = Field(default_factory=list, max_length=10)
     # Optional public pages the founder wants checked (competitor pages, forum threads).
     source_urls: list[HttpUrl] = Field(default_factory=list, max_length=5)

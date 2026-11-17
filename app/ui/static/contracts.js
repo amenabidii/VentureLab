@@ -10,7 +10,15 @@
  * @typedef {{id:string, runId:string, artifactId:string, fingerprint:string, action:string, description:string, status:string}} Approval
  * @typedef {{timestamp:string, agent:string, action:string, model:string|null, sources:string[], cost:number|null, approved_by:string|null, outcome:string}} AuditEntry
  */
-export const STANDINGS = ["ESTABLISHED", "NEEDS_REVIEW", "ASSUMPTION"];
+// Milestone 2 standings, shown exactly as the backend assigns them (never upgraded).
+export const STANDINGS = [
+  "ESTABLISHED",
+  "NEEDS_REVIEW",
+  "PARTIAL_EVIDENCE",
+  "UNSUPPORTED",
+  "CONTRADICTED",
+  "ASSUMPTION",
+];
 export const OUTCOMES = ["GO", "REPEAT", "PIVOT", "STOP"];
 export function safeURL(value) {
   try {

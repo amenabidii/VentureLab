@@ -37,8 +37,13 @@ def warm_model(client: OllamaClient) -> bool:
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app_: FastAPI) -> AsyncIterator[None]:
     threading.Thread(target=warm_model, args=(OllamaClient(),), daemon=True).start()
+    if getattr(app_.state, "services", None) is None:
+        # Run store, background worker and approval store. Runs left unfinished by a
+        # previous process are marked failed ("interrupted") here, not resumed.
+        from app.api import build_services
+        app_.state.services = build_services()
     yield
 
 
@@ -118,10 +123,11 @@ def health_inference(client: OllamaClient = Depends(get_client)) -> JSONResponse
 # the README table can be checked against each other later.
 FEATURES = [
     ("Local model server (Ollama) and health checks", "Working"),
-    ("Discover workflow: founder brief, Investigator, Challenger (CLI: python orchestrator.py)", "Working"),
-    ("Evidence verification and deterministic phase 1 gate with counterfactual", "Working"),
-    ("Builder and Judge agents, later phases", "STUBBED (not built yet)"),
-    ("Founder approval", "STUBBED (not built yet)"),
+    ("Discover workflow in the web workspace and CLI: brief, Investigator, Challenger", "Working"),
+    ("Evidence verification, deterministic gate (Judge) and counterfactual", "Working"),
+    ("Builder: validation experiment kit; local landing page only after GO", "Working (local files only)"),
+    ("Founder approval for Builder actions (backend enforced)", "Working"),
+    ("Commercial Setup, Launch, Operate & Learn phases", "STUBBED (not built)"),
     ("Payments and sale-to-cash", "STUBBED (design only, never implemented)"),
 ]
 
@@ -161,4 +167,6 @@ Checks: <a href="/health/model">/health/model</a>, <a href="/health/inference">/
 
 # Isolated founder workspace; model health and domain endpoints remain unchanged.
 from app.ui.router import router as workspace_router
+from app.api import router as api_router
 app.include_router(workspace_router)
+app.include_router(api_router)

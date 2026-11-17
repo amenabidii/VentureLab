@@ -44,8 +44,16 @@ def _secret(path: Path, create: bool) -> bytes:
         raise ApprovalError("Authority file missing or invalid; never regenerate keys for existing state") from exc
 
 
+DEFAULT_TTL_SECONDS = 2 * 60 * 60  # a request must be decided and executed within this window
+
+
+def _parse_time(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
 class ApprovalStore:
-    def __init__(self, database: Path, output_root: Path):
+    def __init__(self, database: Path, output_root: Path, ttl_seconds: float = DEFAULT_TTL_SECONDS):
+        self.ttl_seconds = ttl_seconds
         self.database = Path(database).absolute()
         self.output_root = Path(output_root).absolute()
         if self.database.resolve() != self.database or self.output_root.resolve() != self.output_root:
@@ -158,7 +166,9 @@ class ApprovalStore:
         request = ApprovalRequest(action_id=action_id, action_type="generate_local_artifacts", run_id=bundle.run_id,
             artifact_identity=bundle.artifact_identity, artifact_sha256=bundle.fingerprint(),
             destination=str(self.output_root / bundle.run_id / action_id),
-            description="Write this exact experiment kit and landing-page concept locally. Approval accepts proposed numerical experiment settings, not evidence of validation. No export, publishing or sending is authorized.")
+            description=("Write this exact experiment kit and landing-page concept locally. " if bundle.landing_page is not None
+                         else "Write this exact experiment kit and interview guide locally (no landing page: the gate decision was not GO). ")
+            + "Approval accepts proposed numerical experiment settings, not evidence of validation. No export, publishing or sending is authorized.")
         values = [action_id, request.model_dump_json(), bundle.model_dump_json(), request.status.value, 0]
         with self._connection() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -167,6 +177,47 @@ class ApprovalStore:
             self._event(db, "prepare_artifacts", "prepared_for_review", request, bundle)
             self._event(db, "request_approval", "pending", request)
         return request
+
+    # --- integration helpers: expiry, founder check and listing ---------------------------
+
+    def _created_at(self, db, action_id: str) -> datetime | None:
+        for row in db.execute("SELECT event FROM audit ORDER BY sequence"):
+            event = json.loads(row[0])
+            if event.get("action") == "request_approval" and event.get("action_id") == action_id:
+                return _parse_time(event["timestamp"])
+        return None
+
+    def expires_at(self, action_id: str) -> datetime | None:
+        with self._connection() as db:
+            db.execute("BEGIN")
+            self._verify_audit(db)
+            created = self._created_at(db, action_id)
+        return None if created is None else datetime.fromtimestamp(created.timestamp() + self.ttl_seconds, timezone.utc)
+
+    def _check_not_expired(self, db, action_id: str):
+        created = self._created_at(db, action_id)
+        if created is None or datetime.now(timezone.utc).timestamp() > created.timestamp() + self.ttl_seconds:
+            raise ApprovalError("Approval request expired; prepare a new request")
+
+    def verify_founder(self, founder_token: bytes | None) -> bool:
+        with self._connection() as db:
+            db.execute("BEGIN")
+            return isinstance(founder_token, bytes) and hmac.compare_digest(
+                hashlib.sha256(founder_token).hexdigest(), self._metadata(db)["founder_hash"])
+
+    def list_requests(self, run_id: str | None = None) -> list[ApprovalRequest]:
+        with self._connection() as db:
+            db.execute("BEGIN")
+            self._verify_audit(db)
+            ids = [row[0] for row in db.execute("SELECT action_id FROM approvals ORDER BY rowid")]
+            out = []
+            for action_id in ids:
+                row = self._row(db, action_id)
+                request = ApprovalRequest.model_validate_json(row["request"]).model_copy(
+                    update={"status": ApprovalStatus(row["status"])})
+                if run_id is None or request.run_id == run_id:
+                    out.append(request)
+        return out
 
     def inspect(self, action_id: str) -> tuple[ApprovalRequest, ArtifactBundle]:
         with self._connection() as db:
@@ -197,6 +248,7 @@ class ApprovalStore:
                     raise ApprovalError("Only pending approvals can be decided")
                 if decision.artifact_sha256 != request.artifact_sha256:
                     raise ApprovalError("Decision fingerprint differs from the requested artifact")
+                self._check_not_expired(db, decision.action_id)
                 if ArtifactBundle.model_validate_json(row["bundle"]).fingerprint() != request.artifact_sha256:
                     raise ApprovalError("Draft or renderer changed; prepare a new request")
                 status = ApprovalStatus.APPROVED if decision.decision == "approve" else ApprovalStatus.REJECTED
@@ -260,6 +312,7 @@ class ApprovalStore:
                 request = ApprovalRequest.model_validate_json(row["request"])
                 if row["status"] != ApprovalStatus.APPROVED.value or row["consumed"]:
                     raise ApprovalError("Approval is not approved or was already consumed")
+                self._check_not_expired(db, action_id)
                 try:
                     candidate = bundle if bundle is not None else ArtifactBundle.model_validate_json(row["bundle"])
                     candidate = ArtifactBundle.model_validate_json(candidate.model_dump_json())

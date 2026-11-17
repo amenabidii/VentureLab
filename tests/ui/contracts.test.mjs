@@ -31,7 +31,14 @@ const valid = {
   constraints: "None",
   sources: [],
 };
+// Live mode talks to the backend; these rendering tests give it an empty backend.
+const emptyBackend = async (url) => ({
+  ok: true,
+  status: 200,
+  json: async () => (/\/(decision|counterfactual)$/.test(url) ? null : []),
+});
 const makeState = async (mode) => {
+  if (mode === "live") globalThis.fetch = emptyBackend;
   const service = new WorkspaceService(mode);
   return {
     service,
@@ -79,23 +86,31 @@ test("safe sources reject script, file, credentials and malformed protocols", ()
   assert.equal(safeURL("https://example.org"), "https://example.org/");
   assert.ok(!source("javascript:alert(1)", "source").includes("href"));
 });
-test("live adapter never fabricates data or approvals", async () => {
+test("live adapter calls only the integrated backend and never fabricates results", async () => {
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push([url, options.method || "GET", options.body ? JSON.parse(options.body) : null]);
+    if (url === "/api/runs" && options.method === "POST")
+      return { ok: false, status: 422, json: async () => ({ fields: { idea: "Too short" } }) };
+    if (url.startsWith("/api/approvals/"))
+      return { ok: false, status: 403, json: async () => ({ detail: "Founder capability required" }) };
+    return { ok: true, status: 200, json: async () => (url.endsWith("/decision") ? null : []) };
+  };
   const s = new WorkspaceService();
+  assert.equal(s.capabilities.approvals, true);
   assert.deepEqual(await s.listRuns(), []);
-  assert.equal(await s.getDecision("x"), null);
-  for (const method of [
-    "getRunStatus",
-    "getFindings",
-    "getChallenges",
-    "listArtifacts",
-    "getApprovals",
-    "getAudit",
-  ])
-    assert.deepEqual(await s[method]("x"), []);
-  assert.equal(await s.getCounterfactual("x"), null);
-  await assert.rejects(s.createRun(valid), UnavailableError);
-  await assert.rejects(s.decideApproval({}, "approve"), UnavailableError);
-  assert.equal(s.capabilities.approvals, false);
+  assert.equal(await s.getDecision("run-1"), null);
+  assert.deepEqual(await s.getFindings("run-1"), []);
+  await assert.rejects(s.createRun(valid), (e) => e.fields?.idea === "Too short");
+  const request = { id: "a".repeat(32), runId: "run-1", fingerprint: "f".repeat(64) };
+  await assert.rejects(s.decideApproval(request, "approve", { key: "k", reason: "ok" }), /Founder capability/);
+  const decision = calls.find(([url]) => url.endsWith("/decision") && url.startsWith("/api/approvals/"));
+  assert.deepEqual(decision[2], { run_id: "run-1", fingerprint: "f".repeat(64), decision: "approve",
+    reason: "ok", founder_key: "k" });
+  assert.ok(calls.every(([url]) => url.startsWith("/api/")));
+  globalThis.fetch = async () => { throw new TypeError("network down"); };
+  await assert.rejects(s.listRuns()); // a network failure is an error, never an empty success
+  await assert.rejects(s.executeApproval(request, "k"));
 });
 test("demo mode is explicit, isolated, and cannot approve", async () => {
   const s = new WorkspaceService("demo");
@@ -104,7 +119,10 @@ test("demo mode is explicit, isolated, and cannot approve", async () => {
   findings[0].claim = "mutated";
   assert.notEqual((await s.getFindings("fixture-01"))[0].claim, "mutated");
   assert.deepEqual(await s.getFindings("unknown"), []);
-  await assert.rejects(s.decideApproval({}, "approve"));
+  await assert.rejects(s.decideApproval({}, "approve"), UnavailableError);
+  await assert.rejects(s.executeApproval({}, "k"), UnavailableError);
+  await assert.rejects(s.createRun(valid), UnavailableError);
+  assert.equal(s.capabilities.approvals, false);
 });
 test("model health uses only the inspected M1 endpoint and supports 503", async () => {
   let called;

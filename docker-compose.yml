@@ -47,6 +47,12 @@ services:
       VENTURELAB_FALLBACK_MODEL: ${VENTURELAB_FALLBACK_MODEL:-qwen3:1.7b}
     ports:
       - "127.0.0.1:${APP_PORT:-8000}:8000"
+    volumes:
+      # Run records, the approval store (with the founder approval key), generated
+      # outputs and the audit log stay on this machine, outside the image.
+      - ./.venturelab:/srv/.venturelab
+      - ./outputs:/srv/outputs
+      - ./decision_log.json:/srv/decision_log.json
     depends_on:
       ollama:
         condition: service_healthy

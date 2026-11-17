@@ -23,9 +23,9 @@ export const escape = (value) =>
   );
 const e = escape;
 export function badge(text) {
-  const tone = ["ESTABLISHED", "GO", "Completed", "Working"].includes(text)
+  const tone = ["ESTABLISHED", "GO", "Completed", "Working", "Executed"].includes(text)
     ? "green"
-    : /STOP|Failed|Contradictory/.test(text)
+    : /STOP|Failed|Contradictory|CONTRADICTED|Rejected/.test(text)
       ? "red"
       : /REPEAT|REVIEW|ASSUMPTION|Blocked|Pending/.test(text)
         ? "amber"
@@ -68,7 +68,7 @@ export const phases = [
     "Define the opportunity",
     "Founder brief and sourced findings",
     "Evidence quality and permitted scope",
-    "Intake working · Research STUBBED",
+    "Working",
     "brief",
   ],
   [
@@ -76,7 +76,7 @@ export const phases = [
     "Challenge the assumptions",
     "Critical analysis and a validation plan",
     "Observed problem and demand evidence",
-    "STUBBED",
+    "Working · plan only; results entry STUBBED",
     "evidence",
   ],
   [
@@ -84,7 +84,7 @@ export const phases = [
     "Create a testable artifact",
     "Experiment kits and local prototypes",
     "Backend approval for the exact action and artifact",
-    "STUBBED",
+    "Working · local files only",
     "artifacts",
   ],
   [
@@ -124,13 +124,13 @@ export function dashboard(s) {
     `<div class="section-title"><h2>Your path forward</h2>${link("roadmap", "Explore all phases →", "text-link")}</div><div class="phase-strip">${phases.map((p, i) => `<a href="#${p[5] || "roadmap"}"><span class="phase-number">0${i + 1}</span><strong>${p[0]}</strong><small>${i === 0 ? "Brief available" : p[4]}</small></a>`).join("")}</div>` +
     `<div class="section-title"><h2>Venture runs</h2>${s.demo ? badge("MOCKED fixtures") : badge("Live workspace")}</div>` +
     (s.runs.length
-      ? `<div class="cards">${s.runs.map((r) => `<article class="card"><span class="eyebrow">${e(r.phase)}</span><h2>${e(r.title)}</h2>${badge(r.status)}${r.recordedAt ? `<p>Recorded run · ${e(r.recordedAt)}</p>` : ""}<p>Run ${e(r.id)}</p><button data-run="${e(r.id)}">Open workspace →</button></article>`).join("")}</div>`
+      ? `<div class="cards">${s.runs.map((r) => `<article class="card"><span class="eyebrow">${e(r.phase)}</span><h2>${e(r.title)}</h2>${badge(r.status)}${r.recordedAt ? `<p>Recorded run (prior execution) · ${e(r.recordedAt)}</p>` : ""}<p>Run ${e(r.id)}</p><button data-run="${e(r.id)}">Open workspace →</button></article>`).join("")}</div>`
       : empty(
           "Your first investigation starts here.",
-          "No venture runs are available. Prepare a brief now; submission becomes available when the workflow backend is connected.",
+          "No venture runs are available. Submit a founder brief to start a real analysis.",
           link("brief", "Create founder brief"),
         )) +
-    `<div class="grid-two"><article class="card"><span class="eyebrow">RECENT DECISION</span>${s.data.decision ? `<h2>${badge(s.data.decision.outcome)}</h2><p>${e(s.data.decision.explanation)}</p>${link("decision", "Inspect the rule →", "text-link")}` : "<h2>No decisions yet</h2><p>A recommendation appears only after a backend gate evaluation.</p>"}</article><article class="card"><span class="eyebrow">WORKSPACE READINESS</span><h2>Built around founder control</h2><p>Local model health is connected. Research and Builder integrations are STUBBED on this branch.</p>${link("approvals", "Review approval boundary →", "text-link")}</article></div>`
+    `<div class="grid-two"><article class="card"><span class="eyebrow">RECENT DECISION</span>${s.data.decision ? `<h2>${badge(s.data.decision.outcome)}</h2><p>${e(s.data.decision.explanation)}</p>${link("decision", "Inspect the rule →", "text-link")}` : "<h2>No decisions yet</h2><p>A recommendation appears only after a backend gate evaluation.</p>"}</article><article class="card"><span class="eyebrow">WORKSPACE READINESS</span><h2>Built around founder control</h2><p>Research, the deterministic gate, the Builder and founder approval are connected to the local backend. Commercial Setup, Launch and Operate &amp; Learn remain STUBBED.</p>${link("approvals", "Review approval boundary →", "text-link")}</article></div>`
   );
 }
 export const fields = [
@@ -200,7 +200,7 @@ export function brief(s) {
     ) +
     `<div class="brief-layout"><section class="card">${
       review
-        ? `<div class="section-title"><h2>Ready for your review</h2>${badge(s.submittedRunId ? "Submitted to backend" : "Not submitted")}</div><dl class="review">${fields.map(([key, label]) => `<dt>${label}</dt><dd>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key]) || "Not provided"}${key === "budget" ? " " + e(s.brief.currency) : ""}</dd>`).join("")}</dl><div class="notice">${s.service.capabilities.createRun ? "The backend will validate this brief before starting research." : "STUBBED — submission requires the Milestone 2 backend. This brief has not been researched."}</div><div class="actions"><button data-action="${s.submittedRunId || s.submitLocked ? "new-brief" : "edit"}" class="secondary" ${s.busy ? "disabled" : ""}>${s.submittedRunId || s.submitLocked ? "Prepare another brief" : "← Edit brief"}</button><button data-action="submit" ${!s.service.capabilities.createRun || s.demo || s.busy || s.submitLocked || s.submittedRunId ? "disabled" : ""}>${s.busy ? "Submitting…" : "Submit and start analysis"}</button></div>`
+        ? `<div class="section-title"><h2>Ready for your review</h2>${badge(s.submittedRunId ? "Submitted to backend" : "Not submitted")}</div><dl class="review">${fields.map(([key, label]) => `<dt>${label}</dt><dd>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key]) || "Not provided"}${key === "budget" ? " " + e(s.brief.currency) : ""}</dd>`).join("")}</dl><div class="notice">${s.service.capabilities.createRun ? "The backend validates this brief, then runs real research with the local model. This usually takes two to four minutes." : "Demo mode never starts research."}</div>${s.service.capabilities.createRun ? `<label class="check"><input type="checkbox" id="quick-run" ${s.quick ? "checked" : ""}> Shorter demonstration run (one search, fewer claims; every step still runs live)</label>` : ""}<div class="actions"><button data-action="${s.submittedRunId || s.submitLocked ? "new-brief" : "edit"}" class="secondary" ${s.busy ? "disabled" : ""}>${s.submittedRunId || s.submitLocked ? "Prepare another brief" : "← Edit brief"}</button><button data-action="submit" ${!s.service.capabilities.createRun || s.demo || s.busy || s.submitLocked || s.submittedRunId ? "disabled" : ""}>${s.busy ? "Submitting…" : "Submit and start analysis"}</button></div>`
         : `<form id="brief-form" novalidate><div id="validation-summary" role="alert">${Object.keys(s.errors).length ? '<p class="field-error">Please correct the highlighted fields.</p>' : ""}</div><div class="form-grid">${fields.map(([key, label, help, type]) => `<div class="field ${type === "textarea" ? "full" : ""}"><label for="${key}">${label} <span>${key === "sources" ? "Optional" : "Required"}</span></label>${type === "textarea" ? `<textarea id="${key}" name="${key}" rows="${key === "idea" || key === "problem" ? 3 : 2}" maxlength="4000"` : `<input id="${key}" name="${key}" type="${type}" ${type === "number" ? `min="${key === "hours" ? 1 : 0}" ${key === "hours" ? 'max="168"' : ""} step="any"` : 'maxlength="4000"'}`} aria-describedby="${key}-help ${key}-error" ${s.errors[key] ? 'aria-invalid="true"' : ""} ${key !== "sources" ? "required" : ""}${type === "textarea" ? `>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key] || "")}</textarea>` : ` value="${e(s.brief[key] ?? "")}">`}<small id="${key}-help">${help}</small><span id="${key}-error" class="field-error">${e(s.errors[key] || "")}</span></div>`).join("")}<div class="field"><label for="currency">Budget currency</label><select id="currency" name="currency" aria-describedby="currency-error" ${s.errors.currency ? 'aria-invalid="true"' : ""}>${["EGP", "USD", "EUR"].map((c) => `<option ${s.brief.currency === c ? "selected" : ""}>${c}</option>`).join("")}</select><span id="currency-error" class="field-error">${e(s.errors.currency || "")}</span></div></div><div class="actions"><span class="muted">Kept in this tab only. Reloading clears it.</span><button type="submit">Review brief →</button></div></form>`
     }</section><aside><article class="card dark"><span class="eyebrow">A STRONGER START</span><h2>A useful brief is specific, not perfect.</h2><p>Name a customer you can reach. Describe a problem you can observe. Include the constraints that matter.</p><hr><p>We may recommend gathering evidence, changing direction, or stopping under current conditions.</p></article><article class="card"><h3>Your control comes first</h3><p>Review before submission. Backend approval is required for gated actions.</p><p>Never include passwords, payment credentials or private customer records.</p></article></aside></div>`
   );
@@ -219,7 +219,7 @@ export function workflow(s) {
       "Four roles. One transparent process.",
       "Statuses reflect backend records. No animated or simulated execution.",
     ) +
-    `<div class="workflow">${agents.map((a, i) => `<article class="card agent"><div class="agent-number">0${i + 1}</div><div><h2>${e(a.agent)}</h2><p>${e(a.task)}</p>${link({ Investigator: "evidence", Challenger: "challenger", Builder: "artifacts", Judge: "decision" }[a.agent], a.status === "Completed" ? "View output →" : "Open output view →", "text-link")}</div>${badge(a.status)}</article>`).join("")}</div><div class="notice">The Judge explains deterministic gate results. It cannot override them. ${s.service.capabilities.workflow ? "Status refreshes every 5 seconds while this view is open." : "Live workflow updates are STUBBED."}</div>`
+    `<div class="workflow">${agents.map((a, i) => `<article class="card agent"><div class="agent-number">0${i + 1}</div><div><h2>${e(a.agent)}</h2><p>${e(a.task)}</p>${link({ Investigator: "evidence", Challenger: "challenger", Builder: "artifacts", Judge: "decision" }[a.agent], a.status === "Completed" ? "View output →" : "Open output view →", "text-link")}</div>${badge(a.status)}</article>`).join("")}</div><div class="notice">The Judge explains deterministic gate results. It cannot override them. ${s.service.capabilities.workflow ? "Status refreshes every 5 seconds while this view is open." : "Demo mode shows MOCKED statuses."}${s.runDetail?.error ? ` Run message: ${e(s.runDetail.error)}` : ""}</div>`
   );
 }
 export function evidence(s) {
@@ -296,7 +296,7 @@ export function decision(s) {
     ) +
     `<div class="outcomes">${OUTCOMES.map((o, i) => `<div>${badge(o)}<p>${["Proceed to further validation.", "Gather evidence and test again.", "Investigate a justified alternative.", "Do not proceed under current conditions."][i]}</p></div>`).join("")}</div>` +
     (d
-      ? `<section class="card decision"><span class="eyebrow">${s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span><h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings, s.data.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}</div></section>`
+      ? `<section class="card decision"><span class="eyebrow">${s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span><h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings, s.data.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}${s.service.capabilities.builder && d.outcome !== "STOP" ? `<button data-action="prepare-builder" ${s.busy ? "disabled" : ""}>Ask the Builder to prepare a validation kit</button>` : ""}</div></section>`
       : empty(
           "No gate decision available.",
           "A recommendation appears only after the backend evaluates the evidence.",
@@ -331,13 +331,13 @@ export function artifacts(s) {
       ? `<div class="cards">${s.data.artifacts.map((a) => `<article class="card"><div class="section-title"><span class="eyebrow">${e(a.type)}</span>${badge(a.status)}</div><h2>${e(a.title)}</h2><p>${e(a.description)}</p><dl><dt>Artifact identity</dt><dd>${e(a.id)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd><dt>Approval</dt><dd>${e(a.approval)}</dd></dl><button data-preview="${e(a.id)}" class="secondary">Read-only preview ↗</button></article>`).join("")}</div><section id="preview-panel" aria-live="polite"></section>`
       : empty(
           "No generated artifacts available.",
-          "Validation kits, interview guides and local prototypes appear here when returned by the Builder backend.",
+          "Validation kits, interview guides and local prototypes appear here once you ask the Builder for a request (Decision dashboard). Files are written only after your approval.",
         ))
   );
 }
 function approvalReason(s, a) {
   if (!s.service.capabilities.approvals || s.demo)
-    return "STUBBED — approval backend is disconnected. These controls cannot grant approval.";
+    return "Demo mode — these controls cannot grant approval.";
   if (s.approvalLocks?.has(a.id))
     return "Confirmation is uncertain. Refresh the request before retrying.";
   return approvalBlock(a, s.data.artifacts, s.runId);
@@ -349,11 +349,14 @@ export function approvals(s) {
       "Your approval. Precisely scoped.",
       "An approval applies to one action, run, artifact and fingerprint. Only the backend can confirm it.",
     ) +
+    (s.service.capabilities.approvals && !s.demo
+      ? `<section class="card"><h2>Founder approval key</h2><p>Approving or executing requires the key stored on your machine in <code>.venturelab/approvals.sqlite3.founder</code>. It is kept in this tab's memory only and sent only with your decision. Approval authorizes writing local files; nothing is published or sent.</p><label class="field full">Founder key<input id="founder-key" type="password" autocomplete="off" spellcheck="false" maxlength="200" value="${e(s.founderKey || "")}"></label></section>`
+      : "") +
     (s.data.approvals.length
       ? s.data.approvals
           .map(
             (a) =>
-              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl><div class="notice">${e(approvalReason(s, a) || "Review the exact scope before responding.")}</div><div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button></div></article>`,
+              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl>${a.expiresAt ? `<p class="muted">Must be decided and executed before ${e(a.expiresAt)}.</p>` : ""}<div class="notice">${e(a.status === "Approved" ? "Approved. The files are written only when you execute this exact request." : approvalReason(s, a) || "Review the exact scope and the artifact preview before responding.")}</div>${a.status === "Pending" && !s.demo ? `<label class="field full">Reason for your decision<input id="reason-${e(a.id)}" maxlength="500" value="Reviewed the exact kit and fingerprint"></label>` : ""}<div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button>${a.status === "Approved" && s.service.capabilities.builder && !s.demo ? `<button data-action="execute" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Write the approved files locally</button>` : ""}</div></article>`,
           )
           .join("")
       : empty(
@@ -388,7 +391,7 @@ export function roadmap() {
       "Six phases. Evidence at every gate.",
       "The current focus is Discover, Validate and selected local artifacts. Later phases are architectural plans.",
     ) +
-    `<div class="roadmap">${phases.map((p, i) => `<article class="card"><div class="section-title"><span class="phase-number">0${i + 1}</span>${badge(p[4])}</div><h2>${p[0]}</h2><p>${p[1]}</p><h3>Expected outputs</h3><p>${p[2]}</p><h3>Gate conditions</h3><p>${p[3]}</p>${p[5] ? link(p[5], i === 0 ? "Prepare a brief →" : "Inspect workspace →", "text-link") : '<p class="muted">No operational actions available.</p>'}</article>`).join("")}</div><div class="notice">Discover: intake UI is working; research integration is STUBBED. Validate and Build: UI is working; backend connections are STUBBED. Commercial Setup, Launch and Operate & Learn are future capabilities. No payment operations are implemented.</div>`
+    `<div class="roadmap">${phases.map((p, i) => `<article class="card"><div class="section-title"><span class="phase-number">0${i + 1}</span>${badge(p[4])}</div><h2>${p[0]}</h2><p>${p[1]}</p><h3>Expected outputs</h3><p>${p[2]}</p><h3>Gate conditions</h3><p>${p[3]}</p>${p[5] ? link(p[5], i === 0 ? "Prepare a brief →" : "Inspect workspace →", "text-link") : '<p class="muted">No operational actions available.</p>'}</article>`).join("")}</div><div class="notice">Discover is working end to end. Validate produces an experiment plan; entering experiment results is STUBBED. Build writes local files only after your approval; nothing is published. Commercial Setup, Launch and Operate &amp; Learn are STUBBED future capabilities. No payment operations are implemented.</div>`
   );
 }
 export const renderers = {

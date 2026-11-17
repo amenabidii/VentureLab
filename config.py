@@ -14,6 +14,11 @@ DEFAULTS: dict[str, str] = {
     "VENTURELAB_NUM_CTX": "4096",
     "OLLAMA_KEEP_ALIVE": "30m",
     "APP_PORT": "8000",
+    "VENTURELAB_STATE_DIR": ".venturelab",
+    "VENTURELAB_OUTPUT_DIR": "outputs",
+    "VENTURELAB_DECISION_LOG": "decision_log.json",
+    "VENTURELAB_APPROVAL_TTL_S": "7200",
+    "VENTURELAB_MAX_QUEUED_RUNS": "3",
 }
 
 
@@ -26,6 +31,11 @@ class Settings:
     num_ctx: int
     keep_alive: str
     app_port: int
+    state_dir: str = DEFAULTS["VENTURELAB_STATE_DIR"]
+    output_dir: str = DEFAULTS["VENTURELAB_OUTPUT_DIR"]
+    decision_log: str = DEFAULTS["VENTURELAB_DECISION_LOG"]
+    approval_ttl_s: float = float(DEFAULTS["VENTURELAB_APPROVAL_TTL_S"])
+    max_queued_runs: int = int(DEFAULTS["VENTURELAB_MAX_QUEUED_RUNS"])
 
 
 def _get(name: str) -> str:
@@ -42,4 +52,9 @@ def get_settings() -> Settings:
         num_ctx=int(_get("VENTURELAB_NUM_CTX")),
         keep_alive=_get("OLLAMA_KEEP_ALIVE"),
         app_port=int(_get("APP_PORT")),
+        state_dir=_get("VENTURELAB_STATE_DIR"),
+        output_dir=_get("VENTURELAB_OUTPUT_DIR"),
+        decision_log=_get("VENTURELAB_DECISION_LOG"),
+        approval_ttl_s=float(_get("VENTURELAB_APPROVAL_TTL_S")),
+        max_queued_runs=int(_get("VENTURELAB_MAX_QUEUED_RUNS")),
     )

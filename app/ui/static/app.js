@@ -35,6 +35,9 @@ const state = {
   approvalLocks: new Set(),
   submitLocked: false,
   submittedRunId: null,
+  founderKey: "",
+  quick: false,
+  runDetail: null,
 };
 const main = document.querySelector("#main");
 let epoch = 0,
@@ -100,9 +103,12 @@ function render(focus = false) {
 }
 function schedulePoll() {
   clearTimeout(poll);
+  // Poll on the workflow view, and on any view while the selected run is still queued or
+  // running, so results that arrive later are never hidden behind stale data.
+  const active = ["Queued", "Running"].includes(state.runDetail?.status);
   if (
     state.service.capabilities.workflow &&
-    route() === "workflow" &&
+    (route() === "workflow" || active) &&
     activeReads === 0 &&
     !state.busy &&
     !document.hidden
@@ -118,7 +124,8 @@ async function load(focus = false, background = false) {
   state.loadError = false;
   if (!background) render();
   try {
-    const runs = normalize("runs", await service.listRuns());
+    const rawRuns = await service.listRuns();
+    const runs = normalize("runs", rawRuns);
     const runId = state.runId ?? runs[0]?.id;
     const data = blankData(),
       errors = {};
@@ -153,6 +160,7 @@ async function load(focus = false, background = false) {
     Object.assign(state, {
       runs,
       runId,
+      runDetail: Array.isArray(rawRuns) ? rawRuns.find((r) => r && r.id === runId) ?? null : null,
       data,
       loading: false,
       sectionErrors: errors,
@@ -199,6 +207,8 @@ main.addEventListener("submit", (event) => {
   else main.focus();
 });
 main.addEventListener("change", (event) => {
+  if (event.target.id === "quick-run") state.quick = event.target.checked;
+  if (event.target.id === "founder-key") state.founderKey = event.target.value.trim();
   if (event.target.closest("#brief-form"))
     state.brief = readBrief(event.target.form);
   const key = {
@@ -217,6 +227,11 @@ main.addEventListener("change", (event) => {
     document.getElementById(id)?.focus();
   }
 });
+function readKey() {
+  const input = document.querySelector("#founder-key");
+  if (input) state.founderKey = input.value.trim();
+  return state.founderKey;
+}
 function failure(message) {
   state.message = message;
   render();
@@ -283,6 +298,7 @@ main.addEventListener("click", async (event) => {
           ...state.brief,
           hours: Number(state.brief.hours),
           budget: Number(state.brief.budget),
+          effort: state.quick ? "quick" : "full",
         }),
       ]);
       state.submittedRunId = run.id;
@@ -306,6 +322,44 @@ main.addEventListener("click", async (event) => {
       render();
       if (!state.review) main.querySelector('[aria-invalid="true"]')?.focus();
       schedulePoll();
+    }
+  }
+  if (button.dataset.action === "prepare-builder") {
+    if (!state.service.capabilities.builder || state.demo || state.busy || !state.runId) return;
+    state.busy = true;
+    state.message = "";
+    render();
+    try {
+      const result = await state.service.prepareBuilder(state.runId);
+      state.message = [
+        result.created ? "The Builder prepared a request. Review it, then approve or reject it." : "A request is already open for this run.",
+        ...(result.notes || []),
+      ].join(" ");
+      location.hash = "approvals";
+      await load();
+    } catch (error) {
+      state.message = `The Builder did not prepare a request: ${error?.message || "unknown error"}`;
+    } finally {
+      state.busy = false;
+      render();
+    }
+  }
+  if (button.dataset.action === "execute") {
+    if (!state.service.capabilities.approvals || state.demo || state.busy) return;
+    const request = state.data.approvals.find((a) => a.id === button.dataset.request);
+    if (!request || request.status !== "Approved") return;
+    state.busy = true;
+    state.message = "";
+    render();
+    try {
+      await state.service.executeApproval({ ...request }, readKey());
+      state.message = "The backend wrote the approved files locally. Nothing was published or sent.";
+      location.hash = "artifacts";
+    } catch (error) {
+      state.message = `Execution was refused: ${error?.message || "unknown error"} No files are reported as written.`;
+    } finally {
+      state.busy = false;
+      await load();
     }
   }
   if (button.dataset.preview) {
@@ -359,6 +413,10 @@ main.addEventListener("click", async (event) => {
         await state.service.decideApproval(
           { ...request },
           button.dataset.choice,
+          {
+            key: readKey(),
+            reason: document.querySelector(`#reason-${CSS.escape(request.id)}`)?.value,
+          },
         ),
       ]);
       if (
@@ -370,9 +428,8 @@ main.addEventListener("click", async (event) => {
       )
         throw new Error("Mismatched confirmation");
       await load(); // Render only authoritative refreshed records, never an optimistic local status.
-    } catch {
-      state.message =
-        "The backend did not confirm this decision. No successful approval is being reported. Refresh the request before retrying.";
+    } catch (error) {
+      state.message = `The backend did not confirm this decision${error?.message ? ": " + error.message : "."} No successful approval is being reported. Refresh the request before retrying.`;
     } finally {
       state.busy = false;
       render();
@@ -405,7 +462,7 @@ document.querySelector("#mode-toggle").addEventListener("click", async () => {
   banner.classList.toggle("demo", state.demo);
   banner.textContent = state.demo
     ? "MOCKED · Synthetic UI preview. No research, execution, generated artifacts or approvals are real."
-    : "Live workspace · Workflow integrations are STUBBED on this foundation branch.";
+    : "Live workspace · connected to the local backend. Later phases are STUBBED.";
   await load();
 });
 document.querySelector(".skip").addEventListener("click", (event) => {

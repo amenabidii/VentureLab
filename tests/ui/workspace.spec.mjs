@@ -70,9 +70,10 @@ test("founder brief validation, review, persistence across navigation, disabled 
   await expect(
     page.getByRole("heading", { name: "Review your founder brief" }),
   ).toBeVisible();
+  // Integrated build: submission is connected to the real backend (not clicked here).
   await expect(
     page.getByRole("button", { name: "Submit and start analysis" }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await page
     .getByRole("navigation")
     .getByRole("link", { name: "Overview", exact: true })

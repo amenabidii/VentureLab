@@ -70,7 +70,7 @@ def founder_assumptions(brief: FounderBrief) -> list[Assumption]:
         ("idea", f"This solves it: {brief.idea}", True),
         ("market", f"These customers can be reached in: {brief.market}.", True),
         ("feasibility", f"The founder can build and test it with: {', '.join(brief.founder_skills)}; "
-                        f"{brief.hours_per_week:g} hours a week; {brief.budget_eur:g} EUR.", True),
+                        f"{brief.hours_per_week:g} hours a week; {brief.budget_eur:g} {brief.budget_currency}.", True),
         ("willingness_to_pay", "Enough of these customers would pay for it.", False),
     ]
     return [Assumption(f"A{i}", f, t, s) for i, (f, t, s) in enumerate(out, start=1)]

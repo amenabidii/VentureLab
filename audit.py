@@ -17,6 +17,36 @@ from typing import Any
 
 REQUIRED_KEYS = ("timestamp", "agent", "action", "sources", "model", "cost", "approved_by")
 
+# One lock per log file, shared by every writer in this process (pipeline worker and web API).
+_FILE_LOCKS: dict[str, threading.Lock] = {}
+_FILE_LOCKS_GUARD = threading.Lock()
+
+
+def file_lock(path: Path) -> threading.Lock:
+    key = str(Path(path).resolve())
+    with _FILE_LOCKS_GUARD:
+        return _FILE_LOCKS.setdefault(key, threading.Lock())
+
+
+def read_entries(path: Path) -> list[dict[str, Any]]:
+    path = Path(path)
+    if not path.exists() or not path.read_text(encoding="utf-8").strip():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise ValueError(f"{path} must hold a JSON list")
+    return data
+
+
+def append_entries(path: Path, new: list[dict[str, Any]]) -> None:
+    """Append already-recorded entries (for example mirrored approval-store events)."""
+    for entry in new:
+        check_entry(entry)
+    with file_lock(path):
+        entries = read_entries(path) + new
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text(json.dumps(entries, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -40,10 +70,12 @@ def check_entry(entry: dict[str, Any]) -> None:
 
 
 class AuditLog:
-    def __init__(self, path: str | Path, run_id: str) -> None:
+    def __init__(self, path: str | Path, run_id: str, listener=None) -> None:
         self.path = Path(path)
         self.run_id = run_id
-        self._lock = threading.Lock()
+        self._lock = file_lock(self.path)
+        # Optional progress callback (the web job store); it only observes recorded entries.
+        self.listener = listener
 
     def entries(self) -> list[dict[str, Any]]:
         if not self.path.exists() or not self.path.read_text(encoding="utf-8").strip():
@@ -81,4 +113,6 @@ class AuditLog:
             entries.append(entry)
             self.path.parent.mkdir(parents=True, exist_ok=True)
             self.path.write_text(json.dumps(entries, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        if self.listener is not None:
+            self.listener(entry)
         return entry
