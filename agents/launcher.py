@@ -57,13 +57,16 @@ privacy and refund policy (Phase 4), pending professional review.</small></p>
 def launch_posts(product: str, brief: dict, price_option: dict, advice: dict | None = None) -> str:
     price = price_option["price_eur_per_month"]
     offer = "free to try" if price == 0 else f"planned at €{price}/month (test price)"
+    tailored = bool(advice and advice.get("source") == "model" and advice.get("value_proposition"))
+    lead = advice["value_proposition"].rstrip(".") if tailored else f"Early concept: {idea_phrase(brief)}"
+    problem = brief["problem_statement"].rstrip(".")
     posts = [
-        ("Community post (draft)",
-         f"I'm exploring an idea: {idea_phrase(brief)}. It's for {brief['target_customer']}. The problem I'm "
-         f"checking: {brief['problem_statement']} How do you deal with this today? I'm not selling anything yet."),
-        ("Short announcement (draft)",
-         f"Early concept: {idea_phrase(brief)}. For {brief['target_customer']}; {offer}. "
-         f"Feedback welcome; nothing is for sale yet."),
+        # Mom Test: recruit people to talk about the problem; do not pitch the idea.
+        ("Interview recruiting post (draft, problem only, no pitch)",
+         f"I'm researching how {brief['target_customer']} deal with this: {problem}. If it happened to you "
+         f"in the last month, could I ask you about it for 15 minutes? I'm not selling anything."),
+        ("Short announcement for after the interviews (draft)",
+         f"{lead}. For {brief['target_customer']}; {offer}. Feedback welcome; nothing is for sale yet."),
     ]
     for _, text in posts:
         check_content(text)
