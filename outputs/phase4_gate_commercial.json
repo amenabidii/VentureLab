@@ -1,14 +1,17 @@
 {
  "run_id": "run-64fdee373f244b81",
  "phase": 4,
- "decision": "AWAITING FOUNDER",
+ "decision": "REHEARSAL GO",
  "checks": [
   {
    "check": "price chosen by founder",
-   "passed": false
+   "passed": true,
+   "choice": "pro-8"
   }
  ],
- "founder_approvals": [],
+ "founder_approvals": [
+  "set_price:pro-8"
+ ],
  "discover_decision": "REPEAT",
  "rehearsal": true,
  "decided_by": "fixed rules in workflow.py"

@@ -302,3 +302,32 @@ def test_launch_refused_when_a_phase3_check_fails(tmp_path, monkeypatch):
     cli.approve(monkeypatch, "publish_store_page", cli.sha("phase5_step1_store-page.html"))
     cli.approve(monkeypatch, "enable_mock_delivery", cli.sha("phase5_step2_mock-product.md"))
     assert cli("launch") == 3
+
+
+def test_phases_page_is_read_only_allowlisted_and_sandboxed(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    import app.phases as phases
+    out = tmp_path / "outputs"
+    out.mkdir()
+    (out / "phase5_gate_launch.json").write_text(json.dumps({"decision": "REHEARSAL PASSED"}))
+    (out / "phase5_step1_store-page.html").write_text("<p>MOCKED</p>")
+    (out / "secret.txt").write_text("nope")
+    monkeypatch.setattr(phases, "_outputs", lambda: out)
+    from fastapi import FastAPI
+    app = FastAPI()
+    app.include_router(phases.router)
+    client = TestClient(app)
+    page = client.get("/phases").text
+    assert "REHEARSAL PASSED" in page and "6. Operate &amp; learn" in page
+    html = client.get("/phases/view/phase5_step1_store-page.html")
+    assert html.status_code == 200 and html.headers["content-security-policy"].startswith("sandbox")
+    for bad in ("secret.txt", "..%2Fsecret.txt", "phase5_gate_launch.json/../../x", "phase9_step1_x.md"):
+        assert client.get(f"/phases/view/{bad}").status_code == 404, bad
+    assert client.post("/phases").status_code == 405
+
+
+def test_rerunning_plan_keeps_the_commercial_gate_consistent_with_approvals(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path))
+    assert full_flow(cli, monkeypatch) == 0
+    assert cli("plan") == 0
+    assert json.loads((cli.out / "phase4_gate_commercial.json").read_text())["decision"] == "REHEARSAL GO"

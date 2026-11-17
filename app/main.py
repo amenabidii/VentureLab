@@ -127,8 +127,10 @@ FEATURES = [
     ("Evidence verification, deterministic gate (Judge) and counterfactual", "Working"),
     ("Builder: validation experiment kit; local landing page only after GO", "Working (local files only)"),
     ("Founder approval for Builder actions (backend enforced)", "Working"),
-    ("Commercial Setup, Launch, Operate & Learn phases", "STUBBED (not built)"),
-    ("Payments and sale-to-cash", "STUBBED (design only, never implemented)"),
+    ("Phases 2-6 via workflow.py: Lean Canvas, MVP scope and checks, pricing and policy drafts", "Working"),
+    ("Store page and launch posts (drafts); publishing", "Working drafts; publishing MOCKED"),
+    ("Sale to cash: payment events, delivery, refunds, reconciliation", "MOCKED (no payments of any kind)"),
+    ("Support, metrics, persevere-or-pivot memo", "Working (real evidence only)"),
 ]
 
 
@@ -173,3 +175,6 @@ app.include_router(api_router)
 
 from app.recordings import router as recordings_router
 app.include_router(recordings_router)
+
+from app.phases import router as phases_router  # noqa: E402
+app.include_router(phases_router)

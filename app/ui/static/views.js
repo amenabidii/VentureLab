@@ -95,26 +95,26 @@ export const phases = [
   ],
   [
     "Commercial Setup",
-    "Plan responsible operations",
-    "Future setup checklist",
-    "Future compliance and founder review",
-    "Future · STUBBED",
+    "Set the price and policies",
+    "Price hypotheses (ASSUMPTION) and DRAFT terms, privacy and refund policies",
+    "The founder chooses the price; approval bound to the exact file",
+    "Working · no payments",
     "",
   ],
   [
     "Launch",
-    "Plan a controlled introduction",
-    "Future launch plan",
-    "Future founder authorization; no external publishing",
-    "Future · STUBBED",
+    "Open the store; deliver automatically",
+    "Store page, launch-post drafts, sale-to-cash test log",
+    "Founder approves the exact page and product file; all checks must pass",
+    "MOCKED · publishing and sale to cash",
     "",
   ],
   [
     "Operate & Learn",
     "Learn from observed outcomes",
-    "Future experiment review",
-    "Future measured evidence and reassessment",
-    "Future · STUBBED",
+    "Support triage, metrics, persevere-or-pivot memo",
+    "Fixed rules over real evidence only; MOCKED metrics never count",
+    "Working · real evidence only",
     "",
   ],
 ];
@@ -395,9 +395,9 @@ export function roadmap() {
     heading(
       "THE COMPLETE ARCHITECTURE",
       "Six phases. Evidence at every gate.",
-      "The current focus is Discover, Validate and selected local artifacts. Later phases are architectural plans.",
+      "Discover and the Builder run here; phases 2–6 run through workflow.py behind founder approvals. Their gates and outputs are on the Phases 1–6 page.",
     ) +
-    `<div class="roadmap">${phases.map((p, i) => `<article class="card"><div class="section-title"><span class="phase-number">0${i + 1}</span>${badge(p[4])}</div><h2>${p[0]}</h2><p>${p[1]}</p><h3>Expected outputs</h3><p>${p[2]}</p><h3>Gate conditions</h3><p>${p[3]}</p>${p[5] ? link(p[5], i === 0 ? "Prepare a brief →" : "Inspect workspace →", "text-link") : '<p class="muted">No operational actions available.</p>'}</article>`).join("")}</div><div class="notice">Discover is working end to end. Validate produces an experiment plan; entering experiment results is STUBBED. Build writes local files only after your approval; nothing is published. Commercial Setup, Launch and Operate &amp; Learn are STUBBED future capabilities. No payment operations are implemented.</div>`
+    `<div class="roadmap">${phases.map((p, i) => `<article class="card"><div class="section-title"><span class="phase-number">0${i + 1}</span>${badge(p[4])}</div><h2>${p[0]}</h2><p>${p[1]}</p><h3>Expected outputs</h3><p>${p[2]}</p><h3>Gate conditions</h3><p>${p[3]}</p>${p[5] ? link(p[5], i === 0 ? "Prepare a brief →" : "Inspect workspace →", "text-link") : '<p class="muted">Runs via <code>workflow.py</code> · <a class="text-link" href="/phases">Gates and outputs →</a></p>'}</article>`).join("")}</div><div class="notice">Discover is working end to end. Validate produces an experiment plan; entering experiment results is STUBBED. Build writes local files only after your approval; nothing is published. Commercial Setup, Launch and Operate &amp; Learn are STUBBED future capabilities. No payment operations are implemented.</div>`
   );
 }
 export const renderers = {

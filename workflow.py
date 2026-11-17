@@ -196,6 +196,12 @@ def plan(ctx: Context) -> list[str]:
     for kind, text in policy_drafts(ctx.brief).items():
         ctx.write(f"phase4_step2_{kind}-policy-draft.md", text)
     ctx.rec(4, "draft_policies", "drafted: terms, privacy, refund (DRAFT, not legal advice)")
+    # The gate always reflects the recorded approval state, so re-running plan never contradicts it.
+    choice = ctx.approvals.chosen("set_price:", p_sha)
+    if choice:
+        ctx.gate_file(4, "commercial", "REHEARSAL GO" if ctx.rehearsal else "GO (founder approved price)",
+                      [{"check": "price chosen by founder", "passed": True, "choice": choice}], [f"set_price:{choice}"])
+        return [f"price already approved by the founder: {choice}"]
     ctx.gate_file(4, "commercial", "AWAITING FOUNDER", [{"check": "price chosen by founder", "passed": False}], [])
     needed = [f"set_price:<{'|'.join(o['id'] for o in pricing['options'])}> {p_sha}"]
     return needed
