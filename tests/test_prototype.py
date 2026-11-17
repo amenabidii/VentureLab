@@ -14,6 +14,12 @@ from tests.test_later_phases import BRIEF, CLI, full_flow, make_run
 CANVAS = {"summary": {"founder_assumptions_under_test": ["A1"]}}
 
 
+@pytest.fixture(autouse=True)
+def no_live_model(monkeypatch):
+    # Never reach a model, even where one is running (e.g. inside Docker): use the labelled fallback.
+    monkeypatch.setenv("VENTURELAB_ADVISOR_MODEL", "0")
+
+
 def build() -> str:
     return prototype_html(BRIEF, mvp_scope(BRIEF, CANVAS), "Concept for remote engineers")
 
