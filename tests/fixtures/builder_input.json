@@ -1,0 +1,21 @@
+{
+  "brief": {
+    "run_id": "synthetic-unit-test",
+    "business_idea": "A digital workspace for organizing workshop preparation",
+    "target_customer": "Independent adult workshop facilitators",
+    "core_problem": "Workshop preparation notes are scattered across documents",
+    "main_assumptions": ["Facilitators recently spent time reconstructing preparation checklists"],
+    "supporting_evidence": [],
+    "founder_constraints": ["SYNTHETIC TEST FIXTURE ONLY", "One week for voluntary interviews; no spending"],
+    "product_category": "digital_product"
+  },
+  "landing_page": {
+    "product_name": "SessionSketch",
+    "headline": "Give your next workshop a clear starting point.",
+    "value_proposition": "A proposed workspace for planning materials and facilitation steps together.",
+    "target_audience": "Independent adult workshop facilitators",
+    "problem": "Preparation notes may be scattered across documents.",
+    "proposed_solution": "Explore a shared checklist for each workshop plan.",
+    "features": ["Session preparation checklists", "Materials organized by session", "Reusable workshop outlines"]
+  }
+}

@@ -54,3 +54,7 @@ $RECYCLE.BIN/
 
 # --- Benchmark scratch output (each run is archived in docs/benchmark_runs/) ---
 docs/benchmarks.json
+
+# Local Builder approval state and independent run artifacts
+.venturelab/
+outputs/*/
