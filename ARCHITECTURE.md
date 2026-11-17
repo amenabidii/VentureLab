@@ -47,11 +47,26 @@ founder's machine except inside a decision the founder submits.
 | 5 Launch | Store page, launch posts, automatic delivery | Launcher; `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py` | Publish page and enable delivery, each bound to the exact file | Drafts **Working**; publishing and sale to cash **MOCKED** |
 | 6 Operate & Learn | Support, metrics, persevere-or-pivot memo | Operator, Judge rules | Required for any real-world change | **Working** on real inputs; rehearsal metrics **MOCKED** and never evidence |
 
-Phases 2 (Lean Canvas) and 4–6 run through `workflow.py` (`plan`, `approve`, `prepare-launch`, `launch`).
-STOP from the Discover gate blocks them. After REPEAT or PIVOT they run only as a REHEARSAL
-that the founder approves explicitly (`rehearse_after_<decision>`, bound to the gate file's
-SHA-256); every rehearsal artifact says so. Each phase writes a `phase<N>_gate_*.json` with
-its checks, and every action is appended to `decision_log.json`.
+Phases 2 (Lean Canvas) and 3–6 run through `workflow.py` (`plan`, `approve`, `prepare-launch`,
+`launch`), from the command line or from the web app (`/phases/run/<run>`, `app/phase_runner.py`,
+which calls the same functions). STOP from the Discover gate blocks them, and so does any
+decision made by superseded gate rules. After REPEAT or PIVOT they run only as a REHEARSAL
+that the founder approves explicitly (`rehearse_after_<decision>`). Every founder approval is
+bound to the run, the action and the file's SHA-256, signed with a local key, and in the web
+app requires the same founder key as the Builder's approvals. Each phase writes a
+`phase<N>_gate_*.json` with its checks, and every action is appended to `decision_log.json`.
+
+**Advisor (`agents/advisor.py`, `prompts/advisor.md`):** what makes phases 2–6 specific to the
+idea rather than generic. Once per run, the local model reads the brief, the gate's missing
+evidence, the verified findings and the Challenger's risks, and proposes: a value
+proposition, what these customers use today, named places to recruit and launch, a key metric
+measurable during validation, test prices anchored to current spending, past-behaviour
+interview questions, the riskiest assumption and a measurable stop rule. Code then keeps only
+items that pass the content rules, contain no leading question, no unsourced time or
+percentage claim, no unknown finding ID and no out-of-range price; everything kept is labelled
+ASSUMPTION with the model's name, and dropped items are listed. If the model is unavailable,
+a labelled deterministic fallback is used. The proposals feed the Lean Canvas, pricing, launch
+posts and the Phase 6 memo (`phase2_step3_advisor-proposals.*`).
 
 ### 1. Discover
 
