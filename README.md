@@ -89,8 +89,9 @@ briefs are in [docs/evaluation-runs.md](docs/evaluation-runs.md): four ended in
 **REPEAT**. Two **GO** results for accessible PDFs were later found to be wrong: the two
 comments counted were a quoted government report and a developer's technical criticism,
 not screen reader users' own experiences. The rule was corrected, and a rerun ended in
-**REPEAT**. No run under the current gate rules (version 3) reaches GO; two GOs made under superseded rules are kept unchanged, marked superseded in the app, and refused by the Builder. Earlier command-line runs are in
-`outputs/phase1_*` with their log archived in `docs/history/`. The later phases were run
+**REPEAT**. No run under the current gate rules (version 3) reaches GO; two GOs made under superseded rules are kept unchanged, marked superseded in the app, and refused by the Builder. The top-level
+`outputs/phase1_*` files are copies of the demo run's own Phase 1 files; earlier command-line
+runs keep a suffix (`_discord_bug_reports`, `_late_payments`, …) with their log archived in `docs/history/`. The later phases were run
 on the Slack-thread run as a founder-approved REHEARSAL (the gate said REPEAT): outputs
 `outputs/phase2_*`, `phase4_*`, `phase5_*`, `phase6_*` and `outputs/payment_test_log.md`
 (all 8 sale-to-cash checks passed); the Phase 6 memo recommends **REPEAT**.

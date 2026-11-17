@@ -4,27 +4,29 @@ Each founder assumption has a fixed ID. The label on each review is set by code 
 
 ## The founder's assumptions, reviewed
 
-- **A1** (stated) Indie game developers lose track of player bug reports scattered across Discord messages.
-  - **UNCONFIRMED (needs review)**, stance: untested (findings H1). H1 directly states that indie game developers lose track of player bug reports scattered across Discord.
-  - https://news.ycombinator.com/item?id=24827163
-- **A2** (stated) solo and small-team indie game developers with an active Discord community have this problem.
-  - **ASSUMPTION**, stance: untested. No findings specifically address whether solo and small-team indie game developers with active Discord servers
-- **A3** (stated) This solves it: A web app that collects player bug reports posted in a game's Discord server and turns them into a de-duplicated, triaged list for the developer.
-  - **ASSUMPTION**, stance: untested. No findings test if a web app collecting Discord bug reports would solve the problem
-- **A4** (stated) These customers can be reached in: online, English-speaking indie game developers.
-  - **ASSUMPTION**, stance: untested. No findings specify online, English-speaking indie game developers as a target segment
-- **A5** (stated) The founder can build and test it with: Python, Discord bot development, web development; 8 hours a week; 150 EUR.
+- **A1** (stated) Remote workers waste time catching up on long Slack threads they missed.
+  - **UNCONFIRMED (needs review)**, stance: weakened (findings H1, H2). F1 shows one user says Slack threads are too long to read and they miss messages, but H1 and H2 are personal, 
+  - https://news.ycombinator.com/item?id=25056920
+  - https://news.ycombinator.com/item?id=36434999
+- **A2** (stated) remote engineers and product managers on distributed teams have this problem.
+  - **ASSUMPTION**, stance: untested. H1 and H2 are personal experiences from target customers, but F3 is off-topic and doesn't confirm the problem
+- **A3** (stated) This solves it: A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.
+  - **ASSUMPTION**, stance: untested. No findings directly test if the browser extension solves the problem
+- **A4** (stated) These customers can be reached in: Online, English-speaking remote software teams.
+  - **ASSUMPTION**, stance: untested. H1 and H2 mention target customers but don't confirm they can be reached in online English-speaking remote dev
+- **A5** (stated) The founder can build and test it with: TypeScript, browser extensions, Python; 8 hours a week; 5000 EGP.
   - **ASSUMPTION**, stance: untested. no finding relates to it, so the Challenger did not review it
 - **A6** (implied) Enough of these customers would pay for it.
-  - **ASSUMPTION**, stance: untested. No findings address whether customers would pay for the solution
+  - **ASSUMPTION**, stance: untested. No findings address whether customers would pay for the product
 
 ## New hypotheses raised by the Challenger (not the founder's claims)
 
-- **ASSUMPTION**: Indie game developers face challenges with Linux-specific bug reporting due to niche technical environments.
+- **UNCONFIRMED (needs review)**: Remote teams might prefer solutions that reduce meeting time over summarizing Slack threads (findings F2)
 
 ## Market and feasibility risks
 
-- **ASSUMPTION**: market risk to A2: Solo and small-team indie developers may not have active Discord communities, making the solution's 
+- **ASSUMPTION**: market risk to A4: Online English-speaking remote software teams may not be the primary market for this product
+- **ASSUMPTION**: market risk to A6: There may be no willingness to pay for Slack thread summarization
 
 ## Contradicting evidence (listed by code)
 
@@ -32,11 +34,15 @@ No finding contradicts its claim.
 
 ## Proposed experiments (not run)
 
-- **Test Discord bug tracking** (tests A1)
-  - Method: Ask 10 indie game developers to share their current process for tracking Discord bug reports
-  - Supports if: They report using manual methods like spreadsheets or chat logs
-  - Weakens if: They use automated tools like Discord bots or dedicated bug trackers
+- **Ask 10 remote workers about Slack thread** (tests A1)
+  - Method: Survey
+  - Supports if: At least 5 say they miss important messages in long Slack threads
+  - Weakens if: All say they don't miss messages or they use other tools to catch up
+- **Ask 5 remote engineers about Slack** (tests A2)
+  - Method: Survey
+  - Supports if: At least 3 say they miss messages in Slack threads
+  - Weakens if: All say they don't miss messages or they use other tools
 
 ## Corrected or removed by code
 
-- A1: model said 'supported' but no cited finding can support it: H1 a check of the founder's statement that is unsupported, not established; stance set to 'untested'
+- A2: model said 'weakened' but every cited finding is irrelevant to it; stance set to 'untested'

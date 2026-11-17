@@ -1,20 +1,21 @@
 {
- "run_id": "run-2026-11-17T11:58:32Z-80ebb0",
+ "run_id": "run-a9f21cd634924cca",
  "brief": {
-  "idea": "A web app that collects player bug reports posted in a game's Discord server and turns them into a de-duplicated, triaged list for the developer.",
-  "problem_statement": "Indie game developers lose track of player bug reports scattered across Discord messages.",
-  "target_customer": "solo and small-team indie game developers with an active Discord community",
-  "market": "online, English-speaking indie game developers",
+  "idea": "A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.",
+  "problem_statement": "Remote workers waste time catching up on long Slack threads they missed.",
+  "target_customer": "remote engineers and product managers on distributed teams",
+  "market": "Online, English-speaking remote software teams",
   "founder_skills": [
-   "Python",
-   "Discord bot development",
-   "web development"
+   "TypeScript",
+   "browser extensions",
+   "Python"
   ],
   "hours_per_week": 8.0,
-  "budget_eur": 150.0,
+  "budget_eur": 5000.0,
+  "budget_currency": "EGP",
   "values_and_constraints": [
-   "no dark patterns",
-   "player messages are only read in servers that installed the bot"
+   "Value: Respect privacy, no dark patterns",
+   "Constraint: Messages are only read in workspaces that install the extension"
   ],
   "source_urls": [],
   "validation_conditions": [],

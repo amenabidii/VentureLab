@@ -1,8 +1,9 @@
 {
- "run_id": "run-2026-11-17T11:58:32Z-80ebb0",
+ "run_id": "run-a9f21cd634924cca",
  "model": "qwen3:4b",
  "effort": "full",
  "gate": "phase1_evidence_gate",
+ "ruleset_version": 3,
  "decision": "REPEAT",
  "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
  "rule_meaning": "Nothing contradicts the idea strongly enough to stop or pivot, but there is not enough established, relevant evidence to go on.",
@@ -28,6 +29,7 @@
    "applies": false,
    "inputs": {
     "supporting_findings": 0,
+    "corroborating_checks": 0,
     "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0
@@ -39,6 +41,7 @@
    "applies": false,
    "inputs": {
     "supporting_findings": 0,
+    "corroborating_checks": 0,
     "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0,
@@ -51,6 +54,7 @@
    "applies": false,
    "inputs": {
     "supporting_findings": 0,
+    "corroborating_checks": 0,
     "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0
@@ -80,13 +84,14 @@
    "applies": false,
    "inputs": {
     "supporting_findings": 0,
+    "corroborating_checks": 0,
     "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0,
     "not_counted": {
-     "needs_review": 0,
-     "partial": 0,
-     "off_topic": 3,
+     "needs_review": 1,
+     "partial": 1,
+     "off_topic": 2,
      "assumptions": 0
     }
    },
@@ -105,22 +110,29 @@
   "sources_analysed": 1,
   "supporting": [],
   "supporting_sources": [],
+  "corroborating_checks": [],
+  "corroborating_sources": [],
+  "not_counted_checks": [],
+  "support_sources": [],
   "alternatives": [],
   "contradicting_checks": [],
   "contradicting_sources": [],
-  "unsupported_checks": [
-   "H1"
+  "unsupported_checks": [],
+  "needs_review": [
+   "F1"
   ],
-  "needs_review": [],
-  "partial": [],
+  "partial": [
+   "F2"
+  ],
   "off_topic": [
-   "F1",
-   "F2",
-   "F3"
+   "F3",
+   "F4"
   ],
   "assumptions": [],
   "established_other": [],
-  "demand_signals": []
+  "demand_signals": [
+   "F4"
+  ]
  },
  "failed_conditions": [],
  "unmeasured_conditions": [],
@@ -135,8 +147,9 @@
   "decision": "REPEAT",
   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
   "missing_evidence": [
-   "Established, relevant problem findings: 0 of 2 needed, from 0 of 2 sources needed.",
-   "3 findings were off-topic for this brief and were not counted.",
+   "Independent sources supporting the problem statement: 0 of 2 needed (0 established findings, 0 people describing it in their own words).",
+   "1 needs-review and 1 partial findings do not count. A person may check them against their quotes; they never count automatically.",
+   "2 findings were off-topic for this brief and were not counted.",
    "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
    "Validation conditions: none set. Set pass marks before running any experiment."
   ],
@@ -145,17 +158,26 @@
   "experiments": [
    {
     "assumption": "A1",
-    "name": "Test Discord bug tracking",
-    "method": "Ask 10 indie game developers to share their current process for tracking Discord bug reports",
-    "support_if": "They report using manual methods like spreadsheets or chat logs",
-    "weaken_if": "They use automated tools like Discord bots or dedicated bug trackers",
+    "name": "Ask 10 remote workers about Slack thread",
+    "method": "Survey",
+    "support_if": "At least 5 say they miss important messages in long Slack threads",
+    "weaken_if": "All say they don't miss messages or they use other tools to catch up",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
+   {
+    "assumption": "A2",
+    "name": "Ask 5 remote engineers about Slack",
+    "method": "Survey",
+    "support_if": "At least 3 say they miss messages in Slack threads",
+    "weaken_if": "All say they don't miss messages or they use other tools",
     "status": "proposed, not run",
     "origin": "challenger"
    },
    {
     "name": "Problem interviews",
     "assumption": "A1",
-    "method": "Talk to people who match 'solo and small-team indie game developers with an active Discord community' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.",
+    "method": "Talk to people who match 'remote engineers and product managers on distributed teams' about the last time they dealt with this problem. Ask what happened and what they did; do not pitch the idea.",
     "support_if": "Most interviewees describe a recent, specific occurrence without being prompted. Write down the pass mark before you start, as a validation condition in the brief.",
     "weaken_if": "Most cannot recall a recent occurrence, or say it is minor or already solved.",
     "origin": "default"
@@ -173,11 +195,11 @@
   "no_guarantee": "New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income."
  },
  "timings_s": {
-  "model_load": 0.0,
-  "investigator": 60.4,
-  "challenger": 58.3,
-  "total": 118.8
+  "model_load": 0.1,
+  "investigator": 184.8,
+  "challenger": 118.8,
+  "total": 304.0
  },
- "model_calls": 4,
- "model_seconds": 116.7
+ "model_calls": 6,
+ "model_seconds": 300.7
 }
