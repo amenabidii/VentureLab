@@ -2,6 +2,26 @@
  "run_id": "run-a9f21cd634924cca",
  "checks": [
   {
+   "check": "working MVP: finds the decision in a thread (SYNTHETIC input)",
+   "passed": true,
+   "detail": "decisions at messages [2]"
+  },
+  {
+   "check": "working MVP: finds the action item",
+   "passed": true,
+   "detail": "action items at [3]"
+  },
+  {
+   "check": "working MVP: answered question closed, open question kept",
+   "passed": true,
+   "detail": "open questions at [4]"
+  },
+  {
+   "check": "working MVP: every point links to its source message (AC2)",
+   "passed": true,
+   "detail": "anchors checked in the rendered digest"
+  },
+  {
    "check": "user guide marked DRAFT and code STUBBED",
    "passed": true,
    "detail": "phase3_step3_user-guide-draft.md"

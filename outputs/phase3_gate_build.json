@@ -2,9 +2,29 @@
  "run_id": "run-a9f21cd634924cca",
  "phase": 3,
  "outcome": "GO",
- "decision": "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)",
+ "decision": "PROTOTYPE AND ARTIFACTS PASSED; WORKING MVP (thread digest) CHECKS PASSED",
  "launch_recommendation": "DO NOT LAUNCH: the Discover gate decided REPEAT; this phase ran only as a founder-approved REHEARSAL, so its outcome is not a reason to launch.",
  "checks": [
+  {
+   "check": "working MVP: finds the decision in a thread (SYNTHETIC input)",
+   "passed": true,
+   "detail": "decisions at messages [2]"
+  },
+  {
+   "check": "working MVP: finds the action item",
+   "passed": true,
+   "detail": "action items at [3]"
+  },
+  {
+   "check": "working MVP: answered question closed, open question kept",
+   "passed": true,
+   "detail": "open questions at [4]"
+  },
+  {
+   "check": "working MVP: every point links to its source message (AC2)",
+   "passed": true,
+   "detail": "anchors checked in the rendered digest"
+  },
   {
    "check": "user guide marked DRAFT and code STUBBED",
    "passed": true,

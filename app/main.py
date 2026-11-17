@@ -180,3 +180,6 @@ from app.phases import router as phases_router  # noqa: E402
 from app.phase_runner import router as phase_runner_router  # noqa: E402
 app.include_router(phases_router)
 app.include_router(phase_runner_router)
+
+from app.mvp_page import router as mvp_router  # noqa: E402
+app.include_router(mvp_router)

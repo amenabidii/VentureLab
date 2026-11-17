@@ -20,6 +20,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from builder_models import check_content
+from mvp.thread_digest import SUPPORTED_TYPE, digest, render_html, supported
 
 BANNED = ("testimonial", "five-star", "5-star", "limited time", "only 3 left", "guaranteed", "act now")
 
@@ -43,8 +44,15 @@ def mvp_scope(brief: dict, canvas: dict) -> dict:
         "riskiest_assumption_first": (canvas.get("summary") or {}).get("founder_assumptions_under_test", [])[:1],
         "prototype": "phase3_step1_prototype.html: clickable flow of the core job for usability sessions "
                      "(PROTOTYPE: placeholders, no working functionality)",
-        "code_generation": "STUBBED — VentureLab does not yet generate the MVP's production application code; "
-                           "the clickable prototype shows the intended flow only.",
+        "working_mvp": ({"status": "WORKING", "type": SUPPORTED_TYPE, "where": "/mvp in the web app (mvp/thread_digest.py)",
+                         "tests": "tests/test_mvp.py and the Phase 3 acceptance checks run it on real input"}
+                        if supported(brief["idea"]) else
+                        {"status": "UNSUPPORTED", "type": SUPPORTED_TYPE,
+                         "note": "This idea is outside the one product type VentureLab can build as working code; "
+                                 "it gets the clickable prototype only."}),
+        "code_generation": "STUBBED — VentureLab does not generate arbitrary application code. For the supported "
+                           "type it ships a working local MVP (above); otherwise the clickable prototype shows the "
+                           "intended flow only.",
     }
 
 
@@ -212,9 +220,37 @@ def walk_prototype(html: str, start: str = "start", end: str = "done") -> dict:
             "result_points": points, "result_points_with_source": with_source}
 
 
-def acceptance_checks(out: Path, guide_name: str) -> list[dict]:
+# SYNTHETIC test thread for the acceptance checks of the working MVP; never presented as customer data.
+MVP_CHECK_THREAD = """ana: SYNTHETIC test thread. Should the digest include links?
+ben: Agreed: every point links to its message.
+ana: I'll write the guide by Friday.
+cy: Can we support threaded replies later?"""
+
+
+def mvp_checks(idea: str) -> list[dict]:
+    """Run the working MVP on real input and check its actual output (supported ideas only)."""
+    if not supported(idea):
+        return []
+    d = digest(MVP_CHECK_THREAD).to_dict()
+    html = render_html(digest(MVP_CHECK_THREAD))
+    dec = [x["message"] for x in d["decisions"]]
+    act = [x["message"] for x in d["action_items"]]
+    opn = [x["message"] for x in d["open_questions"]]
+    return [
+        {"check": "working MVP: finds the decision in a thread (SYNTHETIC input)", "passed": dec == [2],
+         "detail": f"decisions at messages {dec}"},
+        {"check": "working MVP: finds the action item", "passed": act == [3], "detail": f"action items at {act}"},
+        {"check": "working MVP: answered question closed, open question kept", "passed": opn == [4],
+         "detail": f"open questions at {opn}"},
+        {"check": "working MVP: every point links to its source message (AC2)",
+         "passed": all(f"href='#m{n}'" in html and f"id='m{n}'" in html for n in dec + act + opn),
+         "detail": "anchors checked in the rendered digest"},
+    ]
+
+
+def acceptance_checks(out: Path, guide_name: str, idea: str | None = None) -> list[dict]:
     """Executed checks over generated artifacts; each records what was actually checked."""
-    checks = []
+    checks = mvp_checks(idea) if idea else []
 
     def add(name: str, passed: bool, detail: str):
         checks.append({"check": name, "passed": bool(passed), "detail": detail})

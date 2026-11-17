@@ -367,12 +367,15 @@ def prepare_launch(ctx: Context) -> list[str]:
                f"product a buyer receives after a (MOCKED) payment. It contains no real product yet.\n\n"
                f"Price option: `{choice}`. Rehearsal: {ctx.rehearsal}.\n")
     _, prod_sha = ctx.write("phase5_step2_mock-product.md", package)
-    checks = acceptance_checks(ctx.out, "phase3_step3_user-guide-draft.md")
+    checks = acceptance_checks(ctx.out, "phase3_step3_user-guide-draft.md", ctx.brief["idea"])
     ctx.write("phase3_step4_acceptance-checks.json", {"run_id": ctx.run_id, "checks": checks,
                                                       "scope": "clickable prototype (user-journey walk) and VentureLab's "
                                                                "generated artifacts; MVP production code STUBBED"})
     passed = all(c["passed"] for c in checks)
-    ctx.gate_file(3, "build", "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)" if passed else "REPEAT",
+    working = any(c["check"].startswith("working MVP") for c in checks)
+    ctx.gate_file(3, "build", ("PROTOTYPE AND ARTIFACTS PASSED; WORKING MVP (thread digest) CHECKS PASSED"
+                               if working else "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)")
+                  if passed else "REPEAT",
                   checks, [], outcome="GO" if passed else "REPEAT")
     ctx.rec(3, "run_acceptance_checks", f"{sum(c['passed'] for c in checks)}/{len(checks)} passed")
     return [f"publish_store_page {page_sha}", f"enable_mock_delivery {prod_sha}"]

@@ -34,5 +34,11 @@
   "A1"
  ],
  "prototype": "phase3_step1_prototype.html: clickable flow of the core job for usability sessions (PROTOTYPE: placeholders, no working functionality)",
- "code_generation": "STUBBED — VentureLab does not yet generate the MVP's production application code; the clickable prototype shows the intended flow only."
+ "working_mvp": {
+  "status": "WORKING",
+  "type": "thread digest: summarise a long discussion and link each point to its source message",
+  "where": "/mvp in the web app (mvp/thread_digest.py)",
+  "tests": "tests/test_mvp.py and the Phase 3 acceptance checks run it on real input"
+ },
+ "code_generation": "STUBBED — VentureLab does not generate arbitrary application code. For the supported type it ships a working local MVP (above); otherwise the clickable prototype shows the intended flow only."
 }
