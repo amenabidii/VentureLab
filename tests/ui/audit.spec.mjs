@@ -34,6 +34,8 @@ async function mockService(page, data = clone(), options = {}) {
  async listArtifacts(){return structuredClone(data.artifacts);}
  async getApprovals(){return structuredClone(data.approvals);}
  async getAudit(){return structuredClone(data.audit);}
+ async getValidation(){return structuredClone(options.kits||[]);}
+ async recordResult(request,body){__qa.calls.push({request,result:body});const kit=options.kits.find(k=>k.id===request.id);const outcome={decision:body.successes>=kit.plan.threshold?'GO':(body.successes+kit.plan.sampleSize-body.participants<kit.plan.threshold?'STOP':'REPEAT'),rule:'MOCKED_RULE',meaning:'MOCKED test transport',next_step:'MOCKED'};kit.observations.push({recorded_at:'2026-11-17T17:00:00Z',participants:body.participants,successes:body.successes,notes:body.notes,result_source:'FOUNDER-REPORTED (MOCKED test transport)',outcome});kit.latest=outcome;kit.final=outcome.decision!=='REPEAT';return {outcome};}
  async createRun(brief){__qa.calls.push({brief});await new Promise(r=>setTimeout(r,200));if(options.validation)throw new BriefValidationError({market:'MOCKED backend: specify a reachable market.'});if(__qa.fail)throw new Error('MOCKED network failure');return options.badRun?{}:options.unlistedRun?{...data.runs[0],id:'new-unlisted'}:data.runs[0];}
  async decideApproval(request,choice,decisionOptions){__qa.calls.push({request,choice,options:decisionOptions});await new Promise(r=>setTimeout(r,200));if(__qa.fail)throw new Error('MOCKED network failure');const row=data.approvals.find(a=>a.id===request.id);row.status=choice==='approve'?'Approved':'Rejected';const response={...row,fingerprint:options.badConfirmation?'changed':row.fingerprint};__qa.response=response;return response;}
  }
@@ -643,4 +645,56 @@ test("blank optional reason stays blank for explicit rejection", async ({page}) 
   await expect(page.getByText("Rejected", {exact: true})).toBeVisible();
   expect(await page.evaluate(() => __qa.calls[0].options.reason)).toBe("");
   expect(await page.evaluate(() => __qa.calls[0].choice)).toBe("reject");
+});
+
+
+test("founder-reported results are recorded against the approved threshold and shown as such", async ({page}) => {
+  const data = clone();
+  data.approvals[0].status = "Executed";
+  const kits = [{id: data.approvals[0].id, fingerprint: data.approvals[0].fingerprint,
+    plan: {metric: "participants describing a recent occurrence (MOCKED)", threshold: 3, sampleSize: 5},
+    observations: [], latest: null, final: false, resultSource: "FOUNDER-REPORTED (MOCKED test transport)"}];
+  await mockService(page, data, {approvals: true, builder: true, kits});
+  await go(page, "approvals");
+  const section = page.getByRole("region", {name: "Validation results"});
+  await expect(section).toContainText("3 of 5 participants");
+  await expect(section).toContainText("No results recorded");
+  await page.locator("#founder-key").fill("MOCKED-test-key");
+  await section.getByLabel(/Participants so far/).fill("4");
+  await section.getByLabel("Of those, met the condition").fill("0");
+  await section.getByLabel("Notes (optional)").fill("<img src=x onerror=alert(1)>");
+  await section.getByRole("button", {name: "Record founder-reported result"}).click();
+  await expect(page.getByText(/Validation gate: STOP/).first()).toBeVisible();
+  const call = await page.evaluate(() => __qa.calls.at(-1));
+  expect(call.result).toEqual({participants: 4, successes: 0, notes: "<img src=x onerror=alert(1)>", key: "MOCKED-test-key"});
+  await expect(section.locator("img")).toHaveCount(0); // hostile notes are shown as text
+  await expect(section.getByText("result is final")).toBeVisible();
+  await expect(section.getByRole("button", {name: "Record founder-reported result"})).toHaveCount(0);
+});
+
+test("impossible counts are refused in the browser and nothing is sent", async ({page}) => {
+  const data = clone();
+  data.approvals[0].status = "Executed";
+  const kits = [{id: data.approvals[0].id, fingerprint: data.approvals[0].fingerprint,
+    plan: {metric: "MOCKED metric", threshold: 3, sampleSize: 5}, observations: [], latest: null, final: false,
+    resultSource: "FOUNDER-REPORTED (MOCKED test transport)"}];
+  await mockService(page, data, {approvals: true, builder: true, kits});
+  await go(page, "approvals");
+  const section = page.getByRole("region", {name: "Validation results"});
+  await section.getByLabel(/Participants so far/).fill("2");
+  await section.getByLabel("Of those, met the condition").fill("3");
+  await section.getByRole("button", {name: "Record founder-reported result"}).click();
+  await expect(page.getByText(/Nothing was recorded/)).toBeVisible();
+  expect(await page.evaluate(() => __qa.calls.length)).toBe(0);
+});
+
+test("read-only demo shows no results form", async ({page}) => {
+  const data = clone();
+  data.approvals[0].status = "Executed";
+  const kits = [{id: data.approvals[0].id, fingerprint: data.approvals[0].fingerprint,
+    plan: {metric: "MOCKED metric", threshold: 3, sampleSize: 5}, observations: [], latest: null, final: false,
+    resultSource: "FOUNDER-REPORTED (MOCKED test transport)"}];
+  await mockService(page, data, {approvals: false, kits});
+  await go(page, "approvals");
+  await expect(page.getByRole("button", {name: "Record founder-reported result"})).toHaveCount(0);
 });

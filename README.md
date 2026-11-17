@@ -55,11 +55,16 @@ checkout owned by your normal user; a root-owned checkout is refused with an exp
 3. **Evidence explorer, Challenger analysis, Decision dashboard, Counterfactual
    challenge**: the run's recorded outputs, with every standing shown as assigned.
 4. **Ask the Builder to prepare a validation kit** (Decision dashboard). This only
-   creates a request; inspect it under **Builder artifacts**.
+   creates a request; inspect it under **Builder artifacts**. The kit fixes the pass
+   mark (for example, 3 of 5 interviewees describe a recent occurrence) before any
+   result exists.
 5. **Founder approval**: paste the founder key from
    `.venturelab/approvals.sqlite3.founder` (created on first start, kept on your
    machine), approve or reject the exact request, then **Write the approved files
-   locally**. Requests expire after two hours.
+   locally**. Requests expire after two hours. After you run the interviews, record the
+   totals on the written kit (**Validation results**, founder key required). The
+   validation gate compares them with the approved pass mark: it cannot be lowered, the
+   sample cannot be enlarged after the fact, and a GO or STOP result is final.
 6. **Decision history**: every recorded action for the run.
 
 The command-line workflow still works:
@@ -79,7 +84,7 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 | Founder web workspace: brief, workflow, evidence, Challenger, decision, counterfactual, artifacts, approvals, history | **Working**, connected to the backend |
 | Genuine committed execution browser with file-integrity checks | **Working**, read-only; historical approvals never reactivate |
 | Background runs: queued, running, completed, failed, blocked; duplicate submissions merged; queue bounded | **Working** (queue in memory; a run interrupted by a restart is reported as failed, not resumed) |
-| Founder brief validation and prohibited-category screen | **Working** |
+| Founder brief validation and policy screen: excluded categories, plus requests for fake reviews, sign-ups or urgency, impersonation or promised income (policy STOP, no research, Builder blocked) | **Working** |
 | Investigator: search planning, Hacker News and founder-listed page retrieval, relevance selection, quote extraction | **Working** (needs internet) |
 | Evidence verification: exact quotes, wording and attribution checks, standing ESTABLISHED / NEEDS_REVIEW / partial / unsupported / contradicted / assumption | **Working**; known quality limits in [ARCHITECTURE.md](ARCHITECTURE.md#built-vs-stubbed) |
 | Challenger: founder assumptions with stable IDs, code-checked citations and stances, risks, experiments | **Working** |
@@ -88,7 +93,7 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 | Builder: experiment kit and interview guide; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
-| Validate-phase results entry (recording real interview outcomes) | **STUBBED** |
+| Validate-phase results: the founder records observed counts against the threshold approved in the kit; a deterministic validation gate returns GO / REPEAT / STOP. Results are labelled FOUNDER-REPORTED and are not verified by VentureLab | **Working** (no real experiment results have been recorded) |
 | Commercial Setup, Launch, Operate & Learn | **STUBBED** (architecture only) |
 | Payments, sale to cash | **STUBBED**, deliberately not implemented, no real or sandbox transactions |
 | "Explore demo" data in the workspace | **MOCKED**, synthetic, labelled in the interface, never stored as results |
@@ -159,7 +164,11 @@ Not yet recorded. It will be linked here ([docs/demo-runbook.md](docs/demo-runbo
 - Process real or sandbox payments, hold, move or refund money, create accounts, or
   store passwords or card numbers.
 - Support physical goods or financial, investment, crypto, health or legal advice
-  products (these stop at the category screen, and the Builder is blocked).
+  products, or ideas that depend on fake reviews, sign-ups or urgency, impersonation or
+  promised income. These end in a policy STOP before any research, with the matched
+  words shown, and the Builder is blocked.
+- Invent or estimate experiment results. Validation results are only what the founder
+  records, labelled FOUNDER-REPORTED.
 - Hide core features behind a paywall.
 
 ## How the project stays alive after the hackathon

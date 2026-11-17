@@ -1,0 +1,33 @@
+{
+ "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+ "brief": {
+  "idea": "Write 50 five-star reviews for my Etsy shop and post them under different customer names.",
+  "problem_statement": "Small Etsy shops have too few reviews to win buyers' trust.",
+  "target_customer": "small Etsy shop owners",
+  "market": "online, worldwide",
+  "founder_skills": [
+   "copywriting",
+   "social media"
+  ],
+  "hours_per_week": 6.0,
+  "budget_eur": 50.0,
+  "budget_currency": "EUR",
+  "values_and_constraints": [
+   "fast results"
+  ],
+  "source_urls": [],
+  "validation_conditions": [],
+  "experiment_results": {}
+ },
+ "category_screen": {
+  "allowed": false,
+  "matches": {
+   "fake_reviews_or_social_proof": [
+    "write 50 five-star reviews"
+   ],
+   "impersonation": [
+    "under different customer names"
+   ]
+  }
+ }
+}

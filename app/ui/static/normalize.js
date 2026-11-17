@@ -70,7 +70,56 @@ function timestamp(value) {
 function nullableText(value) {
   return value == null ? null : text(value);
 }
+function count(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 100)
+    throw new ContractError("Invalid count.");
+  return value;
+}
+const DECISIONS = ["GO", "REPEAT", "STOP"];
+function outcome(r) {
+  if (r == null) return null;
+  r = record(r);
+  return {
+    decision: choice(r.decision, DECISIONS),
+    rule: required(r.rule),
+    meaning: text(r.meaning),
+    nextStep: text(r.next_step),
+  };
+}
 const schemas = {
+  validation: (r) => {
+    const plan = record(r.plan);
+    const p = {
+      metric: required(plan.metric),
+      threshold: count(plan.threshold),
+      sampleSize: count(plan.sampleSize),
+    };
+    if (p.threshold < 1 || p.threshold > p.sampleSize)
+      throw new ContractError("Invalid validation plan.");
+    return {
+      id: required(r.id),
+      fingerprint: required(r.fingerprint),
+      plan: p,
+      observations: array(r.observations, (o) => {
+        o = record(o);
+        const participants = count(o.participants),
+          successes = count(o.successes);
+        if (successes > participants)
+          throw new ContractError("Successes exceed participants.");
+        return {
+          recordedAt: timestamp(o.recorded_at),
+          participants,
+          successes,
+          notes: text(o.notes, ""),
+          source: required(o.result_source),
+          outcome: outcome(o.outcome),
+        };
+      }),
+      latest: outcome(r.latest),
+      final: r.final === true,
+      resultSource: required(r.resultSource),
+    };
+  },
   runs: (r) => ({
     id: required(r.id),
     title: text(r.title),

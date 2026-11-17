@@ -80,6 +80,9 @@ export class WorkspaceService {
   async getAudit(id) {
     return this.read(id, "audit");
   }
+  async getValidation(id) {
+    return this.read(id, "validation");
+  }
   async read(id, key, empty = []) {
     if (this.mode === "recorded") {
       if (!this.recordings.has(id))
@@ -102,10 +105,11 @@ export class WorkspaceService {
         artifacts: "artifacts",
         approvals: "approvals",
         audit: "audit",
+        validation: "validation",
       }[key];
       return api(run(id, path));
     }
-    return id === demo.runs[0].id ? structuredClone(demo[key]) : empty;
+    return id === demo.runs[0].id ? structuredClone(demo[key] ?? empty) : empty;
   }
   async createRun(brief) {
     if (!this.live)
@@ -132,6 +136,20 @@ export class WorkspaceService {
         decision,
         reason: reason || "",
         founder_key: key || "",
+      }),
+    });
+  }
+  async recordResult(request, { participants, successes, notes, key }) {
+    if (!this.live)
+      throw new UnavailableError("Read-only mode can never record results.");
+    return api(`/api/approvals/${encodeURIComponent(request.id)}/results`, {
+      method: "POST",
+      body: JSON.stringify({
+        run_id: request.runId,
+        founder_key: key || "",
+        participants,
+        successes,
+        notes: notes || "",
       }),
     });
   }

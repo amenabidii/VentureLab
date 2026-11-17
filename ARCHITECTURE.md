@@ -41,7 +41,7 @@ founder's machine except inside a decision the founder submits.
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
-| 2 Validate | Design an experiment that could disprove the assumption | Builder (kit), Judge (rules) | Approve exact kit and proposed thresholds | **Working** (plan and kit); recording real results is **STUBBED** |
+| 2 Validate | Design an experiment that could disprove the assumption, then judge its results | Builder (kit), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (plan, kit, founder-reported results and validation gate); Lean Canvas and landing-page demand test **STUBBED** |
 | 3 Build | Local landing-page prototype for the concept | Builder | Approve exact page fingerprint | **Working** after a GO decision; local files only |
 | 4 Commercial Setup | Pricing hypotheses, positioning, costs | (future) | Required for any commitment | **STUBBED** |
 | 5 Launch | Channel experiment, publishing | (future) | Separate approval per send or publish | **STUBBED** |
@@ -90,8 +90,19 @@ questions or interpreting polite interest as demand.
   test; it writes no factual prose. Nothing is sent to anyone.
 - **Outputs**: `outputs/builder/<run>/<action>/phase2_step1_validation-kit.json` / `.md`,
   written only after approval.
-- **Gate**: founder approval of the exact kit; real results would later feed the
-  `STOP_FAILED_VALIDATION_CONDITION` rule (results entry is STUBBED).
+- **Gate**: founder approval of the exact kit, which fixes the success threshold and
+  sample size before any result exists. Then the **validation gate** (`validation.py`,
+  `POST /api/approvals/<id>/results`): the founder records cumulative counts against
+  that executed, unmodified kit (founder key required). Fixed rules decide:
+  `VALIDATION_THRESHOLD_MET` (GO to the next phase, never proof of demand),
+  `STOP_FAILED_VALIDATION_CONDITION` (the threshold can no longer be reached: stop or
+  pivot back to Discover) or `REPEAT_EXPERIMENT_INCOMPLETE`. A larger sample than
+  approved, falling counts, more successes than participants, results for a modified
+  kit or a superseded run are refused, and a GO or STOP result is final. Results are
+  stored in `outputs/runs/<run>/phase2_step2_validation-results.json` and
+  `phase2_gate_validation.json`, labelled FOUNDER-REPORTED (VentureLab does not verify
+  them), and each recording appends a founder entry (`approved_by: founder`) and a gate
+  entry to `decision_log.json`. The phase 1 decision is never rewritten.
 
 **Remaining Validate design (STUBBED):** a versioned Lean Canvas would link problem,
 customer, value proposition, solution, channels, revenue, costs, key metrics and
@@ -173,8 +184,11 @@ Application tests in this repository test VentureLab, not an automatically built
 The phase 1 gate (`gates.py`) contains no model. Rules are checked in a fixed order;
 the first that applies decides, and every check up to it is recorded in the output:
 
-1. `STOP_PROHIBITED_CATEGORY`: physical goods, financial/investment/crypto, health or
-   legal advice (keyword screen, matched words are shown).
+1. `STOP_PROHIBITED_CATEGORY`, a **policy** STOP (not a verdict on the evidence):
+   physical goods, financial/investment/crypto, health or legal advice, or an idea
+   that depends on fake reviews, sign-ups or urgency, impersonation or promised income
+   (`brief.py`, keyword screen per field; a counter-measure verb right before the match,
+   as in "detects fake reviews", exempts it; matched words are shown). No research runs.
 2. `STOP_FAILED_VALIDATION_CONDITION`: a real result is below a pass mark the founder
    set before testing.
 3. `STOP_CONTRADICTED`: at least 2 independent sources contradict the problem and no
@@ -296,7 +310,7 @@ matching audit entries; review provenance before updating it.
 | Gate and counterfactual | Built, deterministic, tested |
 | Builder (kit; landing page after GO), adapter from the research run | Built, tested; kit live-run and founder-approved |
 | Founder approval: key, fingerprint, run, expiry, single use, audit | Built, tested, bypass attempts refused on the live server |
-| Validate-phase results entry | STUBBED |
+| Validate-phase results entry and validation gate (founder-reported) | Built, tested (unit, API, browser) |
 | Commercial Setup, Launch, Operate & Learn | STUBBED |
 | Payments | STUBBED by policy |
 
@@ -311,8 +325,8 @@ key is a single-machine capability, not an account system.
 
 ## Roadmap
 
-1. Record real experiment results against the founder's pre-set pass marks and feed
-   them back into the gate (Validate, then Operate & Learn).
+1. Use recorded validation results in Operate & Learn (persevere-or-pivot memo), and
+   add demand experiments with their own denominators (landing-page sign-ups).
 2. Evidence quality: semantic relevance instead of keyword matching, stronger
    attribution checks, measured on the held-out benchmark set.
 3. Human review queue for NEEDS_REVIEW findings, recorded in the audit log.

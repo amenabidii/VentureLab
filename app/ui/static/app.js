@@ -12,6 +12,7 @@ const blankData = () => ({
   artifacts: [],
   approvals: [],
   audit: [],
+  validation: [],
 });
 const state = {
   demo: false,
@@ -61,7 +62,7 @@ const sections = {
   decision: ["decision", "findings"],
   counterfactual: ["counterfactual"],
   artifacts: ["artifacts"],
-  approvals: ["approvals", "artifacts"],
+  approvals: ["approvals", "artifacts", "validation"],
   history: ["audit"],
 };
 function render(focus = false) {
@@ -144,6 +145,7 @@ async function load(focus = false, background = false) {
         artifacts: "listArtifacts",
         approvals: "getApprovals",
         audit: "getAudit",
+        validation: "getValidation",
       };
       await Promise.all(
         Object.entries(methods).map(async ([key, method]) => {
@@ -355,6 +357,47 @@ main.addEventListener("click", async (event) => {
     } finally {
       state.busy = false;
       render();
+    }
+  }
+  if (button.dataset.action === "record-result") {
+    if (!state.service.capabilities.approvals || state.demo || state.busy)
+      return;
+    const request = state.data.approvals.find(
+      (a) => a.id === button.dataset.request,
+    );
+    const kit = state.data.validation.find((v) => v.id === button.dataset.request);
+    if (!request || request.status !== "Executed" || !kit || kit.final) return;
+    const value = (name) =>
+      document.querySelector(`#${name}-${CSS.escape(request.id)}`)?.value ?? "";
+    // Read every input before re-rendering: render() replaces the form.
+    const participants = Number(value("participants")),
+      successes = Number(value("successes")),
+      notes = value("notes"),
+      key = readKey();
+    if (
+      !Number.isInteger(participants) ||
+      !Number.isInteger(successes) ||
+      participants < 1 ||
+      successes < 0 ||
+      successes > participants
+    )
+      return failure(
+        "Enter whole numbers: at least one participant, and no more successes than participants. Nothing was recorded.",
+      );
+    state.busy = true;
+    state.message = "";
+    render();
+    try {
+      const result = await state.service.recordResult(
+        { ...request },
+        { participants, successes, notes, key },
+      );
+      state.message = `Recorded as founder-reported. Validation gate: ${result.outcome.decision} (${result.outcome.rule}).`;
+    } catch (error) {
+      state.message = `The result was not recorded: ${error?.message || "unknown error"}`;
+    } finally {
+      state.busy = false;
+      await load();
     }
   }
   if (button.dataset.action === "execute") {

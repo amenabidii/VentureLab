@@ -2889,5 +2889,55 @@
   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
   "missing": 5,
   "experiments": 3
+ },
+ {
+  "timestamp": "2026-11-17T17:06:40Z",
+  "agent": "orchestrator",
+  "action": "validate_brief",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+  "outcome": "prohibited_category",
+  "screen": "fake_reviews_or_social_proof: write 50 five-star reviews; impersonation: under different customer names"
+ },
+ {
+  "timestamp": "2026-11-17T17:06:40Z",
+  "agent": "orchestrator",
+  "action": "skip_research",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+  "outcome": "skipped",
+  "reason": "a STOP rule applies before research; no model time spent"
+ },
+ {
+  "timestamp": "2026-11-17T17:06:40Z",
+  "agent": "gate",
+  "action": "evidence_gate",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+  "outcome": "stop",
+  "rule": "STOP_PROHIBITED_CATEGORY"
+ },
+ {
+  "timestamp": "2026-11-17T17:06:40Z",
+  "agent": "counterfactual",
+  "action": "explain_decision",
+  "sources": [],
+  "model": null,
+  "cost": 0,
+  "approved_by": null,
+  "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+  "outcome": "stop",
+  "rule": "STOP_PROHIBITED_CATEGORY",
+  "missing": 1,
+  "experiments": 0
  }
 ]

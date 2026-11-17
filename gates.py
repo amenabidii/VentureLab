@@ -47,7 +47,9 @@ from brief import CategoryScreen, FounderBrief
 # decided under another version is superseded and can no longer reach the Builder
 # (builder_adapter.adapt, enforced again at approval and execution in app/api.py).
 # 2: corroboration counts only a commenter's own first-person words, each person once.
-RULESET_VERSION = 2
+# 3: the brief screen also stops deceptive practices (fake reviews, sign-ups or urgency,
+#    impersonation, promised income), not only excluded product categories.
+RULESET_VERSION = 3
 
 MIN_SUPPORTING_FINDINGS = 2
 MIN_SUPPORTING_SOURCES = 2  # distinct comment or page URLs
@@ -76,7 +78,10 @@ class Rule:
 
 RULES: dict[str, Rule] = {r.id: r for r in [
     Rule("STOP_PROHIBITED_CATEGORY", Decision.STOP,
-         "The brief describes a product in a category this system must not help build."),
+         "The brief describes a product in an excluded category (physical goods, financial or crypto, health "
+         "or legal advice), or one that depends on a practice this system must never help with (fake reviews, "
+         "sign-ups or urgency, impersonation, promised income). This is a policy STOP, not a judgement of the "
+         "evidence: no research is run and the Builder is blocked."),
     Rule("STOP_FAILED_VALIDATION_CONDITION", Decision.STOP,
          "An experiment result is below a pass mark the founder set before testing."),
     Rule("STOP_CONTRADICTED", Decision.STOP,
