@@ -198,3 +198,21 @@ def combine(title: str, url: str, picked: list[tuple[Source, Segment]]) -> Sourc
     if not combined.segments:
         combined.status, combined.error = "empty", "no retrieved comment was relevant to the brief"
     return combined
+
+
+# Retrieved text is untrusted data. Text that addresses an AI system or tries to steer an
+# assessment is never sent to the model for a verdict; it stays visible, labelled.
+_INSTRUCTION_LIKE = re.compile(
+    r"\b(?:ignore|disregard|forget)\b.{0,40}\b(?:instructions?|prompts?|rules?|above|previous)\b"
+    r"|\b(?:system|developer)\s+prompt\b"
+    r"|\b(?:you are|act as)\s+(?:an?\s+)?(?:ai|assistant|language model|llm|chatbot|evaluator|judge)\b"
+    r"|\b(?:respond|answer|reply|output)\s+(?:only\s+)?(?:with|in)\b.{0,30}\b(?:json|verdict|supports?|yes)\b"
+    r"|\bverdict\s*[:=]"
+    r"|\b(?:mark|classify|label|rate)\s+(?:this|it)\s+as\b",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
+def looks_like_instructions(text: str) -> bool:
+    """True when retrieved text reads like instructions to an AI (possible prompt injection)."""
+    return bool(_INSTRUCTION_LIKE.search(text))

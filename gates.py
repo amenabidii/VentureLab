@@ -16,9 +16,17 @@ decision can be traced to one named rule.
   constraint to adjust or clarify, not a reason to stop; infeasibility stops a
   run only through a condition the founder set and a result that failed it.
 
-Only ESTABLISHED customer-problem findings whose quotes are about the founder's
-statement count as support. NEEDS_REVIEW, partial, off-topic, segment,
-competitor and demand findings never satisfy an evidence requirement.
+Support for the founder's problem comes from independent sources, each counted once:
+- an ESTABLISHED customer-problem finding about the founder's statement, or
+- a corroborating check: one commenter's exact, verified words, about the statement
+  by the deterministic relevance rule, that the assessment judges to fully support
+  "this person experiences the founder's problem" AND that the sceptical second check
+  confirms (it rejects product descriptions, changed context and opposite meaning).
+  Partial support never counts. This is one person's account, so it is never
+  ESTABLISHED and never proof of a market; two independent people describing the
+  problem in their own words justify customer interviews, nothing more.
+NEEDS_REVIEW, off-topic, segment, competitor and demand findings never satisfy an
+evidence requirement.
 """
 
 from __future__ import annotations
@@ -75,9 +83,9 @@ RULES: dict[str, Rule] = {r.id: r for r in [
     Rule("REPEAT_CLARIFY_AVAILABILITY", Decision.REPEAT,
          "The brief gives 0 hours a week. Validation needs some of the founder's time; clarify or adjust."),
     Rule("GO_TO_FURTHER_VALIDATION", Decision.GO,
-         f"At least {MIN_SUPPORTING_FINDINGS} established, relevant problem findings from at least "
-         f"{MIN_SUPPORTING_SOURCES} sources, and nothing contradicts the problem statement. This justifies "
-         "experiments with customers; it is not proof of demand or of a market."),
+         f"At least {MIN_SUPPORTING_SOURCES} independent sources support the problem statement (established "
+         "findings, or people describing it in their own verified words), and nothing contradicts it. This "
+         "justifies experiments with customers; it is not proof of demand or of a market."),
     Rule("REPEAT_INSUFFICIENT_EVIDENCE", Decision.REPEAT,
          "Nothing contradicts the idea strongly enough to stop or pivot, but there is not enough established, "
          "relevant evidence to go on."),
@@ -91,6 +99,9 @@ class EvidenceSummary:
     sources_analysed: int = 0
     supporting: list[str] = field(default_factory=list)  # established, about the founder's statement
     supporting_sources: list[str] = field(default_factory=list)
+    corroborating_checks: list[str] = field(default_factory=list)  # one commenter's words support the statement
+    corroborating_sources: list[str] = field(default_factory=list)
+    support_sources: list[str] = field(default_factory=list)  # distinct sources of either kind
     alternatives: list[dict[str, Any]] = field(default_factory=list)  # established, about a different problem
     contradicting_checks: list[str] = field(default_factory=list)
     contradicting_sources: list[str] = field(default_factory=list)
@@ -112,12 +123,17 @@ class EvidenceSummary:
         s.sources_analysed = len(inv.analysed)
         support_urls: set[str] = set()
         contra_urls: set[str] = set()
+        corro_urls: set[str] = set()
         for f in inv.findings:
             st = f.standing
             if f.origin == "hypothesis_check":
                 if st is ev.Standing.CONTRADICTED and f.relevance == "statement":
                     s.contradicting_checks.append(f.id)
                     contra_urls.update(f.urls)
+                elif (f.relevance == "statement" and f.item.verified and len(f.urls) == 1
+                      and f.item.verdict == "supports" and f.item.confirmed is True):
+                    s.corroborating_checks.append(f.id)
+                    corro_urls.update(f.urls)
                 elif st is ev.Standing.UNSUPPORTED:
                     s.unsupported_checks.append(f.id)
                 elif st is ev.Standing.NEEDS_REVIEW:
@@ -143,6 +159,8 @@ class EvidenceSummary:
                 s.assumptions.append(f.id)
         s.supporting_sources = sorted(support_urls)
         s.contradicting_sources = sorted(contra_urls)
+        s.corroborating_sources = sorted(corro_urls)
+        s.support_sources = sorted(support_urls | corro_urls)
         return s
 
     def to_dict(self) -> dict[str, Any]:
@@ -210,10 +228,11 @@ def pre_research_stop(brief: FounderBrief, screen: CategoryScreen) -> bool:
 def decide(brief: FounderBrief, screen: CategoryScreen, inv: Investigation | None) -> GateResult:
     e = EvidenceSummary.from_investigation(inv)
     failed, unmeasured = conditions(brief)
-    n_sup, n_sup_src = len(e.supporting), len(e.supporting_sources)
+    n_sup = len(e.supporting) + len(e.corroborating_checks)
+    n_sup_src = len(e.support_sources)
     n_contra, n_alt = len(e.contradicting_sources), len(e.alternatives)
-    counts = {"supporting_findings": n_sup, "supporting_sources": n_sup_src,
-              "contradicting_sources": n_contra, "alternatives": n_alt}
+    counts = {"supporting_findings": len(e.supporting), "corroborating_checks": len(e.corroborating_checks),
+              "supporting_sources": n_sup_src, "contradicting_sources": n_contra, "alternatives": n_alt}
     tests: list[tuple[str, bool, dict[str, Any]]] = [
         ("STOP_PROHIBITED_CATEGORY", not screen.allowed, {"matches": screen.matches}),
         ("STOP_FAILED_VALIDATION_CONDITION", bool(failed), {"failed": [c["id"] for c in failed]}),

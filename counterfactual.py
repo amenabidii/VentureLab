@@ -100,7 +100,7 @@ def explain(gate: GateResult, brief: FounderBrief, challenge: Challenge | None) 
                        f"({alt['finding']}) from {len(alt['sources'])} source(s).")
         experiments = [_interviews(brief, alt["claim"])] + proposed
     elif rule == "REPEAT_MIXED_EVIDENCE":
-        missing.append(f"Why sources disagree: supported by {', '.join(e.supporting)}, contradicted by "
+        missing.append(f"Why sources disagree: supported by {', '.join(e.supporting + e.corroborating_checks)}, contradicted by "
                        f"{', '.join(e.contradicting_sources)}. Who has the problem and who does not?")
         experiments = [_interviews(brief)] + proposed
     elif rule == "REPEAT_NO_READABLE_SOURCES":
@@ -113,8 +113,9 @@ def explain(gate: GateResult, brief: FounderBrief, challenge: Challenge | None) 
     else:  # GO_TO_FURTHER_VALIDATION or REPEAT_INSUFFICIENT_EVIDENCE
         if rule == "REPEAT_INSUFFICIENT_EVIDENCE":
             missing.append(
-                f"Established, relevant problem findings: {len(e.supporting)} of {MIN_SUPPORTING_FINDINGS} "
-                f"needed, from {len(e.supporting_sources)} of {MIN_SUPPORTING_SOURCES} sources needed.")
+                f"Independent sources supporting the problem statement: {len(e.support_sources)} of "
+                f"{MIN_SUPPORTING_SOURCES} needed ({len(e.supporting)} established findings, "
+                f"{len(e.corroborating_checks)} people describing it in their own words).")
             if e.needs_review or e.partial:
                 missing.append(
                     f"{len(e.needs_review)} needs-review and {len(e.partial)} partial findings do not count. "

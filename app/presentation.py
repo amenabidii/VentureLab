@@ -115,7 +115,8 @@ def decision(outputs: dict[str, Any], builder_note: str) -> dict[str, Any] | Non
     return {
         "outcome": gate["decision"], "rule": gate["rule"],
         "explanation": f"{gate['rule_meaning']} {meaning}",
-        "findings": e["supporting"] + e["contradicting_checks"] + [a["finding"] for a in e["alternatives"]],
+        "findings": e["supporting"] + e.get("corroborating_checks", []) + e["contradicting_checks"]
+                    + [a["finding"] for a in e["alternatives"]],
         "missing": cf["missing_evidence"],
         "risks": gate.get("feasibility_notes", []),
         "next": f"Reconsidered by: {cf['reconsidered_by']}.",
@@ -165,6 +166,8 @@ def agents(run: dict[str, Any], outputs: dict[str, Any], approvals: list[dict[st
         inv_task = chal_task = "Not run: a STOP rule applied before research."
     if status == "blocked":
         inv_task = run.get("error") or "Blocked."
+    elif status == "running" and stage.startswith("Waiting for the local model"):
+        inv_task = stage + ". Research starts automatically when it is ready."
     calls = (outputs.get("investigation") or {}).get("model_calls")
     if calls is not None:
         inv_task += f" {calls} model calls."

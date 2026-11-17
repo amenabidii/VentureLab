@@ -31,8 +31,14 @@ def run(tmp_path, *, brief=BRIEF, replies=None, routes=None, effort=orchestrator
     return result, model, entries
 
 
+def statement_not_supported(user: str) -> str:
+    if "this problem: Small software teams" in user:
+        return json.dumps({"reason": "Not about the time it takes.", "limitations": "", "verdict": "does_not_support"})
+    return SUPPORTS
+
+
 def statement_contradicted(user: str) -> str:
-    return CONTRADICTS if "CLAIM: Small software teams" in user else SUPPORTS
+    return CONTRADICTS if "this problem: Small software teams" in user else SUPPORTS
 
 
 def test_full_pipeline_writes_named_outputs_and_a_valid_log(tmp_path):
@@ -72,9 +78,12 @@ def test_wrongly_attributed_claims_cannot_produce_go(tmp_path):
         ("customer_problem", "One designer says I spend two hours writing release notes for each release.",
          ["two hours writing"]),
     )
-    result, _, _ = run(tmp_path, replies={"extract": wrong})
+    # The founder's statement itself is judged unsupported here, so only the wrongly
+    # attributed claims could make a GO; they must not.
+    result, _, _ = run(tmp_path, replies={"extract": wrong, "assess": statement_not_supported})
     assert result.gate.decision.value == "REPEAT"
     assert len(result.gate.evidence.needs_review) >= 2 and result.gate.evidence.supporting == []
+    assert result.gate.evidence.corroborating_checks == []
 
 
 def test_support_plus_contradiction_is_mixed_evidence(tmp_path):

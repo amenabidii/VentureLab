@@ -120,14 +120,23 @@ the first that applies decides, and every check up to it is recorded in the outp
 4. `PIVOT_ALTERNATIVE_SUPPORTED`: the problem is contradicted and an established finding
    points to a different problem for the same customers.
 5. `REPEAT_MIXED_EVIDENCE`, `REPEAT_NO_READABLE_SOURCES`, `REPEAT_CLARIFY_AVAILABILITY`.
-6. `GO_TO_FURTHER_VALIDATION`: at least 2 established, relevant problem findings from at
-   least 2 sources and no contradiction. GO means "run customer experiments next",
-   never proof of demand or product-market fit.
+6. `GO_TO_FURTHER_VALIDATION`: at least 2 independent sources support the problem and
+   nothing contradicts it. GO means "run customer experiments next", never proof of
+   demand or product-market fit.
 7. `REPEAT_INSUFFICIENT_EVIDENCE`: the default when evidence is too thin.
 
-Only ESTABLISHED customer-problem findings about the founder's statement count.
+A source supports the problem in one of two ways, and each source counts once:
+- an ESTABLISHED customer-problem finding about the founder's statement; or
+- a **corroborating check**: the founder's statement is tested against each relevant
+  commenter separately, in that person's exact verified words ("One commenter says they
+  experience this problem: …"). It counts only if the assessment says it fully supports
+  it **and** the sceptical second check agrees; partial support never counts. The check
+  is about one person, so it is never ESTABLISHED and never evidence of a market.
+
 NEEDS_REVIEW, partial, off-topic, competitor, segment and demand findings never satisfy
-a requirement. Missing evidence gives REPEAT, not STOP, because absence of desk evidence
+a requirement. Retrieved comments that contain instructions to an AI ("ignore previous
+instructions", "answer with verdict…") are untrusted as a whole: never shown to the
+model, quoted or used as context, and logged. Missing evidence gives REPEAT, not STOP, because absence of desk evidence
 is not evidence of absence; STOP needs a prohibited category, a failed pre-set
 condition or independent contradiction. The Counterfactual Challenge names the unmet
 requirement and the experiment that could change the result, and states that more

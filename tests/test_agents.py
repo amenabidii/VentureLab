@@ -115,7 +115,8 @@ def test_wrong_attribution_and_unsupported_claims_stay_needs_review_without_a_mo
     assert f.standing is ev.Standing.NEEDS_REVIEW and f.item.not_assessed
     assert any(why in r for r in f.item.review)
     assert all(q.verified for q in f.item.quotes)  # the quote is kept for the reviewer
-    assert model.calls.count("confirm") == 0
+    assert inv.by_origin("extracted")[0].item.confirmed is None  # no second check for the claim itself
+    assert model.calls.count("confirm") == sum(1 for h in inv.by_origin("hypothesis_check") if h.item.verdict == "supports")
 
 
 def test_off_topic_quote_is_kept_but_never_counted(tmp_path):
@@ -130,7 +131,8 @@ def test_off_topic_quote_is_kept_but_never_counted(tmp_path):
 def test_demand_claims_skip_the_pointless_second_check(tmp_path):
     inv, model, _ = run(tmp_path, {"extract": extraction(
         ("demand", "One product manager says I would pay for release notes.", ["takes me an hour"]))})
-    assert model.calls.count("confirm") == 0
+    assert inv.by_origin("extracted")[0].item.confirmed is None  # no second check for the claim itself
+    assert model.calls.count("confirm") == sum(1 for h in inv.by_origin("hypothesis_check") if h.item.verdict == "supports")
     assert inv.by_origin("extracted")[0].standing is not ev.Standing.ESTABLISHED
 
 
@@ -146,20 +148,26 @@ def test_no_quotation_joins_two_comments():
 
 def test_founder_statement_is_checked_only_against_relevant_passages_and_can_be_contradicted(tmp_path):
     def assess(user: str) -> str:
-        if "CLAIM: Small software teams" in user:
+        if "this problem: Small software teams" in user:
             return json.dumps({"reason": "They say it is quick.", "limitations": "", "verdict": "contradicts"})
         return SUPPORTS
     inv, _, _ = run(tmp_path, {"extract": NONE, "assess": assess})
-    (check,) = inv.by_origin("hypothesis_check")
-    assert check.standing is ev.Standing.CONTRADICTED and check.relevance == "statement"
-    assert all(q.text in (ALICE, BOB) for q in check.item.quotes)
+    checks = inv.by_origin("hypothesis_check")
+    # One check per relevant commenter, each quoting only that person's own words.
+    assert [c.item.quotes[0].text for c in checks] == [BOB, ALICE]
+    assert [c.urls for c in checks] == [[URL["bob"]], [URL["alice"]]]
+    for check in checks:
+        assert check.standing is ev.Standing.CONTRADICTED and check.relevance == "statement"
+        assert len(check.item.quotes) == 1
 
 
 def test_founder_statement_support_never_becomes_established(tmp_path):
     inv, model, _ = run(tmp_path, {"extract": NONE})
     check = inv.by_origin("hypothesis_check")[0]
     assert check.item.verdict == "supports" and check.standing is not ev.Standing.ESTABLISHED
-    assert model.calls.count("confirm") == 0  # it could never be established, so no second check
+    # The second check runs only to decide corroboration; the check still can never be established.
+    assert model.calls.count("confirm") == len(inv.by_origin("hypothesis_check"))
+    assert check.item.claim.startswith("One commenter says they experience this problem:")
 
 
 def test_unavailable_source_is_logged_and_yields_nothing(tmp_path):
@@ -211,7 +219,7 @@ def test_strict_schema_only_allows_existing_ids():
 
 def _findings(tmp_path):
     def assess(user: str) -> str:
-        if "CLAIM: Small software teams" in user:
+        if "this problem: Small software teams" in user:
             return json.dumps({"reason": "It says the opposite.", "limitations": "", "verdict": "contradicts"})
         return SUPPORTS
     inv, _, _ = run(tmp_path, {"assess": assess, "extract": extraction(
@@ -280,7 +288,7 @@ def test_challenger_grounds_reviews_and_rejects_wrong_or_invented_references(tmp
 def test_challenger_failure_still_lists_contradictions_from_code(tmp_path):
     findings = _findings(tmp_path)
     c = challenge(BRIEF, findings, RoutedOllama({}).client(), "qwen3:4b", AuditLog(tmp_path / "c.json", "r"))
-    assert c.status == "failed" and [x["finding"] for x in c.contradictions] == ["H1"]
+    assert c.status == "failed" and [x["finding"] for x in c.contradictions] == ["H1", "H2"]
 
 
 def test_strict_schema_limits_reviews_and_text_length():

@@ -19,6 +19,7 @@ DEFAULTS: dict[str, str] = {
     "VENTURELAB_DECISION_LOG": "decision_log.json",
     "VENTURELAB_APPROVAL_TTL_S": "7200",
     "VENTURELAB_MAX_QUEUED_RUNS": "3",
+    "VENTURELAB_MODEL_WAIT_S": "900",
 }
 
 
@@ -36,6 +37,7 @@ class Settings:
     decision_log: str = DEFAULTS["VENTURELAB_DECISION_LOG"]
     approval_ttl_s: float = float(DEFAULTS["VENTURELAB_APPROVAL_TTL_S"])
     max_queued_runs: int = int(DEFAULTS["VENTURELAB_MAX_QUEUED_RUNS"])
+    model_wait_s: float = float(DEFAULTS["VENTURELAB_MODEL_WAIT_S"])
 
 
 def _get(name: str) -> str:
@@ -57,4 +59,5 @@ def get_settings() -> Settings:
         decision_log=_get("VENTURELAB_DECISION_LOG"),
         approval_ttl_s=float(_get("VENTURELAB_APPROVAL_TTL_S")),
         max_queued_runs=int(_get("VENTURELAB_MAX_QUEUED_RUNS")),
+        model_wait_s=float(_get("VENTURELAB_MODEL_WAIT_S")),
     )

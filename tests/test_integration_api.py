@@ -50,7 +50,7 @@ class Model(RoutedOllama):
         return super().handler(request)
 
 
-def make(tmp_path, replies=None, routes=None, installed=True, ttl=7200, max_queued=3, gate=None):
+def make(tmp_path, replies=None, routes=None, installed=True, ttl=7200, max_queued=3, gate=None, model_wait=0):
     model = Model({"queries": QUERIES, "extract": FAITHFUL, "assess": SUPPORTS, "confirm": CONFIRMED,
                    "challenge": CHALLENGE} | (replies or {}), installed=installed)
 
@@ -59,7 +59,7 @@ def make(tmp_path, replies=None, routes=None, installed=True, ttl=7200, max_queu
             gate.wait(10)
         return model.client()
 
-    settings = replace(TEST_SETTINGS, approval_ttl_s=ttl, max_queued_runs=max_queued)
+    settings = replace(TEST_SETTINGS, approval_ttl_s=ttl, max_queued_runs=max_queued, model_wait_s=model_wait)
     svc = build_services(settings, client_factory=client,
                          fetcher_factory=lambda: stub_sources(routes or {"hn.algolia.com": COMMENTS}), root=tmp_path)
     app.state.services = svc
@@ -141,7 +141,12 @@ def test_full_journey_research_decision_builder_approval_execution(tmp_path):
 
 def test_repeat_run_gets_kit_without_landing_page(tmp_path):
     wrong = extraction(("customer_problem", "Most managers say the notes take an hour.", ["takes me an hour"]))
-    api, svc, _ = make(tmp_path, replies={"extract": wrong})
+
+    def assess(user):
+        if "this problem: Small software teams" in user:
+            return json.dumps({"reason": "Not about time.", "limitations": "", "verdict": "does_not_support"})
+        return SUPPORTS
+    api, svc, _ = make(tmp_path, replies={"extract": wrong, "assess": assess})
     run_id, run = start(api, svc)
     assert run["decision"] == "REPEAT"
     approval = api.post(f"/api/runs/{run_id}/builder").json()["approval"]
@@ -173,7 +178,7 @@ def test_prohibited_brief_stops_without_model_and_blocks_builder(tmp_path):
 
 def test_wrong_attribution_contradiction_and_missing_quotes_keep_their_standing(tmp_path):
     def assess(user):
-        if "CLAIM: Small software teams" in user:
+        if "this problem: Small software teams" in user:
             return json.dumps({"reason": "They say it is quick.", "limitations": "", "verdict": "contradicts"})
         return SUPPORTS
     reply = lambda user: json.dumps({"claims": [
@@ -337,3 +342,24 @@ def test_unknown_run_is_404(tmp_path):
     api, _, _ = make(tmp_path)
     for path in ("findings", "decision", "artifacts", "audit", "agents"):
         assert api.get(f"/api/runs/run-0123456789abcdef/{path}").status_code == 404
+
+
+def test_a_run_waits_for_the_first_model_download_and_says_so(tmp_path):
+    api, svc, model = make(tmp_path, installed=False, model_wait=5)
+    svc.jobs.model_poll_s = 0.05
+    run_id = api.post("/api/runs", json=BRIEF).json()["run"]["id"]
+    deadline = time.time() + 5
+    while "Waiting for the local model" not in svc.runs.get(run_id)["stage"]:
+        assert time.time() < deadline
+        time.sleep(0.02)
+    assert svc.runs.get(run_id)["status"] == "running" and model.calls == []  # waiting, no research
+    model.installed = True  # the download finishes
+    run = wait(svc, run_id)
+    assert run["status"] == "completed" and "queries" in model.calls
+
+
+def test_a_run_is_blocked_with_an_explanation_if_the_model_never_arrives(tmp_path):
+    api, svc, model = make(tmp_path, installed=False, model_wait=0.2)
+    svc.jobs.model_poll_s = 0.05
+    run_id, run = start(api, svc)
+    assert run["status"] == "blocked" and "one-time model download" in run["error"] and model.calls == []

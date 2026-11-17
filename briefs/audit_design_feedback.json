@@ -1,0 +1,16 @@
+{
+  "founder_skills": [
+    "Python",
+    "web development"
+  ],
+  "hours_per_week": 10,
+  "budget_eur": 200,
+  "values_and_constraints": [
+    "no dark patterns",
+    "privacy first"
+  ],
+  "idea": "A web app where freelance designers share drafts and collect pinned client feedback in one place.",
+  "problem_statement": "Freelance designers waste time collecting scattered client feedback on design drafts.",
+  "target_customer": "freelance graphic and web designers",
+  "market": "online, English-speaking freelancers"
+}

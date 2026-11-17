@@ -33,7 +33,7 @@ import relevance as rel
 from audit import AuditLog
 from brief import FounderBrief
 from llm import LLMError, LLMResult, OllamaClient
-from sources import Segment, Source, SourceFetcher, combine
+from sources import Segment, Source, SourceFetcher, combine, looks_like_instructions
 
 AGENT = "investigator"
 
@@ -48,11 +48,13 @@ class Effort:
     max_comments: int  # relevant comments kept for analysis, across all searches
     prefilter_passages: int
     max_claims: int
+    statement_checks: int  # independent commenters checked against the founder's statement
 
 
-FULL = Effort("full", max_queries=3, comments_per_query=10, max_comments=8, prefilter_passages=12, max_claims=4)
-QUICK = Effort("quick", max_queries=1, comments_per_query=10, max_comments=4, prefilter_passages=6, max_claims=2)
-STATEMENT_PASSAGES = 2
+FULL = Effort("full", max_queries=3, comments_per_query=10, max_comments=8, prefilter_passages=12, max_claims=4,
+              statement_checks=4)
+QUICK = Effort("quick", max_queries=1, comments_per_query=10, max_comments=4, prefilter_passages=6, max_claims=2,
+               statement_checks=2)
 
 
 class QueryPlan(BaseModel):
@@ -154,6 +156,11 @@ def record_calls(calls: list[dict[str, Any]], action: str, results: list[LLMResu
 _WORD = re.compile(r"[A-Za-z][A-Za-z'-]+")
 _FALLBACK_STOP = set("a an and are as at be by for from has have in is it of on or that the their they this "
                      "to too was with who which when spend spends long much more most many".split())
+
+
+def personal_claim(problem_statement: str) -> str:
+    """The founder's statement as a question about one commenter's own experience."""
+    return f"One commenter says they experience this problem: {problem_statement.strip()}"
 
 
 def fallback_queries(brief: FounderBrief) -> list[str]:
@@ -291,6 +298,19 @@ def investigate(
         # "Comment by <author> on the thread ..." lines are written by this application,
         # not by the commenter, so they are never shown to the model or quoted as evidence.
         headers = frozenset(p.id for p in passages if p.id in breaks and p.text.startswith("Comment by "))
+        # Retrieved text that reads like instructions to an AI is untrusted in a stronger
+        # sense: it is never shown to the model, quoted, or used as context (it stays in the
+        # stored source text, so nothing is hidden from the founder).
+        # A comment that contains such text is untrusted as a whole: its other sentences could be
+        # written to look like ordinary evidence.
+        flagged = [seg for seg in source.segments if looks_like_instructions(source.text[seg.start:seg.end])]
+        untrusted = frozenset(p.id for p in passages
+                              if any(seg.start <= p.start < seg.end for seg in flagged)
+                              or looks_like_instructions(p.text))
+        if untrusted:
+            inv.selection["instruction_like_passages_skipped"] = (
+                inv.selection.get("instruction_like_passages_skipped", 0) + len(untrusted))
+        headers = headers | untrusted
         try:
             items, result = ev.extract_claims(
                 client, model, source.text, topic=topic, source_url=source.url,
@@ -326,24 +346,53 @@ def investigate(
             inv.findings.append(finding)
             _record_assessment(log, model, finding, bool(results))
 
-        # Check the founder's own statement against the passages that are about it.
+        # Check the founder's own statement against each commenter separately, using that
+        # person's exact words: the most relevant passage per comment, up to a limit. Each
+        # check cites one comment, so independent people are counted independently.
         body = [p for p in passages if p.id not in headers]
-        relevant = [p for p in ev.rank_passages(body, brief.problem_statement, STATEMENT_PASSAGES)
-                    if terms.statement_match(p.text)]
-        if not relevant:
+        scored = []
+        for p in body:
+            shared = terms.statement_match(p.text)
+            if shared:
+                scored.append((len(shared), p.id, p))
+        picks, seen_urls = [], set()
+        for _, _, p in sorted(scored, key=lambda s: (-s[0], s[1])):
+            url = source.url_at(p.start)
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            picks.append(p)
+            if len(picks) >= effort.statement_checks:
+                break
+        for url in sorted({source.url_at(passages[pid - 1].start) for pid in untrusted}):
+            log.record(AGENT, "check_founder_statement", sources=[url], model=None, outcome="skipped",
+                       reason="the comment contains text that reads like instructions to an AI; never sent to the model")
+        if not picks:
             log.record(AGENT, "check_founder_statement", sources=[source.url], model=None, outcome="skipped",
                        reason="no passage shares two key words with the problem statement")
             continue
-        quotes = ev.quotes_from_passages(source.text, passages, [p.id for p in relevant],
-                                         breaks=breaks, url_at=source.url_at)
-        n_checks += 1
-        check = Finding(f"H{n_checks}", "hypothesis_check", source.kind,
-                        ev.EvidenceItem(brief.problem_statement, "customer_problem", quotes))
-        classify(check, terms)
-        results = ev.assess_item(client, model, check.item, source.text, economical=True, exclude=headers)
-        record_calls(calls, "check_founder_statement", results)
-        inv.findings.append(check)
-        _record_assessment(log, model, check, bool(results))
+        for p in picks:
+            quotes = ev.quotes_from_passages(source.text, passages, [p.id], breaks=breaks, url_at=source.url_at)
+            n_checks += 1
+            # The question is about this one person, so one person's words can answer it fully.
+            check = Finding(f"H{n_checks}", "hypothesis_check", source.kind,
+                            ev.EvidenceItem(personal_claim(brief.problem_statement), "customer_problem", quotes))
+            classify(check, terms)
+            results = ev.assess_item(client, model, check.item, source.text, economical=True, exclude=headers)
+            if check.item.verdict == "supports" and check.item.verified:
+                # Only full support can corroborate, and only if the sceptical second check
+                # (scope, context, supply vs demand, changed details) agrees.
+                context = ev.context_for(source.text, check.item.quotes, exclude=headers)
+                texts = [q.text for q in check.item.quotes]
+                try:
+                    confirm, res = ev.confirm_support(client, model, check.item.claim, texts, context)
+                    results.append(res)
+                    check.item.confirmed, check.item.confirm_note = confirm.fully_supported, confirm.problems
+                except LLMError as exc:
+                    check.item.notes.append(f"second check failed: {exc}"[:300])
+            record_calls(calls, "check_founder_statement", results)
+            inv.findings.append(check)
+            _record_assessment(log, model, check, bool(results))
 
     inv.elapsed_s = time.perf_counter() - started
     return inv

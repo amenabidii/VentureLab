@@ -1,0 +1,16 @@
+{
+  "founder_skills": [
+    "Python",
+    "web development"
+  ],
+  "hours_per_week": 10,
+  "budget_eur": 200,
+  "values_and_constraints": [
+    "no dark patterns",
+    "privacy first"
+  ],
+  "idea": "A simple web app for small restaurants to post, swap and approve staff shifts instead of using group chats.",
+  "problem_statement": "Small restaurant managers waste time coordinating staff shift swaps through group chats.",
+  "target_customer": "managers of small independent restaurants",
+  "market": "online, English-speaking small businesses"
+}

@@ -78,7 +78,7 @@ def build_services(settings: Settings | None = None, *, client_factory=None, fet
     fetcher_factory = fetcher_factory or SourceFetcher
     runs = RunStore(state / "runs.sqlite3")
     jobs = JobManager(runs, settings.model, outputs / "runs", log_path, client_factory, fetcher_factory,
-                      max_queued=settings.max_queued_runs)
+                      max_queued=settings.max_queued_runs, model_wait_s=settings.model_wait_s)
     approvals = ApprovalStore(state / "approvals.sqlite3", outputs / "builder", ttl_seconds=settings.approval_ttl_s)
     return Services(settings, runs, jobs, approvals, outputs / "runs", outputs / "builder", log_path,
                     client_factory, threading.Lock())

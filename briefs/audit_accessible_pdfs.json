@@ -1,0 +1,16 @@
+{
+  "founder_skills": [
+    "Python",
+    "web development"
+  ],
+  "hours_per_week": 10,
+  "budget_eur": 200,
+  "values_and_constraints": [
+    "no dark patterns",
+    "privacy first"
+  ],
+  "idea": "A web tool that converts inaccessible PDF documents into screen-reader friendly HTML.",
+  "problem_statement": "Screen reader users struggle to read inaccessible PDF documents.",
+  "target_customer": "blind and low-vision people who use screen readers",
+  "market": "online, worldwide"
+}

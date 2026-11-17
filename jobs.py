@@ -21,6 +21,7 @@ import json
 import queue
 import sqlite3
 import threading
+import time
 import traceback
 import uuid
 from contextlib import contextmanager
@@ -138,6 +139,10 @@ class JobManager:
     client_factory: Callable[[], OllamaClient]
     fetcher_factory: Callable[[], SourceFetcher]
     max_queued: int = 3
+    # On a fresh machine the model is still downloading when the app starts. A run waits
+    # for it (and says so) for up to this many seconds before it is blocked.
+    model_wait_s: float = 900
+    model_poll_s: float = 15
 
     def __post_init__(self) -> None:
         self._queue: queue.Queue[str] = queue.Queue()
@@ -183,16 +188,24 @@ class JobManager:
         client, fetcher = self.client_factory(), self.fetcher_factory()
         try:
             if not pre_research_stop(brief, screen_brief(brief)):
-                try:
-                    available = client.has_model(self.model)
-                except LLMError as exc:
-                    self.store.update(run_id, status="blocked", stage="Blocked", finished=now(),
-                                      error=f"Ollama is not reachable, so no research was started: {exc}"[:500])
-                    return
-                if not available:
-                    self.store.update(run_id, status="blocked", stage="Blocked", finished=now(),
-                                      error=f"Model {self.model} is not downloaded yet, so no research was started.")
-                    return
+                deadline = time.monotonic() + self.model_wait_s
+                while True:
+                    try:
+                        available, problem = client.has_model(self.model), None
+                    except LLMError as exc:
+                        available, problem = False, f"Ollama is not reachable: {exc}"
+                    if available:
+                        break
+                    if time.monotonic() >= deadline:
+                        reason = problem or f"Model {self.model} is not downloaded yet"
+                        self.store.update(run_id, status="blocked", stage="Blocked", finished=now(),
+                                          error=f"{reason}, so no research was started. On a first start the "
+                                                f"one-time model download can take several minutes; submit the "
+                                                f"brief again once /health/model reports ready."[:500])
+                        return
+                    self.store.update(run_id, stage=f"Waiting for the local model {self.model} "
+                                                    "(first start: the one-time download is still running)")
+                    time.sleep(self.model_poll_s)
 
             def listener(entry: dict[str, Any]) -> None:
                 stage = AGENT_STAGES.get(entry["agent"], entry["agent"])

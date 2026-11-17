@@ -41,7 +41,8 @@ checkout owned by your normal user; a root-owned checkout is refused with an exp
 1. **Founder brief**: fill in the form, review it and submit. The backend validates it
    (errors appear next to the fields) and starts a real analysis in the background.
 2. **Agent workflow**: statuses come from the backend's progress records and refresh
-   every 5 seconds. A full run takes about two to four minutes on a CPU laptop; the
+   every 5 seconds. A brief submitted while the first model download is still running
+   waits for it (up to 15 minutes, shown as such) instead of failing. A full run takes about two to four minutes on a CPU laptop; the
    "shorter demonstration run" option uses one search and fewer claims.
 3. **Evidence explorer, Challenger analysis, Decision dashboard, Counterfactual
    challenge**: the run's recorded outputs, with every standing shown as assigned.
@@ -73,7 +74,8 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 | Investigator: search planning, Hacker News and founder-listed page retrieval, relevance selection, quote extraction | **Working** (needs internet) |
 | Evidence verification: exact quotes, wording and attribution checks, standing ESTABLISHED / NEEDS_REVIEW / partial / unsupported / contradicted / assumption | **Working**; known quality limits in [ARCHITECTURE.md](ARCHITECTURE.md#built-vs-stubbed) |
 | Challenger: founder assumptions with stable IDs, code-checked citations and stances, risks, experiments | **Working** |
-| Gate (GO / REPEAT / PIVOT / STOP) and Counterfactual Challenge | **Working**, deterministic Python, no model |
+| Gate (GO / REPEAT / PIVOT / STOP) and Counterfactual Challenge | **Working**, deterministic Python, no model; GO needs 2 independent supporting sources (established findings, or commenters whose exact words fully support the problem and pass a second check) |
+| Untrusted retrieved text: comments containing instructions to an AI are never sent to the model | **Working** |
 | Builder: experiment kit and interview guide; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
