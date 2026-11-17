@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "run_id": "audit-localization",
+    "business_idea": "A digital localization review workspace",
+    "target_customer": "Small software localization teams",
+    "core_problem": "Translated interface strings lose their design context",
+    "main_assumptions": [
+      "Teams recently reopened screenshots to understand translated interface text",
+      "The proposed organization of this workflow may be useful"
+    ],
+    "supporting_evidence": [],
+    "founder_constraints": [
+      "SYNTHETIC AUDIT FIXTURE ONLY",
+      "Voluntary adult interviews; no spending or personal data collection"
+    ],
+    "product_category": "digital_product",
+    "experiment_design": {
+      "sample_size": 5,
+      "success_minimum": 3,
+      "recall_days": 30,
+      "assumption_index": 0
+    }
+  },
+  "landing_page": {
+    "product_name": "LocaleDesk",
+    "headline": "Review translated screens in context.",
+    "value_proposition": "A proposed workspace for comparing interface text with design context.",
+    "target_audience": "Small software localization teams",
+    "problem": "Translated interface strings lose their design context",
+    "proposed_solution": "A digital localization review workspace",
+    "features": [
+      "Screen-linked translation notes",
+      "Locale comparison views",
+      "Context checklists"
+    ]
+  }
+}

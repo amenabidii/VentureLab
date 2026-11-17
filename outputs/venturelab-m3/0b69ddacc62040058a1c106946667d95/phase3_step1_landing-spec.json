@@ -1,0 +1,14 @@
+{
+  "product_name": "VentureLab",
+  "headline": "Put your startup assumptions to the test.",
+  "value_proposition": "Explore an AI co-founder concept that helps turn uncertain digital-product ideas into practical validation experiments.",
+  "target_audience": "Entrepreneurs investigating an early-stage digital product idea",
+  "problem": "An idea can sound convincing while its central assumptions still need evidence.",
+  "proposed_solution": "Investigate the idea, challenge unsupported assumptions, and prepare an experiment for founder review.",
+  "features": [
+    "Structured hypotheses and customer-discovery interview guides",
+    "Explicit proposed success criteria and evidence that could weaken a hypothesis",
+    "Local concept pages with founder approval before generation"
+  ],
+  "cta": "Explore the proposed concept"
+}

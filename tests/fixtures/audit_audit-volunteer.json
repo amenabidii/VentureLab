@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "run_id": "audit-volunteer",
+    "business_idea": "A volunteer activity planning tool",
+    "target_customer": "Adult coordinators of community reading clubs",
+    "core_problem": "Activity coverage plans are scattered across separate spreadsheets",
+    "main_assumptions": [
+      "Coordinators recently reconstructed an activity plan from multiple spreadsheets",
+      "The proposed organization of this workflow may be useful"
+    ],
+    "supporting_evidence": [],
+    "founder_constraints": [
+      "SYNTHETIC AUDIT FIXTURE ONLY",
+      "Voluntary adult interviews; no spending or personal data collection"
+    ],
+    "product_category": "digital_product",
+    "experiment_design": {
+      "sample_size": 8,
+      "success_minimum": 5,
+      "recall_days": 30,
+      "assumption_index": 0
+    }
+  },
+  "landing_page": {
+    "product_name": "ShiftSketch",
+    "headline": "Plan a clearer reading-club session.",
+    "value_proposition": "A proposed planning board for activity roles without personal profiles.",
+    "target_audience": "Adult coordinators of community reading clubs",
+    "problem": "Activity coverage plans are scattered across separate spreadsheets",
+    "proposed_solution": "A volunteer activity planning tool",
+    "features": [
+      "Activity coverage templates",
+      "Anonymous role slots",
+      "Printable session outlines"
+    ]
+  }
+}

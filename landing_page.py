@@ -1,0 +1,53 @@
+"""Fixed, dependency-free local HTML renderer; all founder copy is escaped."""
+from html import escape
+
+from builder_models import LandingPageSpec
+
+
+def render_landing_page(spec: LandingPageSpec) -> str:
+    spec = LandingPageSpec.model_validate(spec.model_dump())
+    text = {key: escape(value, quote=True) for key, value in spec.model_dump().items() if isinstance(value, str)}
+    features = "".join(
+        f'<article class="feature"><span class="number">{i:02}</span><h3>Proposed capability</h3><p>{escape(feature)}</p></article>'
+        for i, feature in enumerate(spec.features, 1)
+    )
+    return f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>{text['product_name']} — Local concept prototype</title>
+<style>
+:root{{color-scheme:light;--ink:#142b29;--muted:#435b57;--paper:#f7f8f2;--accent:#195b48}}
+*{{box-sizing:border-box}}html{{scroll-behavior:smooth}}body{{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 system-ui,sans-serif;overflow-wrap:anywhere}}
+a{{color:inherit}}a:focus-visible{{outline:3px solid #a34916;outline-offset:5px}}
+.wrap{{max-width:1120px;margin:auto;padding:0 28px}}header{{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:26px 0;border-bottom:1px solid #c9d6cd}}
+.brand{{font-size:21px;font-weight:750;letter-spacing:-.6px}}.badge,.eyebrow{{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;font-weight:700}}
+.badge{{border:1px solid #a9c1b2;border-radius:100px;padding:6px 12px}}.hero{{padding:90px 0 70px;display:grid;grid-template-columns:1.5fr 1fr;gap:60px;align-items:center}}
+h1{{font-size:clamp(40px,6vw,72px);line-height:1.08;letter-spacing:-2.5px;margin:22px 0}}h2{{font-size:clamp(28px,4vw,40px);line-height:1.2;letter-spacing:-1px}}h3{{font-size:19px}}
+.lead{{font-size:20px;color:var(--muted);max-width:640px}}.button{{display:inline-block;background:var(--accent);color:white;border-radius:8px;padding:14px 22px;text-decoration:none;font-weight:650;margin:18px 0}}
+.concept{{background:#e5eddf;padding:32px;border-radius:18px;border:1px solid #c7d7c4}}.concept h2{{font-size:28px}}.small{{font-size:14px;color:var(--muted)}}
+.section{{padding:52px 0;border-top:1px solid #c9d6cd}}.split{{display:grid;grid-template-columns:1fr 1fr;gap:50px}}.features{{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}}
+.feature{{background:white;border:1px solid #d3ded3;border-radius:12px;padding:26px}}.number{{color:var(--accent);font-size:14px;font-weight:750}}.notice{{background:var(--ink);color:white;border-radius:16px;padding:32px;margin:40px 0}}.notice p{{max-width:760px}}
+footer{{padding:28px 0 40px;font-size:13px;color:var(--muted)}}.skip{{position:absolute;left:-9999px}}.skip:focus{{left:20px;top:12px;background:white;padding:12px;z-index:1}}
+@media(max-width:720px){{.hero,.split{{grid-template-columns:1fr;gap:28px}}.hero{{padding:45px 0}}header{{align-items:flex-start;flex-direction:column;gap:12px}}.wrap{{padding:0 20px}}h1{{letter-spacing:-1.3px}}}}
+@media(prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}}}}
+</style>
+</head>
+<body><a class="skip" href="#main">Skip to content</a><div class="wrap">
+<header><span class="brand">{text['product_name']}</span><span class="badge">Local validation prototype</span></header>
+<main id="main">
+<section class="hero"><div><p class="eyebrow">A concept worth investigating</p>
+<h1>{text['headline']}</h1><p class="lead">{text['value_proposition']}</p>
+<a class="button" href="#concept">{text['cta']}</a><p class="small">Explore only. No sign-up, data collection, or external connection.</p></div>
+<aside class="concept"><p class="eyebrow">Designed with a specific audience in mind</p><h2>{text['target_audience']}</h2>
+<p>ASSUMPTION: the needs and proposed benefits on this page still require investigation.</p></aside></section>
+<section class="section split" id="concept"><div><p class="eyebrow">The problem to investigate</p><h2>A closer look at the current experience.</h2><p>{text['problem']}</p></div>
+<div><p class="eyebrow">The proposed solution</p><h2>A starting point for a better approach.</h2><p>{text['proposed_solution']}</p></div></section>
+<section class="section"><p class="eyebrow">What the concept could include</p><h2>Proposed features</h2><div class="features">{features}</div></section>
+<aside class="notice"><h2>A prototype, with a clear purpose.</h2><p>ASSUMPTION: all product, audience, problem and benefit statements are unvalidated proposals. Features are proposed, not delivered by this page. This artifact is not evidence of demand or business validation.</p>
+<p>This page stays local. No personal information is collected. The call to action only moves to the concept description; no signup service is implemented.</p></aside>
+</main><footer>{text['product_name']} · Local concept exploration · Built with VentureLab</footer>
+</div></body></html>'''

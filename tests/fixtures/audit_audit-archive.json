@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "run_id": "audit-archive",
+    "business_idea": "A digital archive metadata workspace",
+    "target_customer": "Community museum archive volunteers",
+    "core_problem": "Digital exhibit metadata is inconsistent across catalog files",
+    "main_assumptions": [
+      "Archive volunteers recently reconciled conflicting exhibit descriptions",
+      "The proposed organization of this workflow may be useful"
+    ],
+    "supporting_evidence": [],
+    "founder_constraints": [
+      "SYNTHETIC AUDIT FIXTURE ONLY",
+      "Voluntary adult interviews; no spending or personal data collection"
+    ],
+    "product_category": "digital_product",
+    "experiment_design": {
+      "sample_size": 4,
+      "success_minimum": 2,
+      "recall_days": 30,
+      "assumption_index": 0
+    }
+  },
+  "landing_page": {
+    "product_name": "ArchiveMap",
+    "headline": "Bring digital exhibit context together.",
+    "value_proposition": "A proposed workspace for comparing and organizing archive metadata.",
+    "target_audience": "Community museum archive volunteers",
+    "problem": "Digital exhibit metadata is inconsistent across catalog files",
+    "proposed_solution": "A digital archive metadata workspace",
+    "features": [
+      "Metadata comparison sheets",
+      "Exhibit description drafts",
+      "Source-note organization"
+    ]
+  }
+}

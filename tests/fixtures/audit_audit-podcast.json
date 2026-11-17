@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "run_id": "audit-podcast",
+    "business_idea": "A podcast editorial planning workspace",
+    "target_customer": "Independent podcast editorial teams",
+    "core_problem": "Episode research notes are disconnected from segment outlines",
+    "main_assumptions": [
+      "Editors recently recopied research notes into an episode outline",
+      "The proposed organization of this workflow may be useful"
+    ],
+    "supporting_evidence": [],
+    "founder_constraints": [
+      "SYNTHETIC AUDIT FIXTURE ONLY",
+      "Voluntary adult interviews; no spending or personal data collection"
+    ],
+    "product_category": "digital_product",
+    "experiment_design": {
+      "sample_size": 7,
+      "success_minimum": 3,
+      "recall_days": 30,
+      "assumption_index": 0
+    }
+  },
+  "landing_page": {
+    "product_name": "حلقة & Draft",
+    "headline": "Shape the next episode with context.",
+    "value_proposition": "A proposed workspace for connecting episode notes and segment plans.",
+    "target_audience": "Independent podcast editorial teams",
+    "problem": "Episode research notes are disconnected from segment outlines",
+    "proposed_solution": "A podcast editorial planning workspace",
+    "features": [
+      "Segment outline boards",
+      "Research-note grouping",
+      "Episode preparation checklists"
+    ]
+  }
+}
