@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+ "run_id": "run-2026-11-17T12:00:31Z-d399df",
  "model": "qwen3:4b",
  "assumptions": [
   {
@@ -9,7 +9,6 @@
    "stated": true,
    "related_findings": [
     "F1",
-    "F2",
     "F3",
     "H1"
    ]
@@ -27,8 +26,6 @@
    "text": "This solves it: A web app that drafts customer-facing release notes from a small software team's merged pull requests, for a person to edit and publish.",
    "stated": true,
    "related_findings": [
-    "F1",
-    "F2",
     "F3",
     "H1"
    ]
@@ -60,12 +57,19 @@
    "assumption": "A1",
    "assumption_text": "Small software teams spend too much time writing release notes and changelogs.",
    "stated": true,
-   "stance": "weakened",
-   "model_stance": "weakened",
-   "reason": "F1 and F2 both describe a specific manual process for writing release notes but do not confirm that this is a ",
+   "stance": "untested",
+   "model_stance": "supported",
+   "reason": "F1 shows a user hands writes release notes and copies version numbers, indicating time spent on this task.",
+   "reason_is_advisory": true,
    "evidence": [
-    "F1",
-    "F2"
+    "F1"
+   ],
+   "links": [
+    {
+     "finding": "F1",
+     "relationship": "indirect",
+     "why": "the quote does not mention time, which the assumption asserts"
+    }
    ],
    "basis": "UNCONFIRMED (needs review)",
    "sources": [
@@ -78,8 +82,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -87,12 +93,24 @@
    "assumption": "A3",
    "assumption_text": "This solves it: A web app that drafts customer-facing release notes from a small software team's merged pull requests, for a person to edit and publish.",
    "stated": true,
-   "stance": "untested",
-   "model_stance": "untested",
-   "reason": "No findings directly test if the web app would solve the problem",
-   "evidence": [],
-   "basis": "ASSUMPTION",
-   "sources": []
+   "stance": "weakened",
+   "model_stance": "weakened",
+   "reason": "F3 shows users already use GitHub-generated release notes from PR bodies, which may reduce the need for manual",
+   "reason_is_advisory": true,
+   "evidence": [
+    "F3"
+   ],
+   "links": [
+    {
+     "finding": "F3",
+     "relationship": "indirect",
+     "why": "established, related and covers what the assumption asserts; support for this assumption was not checked"
+    }
+   ],
+   "basis": "UNCONFIRMED (needs review)",
+   "sources": [
+    "https://news.ycombinator.com/item?id=46279042"
+   ]
   },
   {
    "assumption": "A4",
@@ -100,8 +118,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -111,8 +131,10 @@
    "stated": true,
    "stance": "untested",
    "model_stance": null,
+   "reason_is_advisory": true,
    "reason": "no finding relates to it, so the Challenger did not review it",
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   },
@@ -122,19 +144,20 @@
    "stated": false,
    "stance": "untested",
    "model_stance": "untested",
-   "reason": "No findings address whether customers would pay",
+   "reason": "No findings address whether customers would pay for this solution.",
+   "reason_is_advisory": true,
    "evidence": [],
+   "links": [],
    "basis": "ASSUMPTION",
    "sources": []
   }
  ],
  "new_hypotheses": [
   {
-   "text": "Small software teams might prefer manual release note creation over automated tools due to customization needs",
+   "text": "Small software teams might prefer automated release notes that integrate with their existing CI/CD pipelines.",
    "raised_by": "challenger",
    "evidence": [
-    "F1",
-    "F2"
+    "F3"
    ],
    "basis": "UNCONFIRMED (needs review)",
    "sources": [
@@ -144,50 +167,37 @@
  ],
  "risks": [
   {
-   "assumption": "A1",
+   "assumption": "A3",
    "kind": "market",
-   "text": "The problem might not be widespread enough to justify automation",
-   "evidence": [],
-   "basis": "ASSUMPTION"
-  },
-  {
-   "assumption": "A1",
-   "kind": "feasibility",
-   "text": "Automated release notes might not be accurate without significant customization",
+   "text": "Existing GitHub-generated release notes may already meet the need, reducing adoption.",
    "evidence": [],
    "basis": "ASSUMPTION"
   }
  ],
  "experiments": [
   {
-   "assumption": "A1",
-   "name": "Test manual vs automated time",
-   "method": "Ask 5 small software teams to write release notes manually and via the web app",
-   "support_if": "Manual takes longer than automated",
-   "weaken_if": "Manual takes less time or automated is less accurate",
-   "status": "proposed, not run"
-  },
-  {
-   "assumption": "A1",
-   "name": "Test problem severity",
-   "method": "Survey 20 small software teams about time spent on release notes",
-   "support_if": "More than 50% spend over 1 hour per release",
-   "weaken_if": "Less than 20% spend over 1 hour per release",
+   "assumption": "A3",
+   "name": "Test GitHub-generated release notes",
+   "method": "Ask users if they currently use GitHub-generated release notes for their release notes",
+   "support_if": "Users say they use GitHub-generated release notes",
+   "weaken_if": "Users say they don't use GitHub-generated release notes",
    "status": "proposed, not run"
   }
  ],
  "contradictions": [],
- "removed": [],
+ "removed": [
+  "A1: model said 'supported' but no cited finding can support it: F1 the quote does not mention time, which the assumption asserts; stance set to 'untested'"
+ ],
  "calls": [
   {
    "action": "challenge_assumptions",
-   "wall_s": 79.2,
-   "prompt_tokens": 860,
-   "output_tokens": 415
+   "wall_s": 49.5,
+   "prompt_tokens": 852,
+   "output_tokens": 320
   }
  ],
  "status": "ok",
  "error": "",
- "grounded_reviews": 1,
- "elapsed_s": 79.3
+ "grounded_reviews": 2,
+ "elapsed_s": 49.6
 }

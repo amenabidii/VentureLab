@@ -1,0 +1,26 @@
+{
+ "run_id": "run-2026-11-17T12:04:55Z-e5c768",
+ "brief": {
+  "idea": "A web app that sends polite, scheduled payment reminders for freelancers' unpaid invoices and shows which clients usually pay late.",
+  "problem_statement": "Freelancers struggle to get clients to pay their invoices on time.",
+  "target_customer": "freelance software developers and designers",
+  "market": "online, English-speaking freelancers",
+  "founder_skills": [
+   "Python",
+   "web development"
+  ],
+  "hours_per_week": 10.0,
+  "budget_eur": 200.0,
+  "values_and_constraints": [
+   "no dark patterns",
+   "reminders are only sent after the freelancer approves them"
+  ],
+  "source_urls": [],
+  "validation_conditions": [],
+  "experiment_results": {}
+ },
+ "category_screen": {
+  "allowed": true,
+  "matches": {}
+ }
+}

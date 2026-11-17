@@ -13,6 +13,7 @@ from agents.challenger import (
     BASIS_ASSUMPTION,
     BASIS_CONTRADICTING,
     BASIS_ESTABLISHED,
+    BASIS_PARTIAL,
     BASIS_UNCONFIRMED,
     challenge,
     founder_assumptions,
@@ -244,26 +245,35 @@ def test_challenger_grounds_reviews_and_rejects_wrong_or_invented_references(tmp
              "support_if": "10 pre-orders", "weaken_if": "none"},
         ],
     })
-    model = RoutedOllama({"challenge": reply})
+    # The support check (existing assessment prompt) judges one PM's hour a week as partial
+    # support for "small software teams spend too much time": it is one person, not teams.
+    partial = json.dumps({"reason": "One PM, not teams in general.", "limitations": "one person",
+                          "verdict": "partially_supports"})
+    model = RoutedOllama({"challenge": reply, "assess": partial})
     log = AuditLog(tmp_path / "c.json", "run-test")
     c = challenge(BRIEF, findings, model.client(), "qwen3:4b", log)
     r = {x["assumption"]: x for x in c.reviews}
     assert list(r) == ["A1", "A2", "A3", "A4", "A5", "A6"]  # every founder assumption, nothing invented
-    assert (r["A1"]["basis"], r["A1"]["stance"]) == (BASIS_ESTABLISHED, "supported")
-    assert r["A1"]["sources"] == [URL["alice"]]
-    # "supported" resting on a needs-review finding is reset; the invented F99 is dropped.
-    assert (r["A2"]["basis"], r["A2"]["stance"], r["A2"]["evidence"]) == (BASIS_UNCONFIRMED, "untested", ["F2"])
+    assert (r["A1"]["basis"], r["A1"]["stance"]) == (BASIS_PARTIAL, "partly_supported")
+    assert r["A1"]["sources"] == [URL["alice"]] and model.calls.count("assess") == 1
+    # F2 is not about "developers have this problem" (one shared concept): irrelevant, so not cited;
+    # the invented F99 is dropped.
+    assert (r["A2"]["basis"], r["A2"]["stance"], r["A2"]["evidence"]) == (BASIS_ASSUMPTION, "untested", [])
+    assert r["A2"]["links"][0]["relationship"] == "irrelevant"
     assert (r["A3"]["basis"], r["A3"]["stance"]) == (BASIS_ASSUMPTION, "untested")
-    assert (r["A4"]["basis"], r["A4"]["stance"]) == (BASIS_CONTRADICTING, "weakened")
+    # H1 contradicts the problem statement (A1), not the market assumption (A4).
+    assert (r["A4"]["basis"], r["A4"]["stance"]) == (BASIS_ASSUMPTION, "untested")
     assert "did not review" in r["A5"]["reason"] or "not reviewed" in r["A5"]["reason"]
     assert r["A5"]["basis"] == BASIS_ASSUMPTION and r["A5"]["stance"] == "untested"
+    assert all(x["reason_is_advisory"] for x in c.reviews)
     removed = " ".join(c.removed)
     for expected in ("F99", "A9", "A7", "Pre-order page", "A2: model said 'supported'",
-                     "A3: model said 'contradicted'"):
+                     "A3: model said 'contradicted'", "A4: model said 'weakened'"):
         assert expected in removed, expected
-    assert c.new_hypotheses[0]["raised_by"] == "challenger" and c.new_hypotheses[0]["basis"] == BASIS_ESTABLISHED
+    # Hypotheses are never checked for support, so the best they get is UNCONFIRMED.
+    assert c.new_hypotheses[0]["raised_by"] == "challenger" and c.new_hypotheses[0]["basis"] == BASIS_UNCONFIRMED
     assert [e["name"] for e in c.experiments] == ["Interviews"]
-    assert c.grounded_reviews == 3
+    assert c.grounded_reviews == 1
     check_entry(log.entries()[-1])
 
 
@@ -298,3 +308,35 @@ def test_repeated_claims_are_dropped(tmp_path):
             ["takes me an hour"])
     inv, _, _ = run(tmp_path, {"extract": extraction(same, same)})
     assert len(inv.by_origin("extracted")) == 1 and inv.selection["duplicate_claims_dropped"] == 1
+
+
+def test_application_written_headers_are_never_quoted(tmp_path):
+    # A thread title in the header shares words with the statement; it must still never be quoted.
+    titled = {"hits": [{"objectID": "301", "author": "erin", "story_title": "Writing release notes takes forever",
+                        "comment_text": "We gave up and stopped publishing them."}] + COMMENTS["hits"]}
+
+    def assess(user: str) -> str:
+        assert "Comment by" not in user  # no header text reaches the assessment
+        return SUPPORTS
+
+    inv, model, _ = run(tmp_path, {"extract": NONE, "assess": assess}, routes={"hn.algolia.com": titled})
+    for f in inv.findings:
+        for q in f.item.quotes:
+            assert not q.text.startswith("Comment by"), q.text
+
+
+def test_a_header_cited_by_the_model_is_unverified(tmp_path):
+    inv, _, _ = run(tmp_path, {"extract": lambda user: json.dumps({"claims": [
+        {"type": "customer_problem", "claim": "One user says so.", "passages": [1]}]})})
+    f = inv.by_origin("extracted")[0]
+    assert not f.item.verified and f.standing is ev.Standing.ASSUMPTION
+
+
+def test_thread_title_words_cannot_satisfy_the_wording_check(tmp_path):
+    titled = {"hits": [{"objectID": "301", "author": "erin", "story_title": "Writing release notes takes forever",
+                        "comment_text": "Our team stopped publishing release notes last year."}]}
+    claim = ("customer_problem", "One user says writing release notes takes forever.", ["stopped publishing"])
+    inv, _, _ = run(tmp_path, {"extract": extraction(claim)}, routes={"hn.algolia.com": titled})
+    f = inv.by_origin("extracted")[0]
+    assert f.standing is not ev.Standing.ESTABLISHED
+    assert {"takes", "forever"} <= set(f.item.unsourced or [])

@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:22:04Z-7c4890",
+ "run_id": "run-2026-11-17T12:00:31Z-d399df",
  "model": "qwen3:4b",
  "effort": "full",
  "queries": [
@@ -15,7 +15,7 @@
    "title": "Hacker News comments matching \"release notes automation\"",
    "status": "available",
    "error": "",
-   "retrieved_at": "2026-11-17T11:22:13Z",
+   "retrieved_at": "2026-11-17T12:00:36Z",
    "items": 10
   },
   {
@@ -24,7 +24,7 @@
    "title": "Hacker News comments matching \"changelog writing time\"",
    "status": "available",
    "error": "",
-   "retrieved_at": "2026-11-17T11:22:13Z",
+   "retrieved_at": "2026-11-17T12:00:40Z",
    "items": 10
   },
   {
@@ -33,57 +33,51 @@
    "title": "Hacker News comments matching \"small team release notes\"",
    "status": "available",
    "error": "",
-   "retrieved_at": "2026-11-17T11:22:14Z",
-   "items": 7
+   "retrieved_at": "2026-11-17T12:00:49Z",
+   "items": 6
   }
  ],
  "selection": {
-  "comments_seen": 27,
-  "off_topic_dropped": 1,
-  "relevant": 26,
+  "comments_seen": 26,
+  "off_topic_dropped": 3,
+  "relevant": 23,
   "kept": 8,
   "kept_urls": [
    "https://news.ycombinator.com/item?id=46279042",
    "https://news.ycombinator.com/item?id=16518504",
-   "https://news.ycombinator.com/item?id=25124971",
+   "https://news.ycombinator.com/item?id=32879542",
+   "https://news.ycombinator.com/item?id=42102946",
    "https://news.ycombinator.com/item?id=46597069",
-   "https://news.ycombinator.com/item?id=48417335",
-   "https://news.ycombinator.com/item?id=29558588",
-   "https://news.ycombinator.com/item?id=31602126",
-   "https://news.ycombinator.com/item?id=32879542"
+   "https://news.ycombinator.com/item?id=48009158",
+   "https://news.ycombinator.com/item?id=11012066",
+   "https://news.ycombinator.com/item?id=25612484"
   ],
   "topic_terms": [
    "app",
-   "changelog",
-   "companie",
+   "compani",
    "customer",
    "developer",
    "draft",
    "edit",
-   "facing",
+   "fac",
    "manager",
-   "merged",
-   "note",
+   "merg",
    "product",
    "publish",
-   "pull",
-   "release",
-   "request",
+   "pull_request",
+   "release_notes",
    "saa",
-   "software",
+   "softwar",
    "team",
    "web",
-   "writing"
+   "writ"
   ],
   "problem_terms": [
-   "changelog",
-   "note",
-   "release",
-   "software",
+   "release_notes",
+   "softwar",
    "team",
-   "writing"
-  ],
-  "duplicate_claims_dropped": 1
+   "writ"
+  ]
  },
  "findings": [
   {
@@ -91,12 +85,12 @@
    "origin": "extracted",
    "type": "customer_problem",
    "model_type": "customer_problem",
-   "claim": "One user says they spend time writing release notes and changel: hand write the release notes, copy and paste the version number, and select date for each release",
-   "standing": "needs_review",
+   "claim": "One user says they hand write release notes and copy-paste version numbers for each release.",
+   "standing": "established",
    "relevance": "statement",
    "shared_terms": [
-    "note",
-    "release"
+    "release_notes",
+    "writ"
    ],
    "quotes": [
     {
@@ -106,40 +100,30 @@
      "note": ""
     }
    ],
-   "verdict": null,
-   "reason": "",
-   "limitations": "",
-   "second_check": null,
-   "second_check_note": "",
-   "unsourced_words": [
-    "spend",
-    "time",
-    "writing",
-    "changel"
-   ],
+   "verdict": "supports",
+   "reason": "The quote directly states the user hands writes release notes and copies version numbers, matching the claim exactly.",
+   "limitations": "Single user experience, not generalizable to all users.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [],
    "attributed": true,
-   "review": [
-    "wording goes beyond the quoted text: spend, time, writing, changel"
-   ],
-   "notes": [
-    "not sent to the model: the wording or attribution checks already rule out establishing it"
-   ]
+   "review": [],
+   "notes": []
   },
   {
    "id": "F2",
    "origin": "extracted",
    "type": "customer_problem",
    "model_type": "customer_problem",
-   "claim": "One user says they spend time writing release notes and changelogs: hand write the release notes, copy and paste the version number, and select date for each release",
+   "claim": "One user says they hand author release notes in a Django admin for a /release-notes/ page.",
    "standing": "needs_review",
-   "relevance": "statement",
+   "relevance": "off_topic",
    "shared_terms": [
-    "note",
-    "release"
+    "release_notes"
    ],
    "quotes": [
     {
-     "text": "I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).",
+     "text": "Clicking that takes the user to a /release-notes/ page that has a descending order list of the notes that I hand author in the Django admin.",
      "url": "https://news.ycombinator.com/item?id=46279042",
      "status": "verified",
      "note": ""
@@ -150,18 +134,13 @@
    "limitations": "",
    "second_check": null,
    "second_check_note": "",
-   "unsourced_words": [
-    "spend",
-    "time",
-    "writing",
-    "changelogs"
-   ],
-   "attributed": true,
+   "unsourced_words": null,
+   "attributed": null,
    "review": [
-    "wording goes beyond the quoted text: spend, time, writing, changelogs"
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
    ],
    "notes": [
-    "not sent to the model: the wording or attribution checks already rule out establishing it"
+    "not sent to the model: off-topic for this brief"
    ]
   },
   {
@@ -169,17 +148,46 @@
    "origin": "extracted",
    "type": "segment",
    "model_type": "segment",
-   "claim": "One user says they hand write release notes for their dev team",
-   "standing": "needs_review",
+   "claim": "One user says they use GitHub generated release notes from Pull Request bodies for their dev team.",
+   "standing": "established",
    "relevance": "statement",
    "shared_terms": [
-    "note",
-    "release"
+    "release_notes",
+    "team"
    ],
    "quotes": [
     {
-     "text": "I hand write the release notes, copy and paste the version number, and select date for each release (sometimes I'll batch add them if I get behind).",
+     "text": "I use Github generated release notes based on Pull Request bodies and this is more than sufficient for my dev team.",
      "url": "https://news.ycombinator.com/item?id=46279042",
+     "status": "verified",
+     "note": ""
+    }
+   ],
+   "verdict": "supports",
+   "reason": "The quote directly states that the user uses GitHub generated release notes from Pull Request bodies for their dev team, matching the claim exactly.",
+   "limitations": "Limited to one user's experience, not generalizability.",
+   "second_check": true,
+   "second_check_note": "none",
+   "unsourced_words": [],
+   "attributed": true,
+   "review": [],
+   "notes": []
+  },
+  {
+   "id": "F4",
+   "origin": "extracted",
+   "type": "customer_problem",
+   "model_type": "customer_problem",
+   "claim": "One user says they have to manually check release notes for accuracy before publishing.",
+   "standing": "needs_review",
+   "relevance": "off_topic",
+   "shared_terms": [
+    "release_notes"
+   ],
+   "quotes": [
+    {
+     "text": "Because of this it's tricky to fully automate the process as at some level you usually need a person casting an eye over the release note just to sense check.",
+     "url": "https://news.ycombinator.com/item?id=46597069",
      "status": "verified",
      "note": ""
     }
@@ -189,16 +197,13 @@
    "limitations": "",
    "second_check": null,
    "second_check_note": "",
-   "unsourced_words": [
-    "dev",
-    "team"
-   ],
-   "attributed": true,
+   "unsourced_words": null,
+   "attributed": null,
    "review": [
-    "wording goes beyond the quoted text: dev, team"
+    "the quoted text does not share two key words with the brief, including one about the problem or idea rather than the customer, so it is not counted as evidence about it"
    ],
    "notes": [
-    "not sent to the model: the wording or attribution checks already rule out establishing it"
+    "not sent to the model: off-topic for this brief"
    ]
   },
   {
@@ -210,8 +215,7 @@
    "standing": "partial_evidence",
    "relevance": "statement",
    "shared_terms": [
-    "note",
-    "release",
+    "release_notes",
     "team"
    ],
    "quotes": [
@@ -243,27 +247,51 @@
    "notes": []
   }
  ],
- "model_calls": 3,
+ "model_calls": 7,
  "calls": [
   {
    "action": "plan_searches",
-   "wall_s": 8.3,
+   "wall_s": 5.2,
    "prompt_tokens": 160,
    "output_tokens": 32
   },
   {
    "action": "extract_claims",
-   "wall_s": 52.7,
-   "prompt_tokens": 829,
-   "output_tokens": 223
+   "wall_s": 33.6,
+   "prompt_tokens": 909,
+   "output_tokens": 182
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 10.9,
+   "prompt_tokens": 547,
+   "output_tokens": 52
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 7.0,
+   "prompt_tokens": 391,
+   "output_tokens": 18
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 10.8,
+   "prompt_tokens": 518,
+   "output_tokens": 59
+  },
+  {
+   "action": "assess_claim",
+   "wall_s": 6.0,
+   "prompt_tokens": 362,
+   "output_tokens": 18
   },
   {
    "action": "check_founder_statement",
-   "wall_s": 16.6,
+   "wall_s": 15.2,
    "prompt_tokens": 515,
    "output_tokens": 88
   }
  ],
- "model_seconds": 77.6,
- "elapsed_s": 79.3
+ "model_seconds": 88.7,
+ "elapsed_s": 109.4
 }

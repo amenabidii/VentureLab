@@ -288,11 +288,14 @@ def investigate(
     for source in inv.analysed:
         passages = ev.split_passages(source.text)
         breaks = segment_breaks(source, passages)
+        # "Comment by <author> on the thread ..." lines are written by this application,
+        # not by the commenter, so they are never shown to the model or quoted as evidence.
+        headers = frozenset(p.id for p in passages if p.id in breaks and p.text.startswith("Comment by "))
         try:
             items, result = ev.extract_claims(
                 client, model, source.text, topic=topic, source_url=source.url,
                 max_passages=effort.prefilter_passages, max_claims=effort.max_claims, num_predict=250,
-                breaks=breaks, url_at=source.url_at,
+                breaks=breaks, url_at=source.url_at, exclude=headers,
             )
             record_calls(calls, "extract_claims", [result])
             log.record(AGENT, "extract_claims", sources=[seg.url for seg in source.segments][:20] or [source.url],
@@ -318,13 +321,14 @@ def investigate(
                 results = []
             else:
                 results = ev.assess_item(client, model, item, source.text, economical=True,
-                                         assess_unpromotable=False)
+                                         assess_unpromotable=False, exclude=headers)
             record_calls(calls, "assess_claim", results)
             inv.findings.append(finding)
             _record_assessment(log, model, finding, bool(results))
 
         # Check the founder's own statement against the passages that are about it.
-        relevant = [p for p in ev.rank_passages(passages, brief.problem_statement, STATEMENT_PASSAGES)
+        body = [p for p in passages if p.id not in headers]
+        relevant = [p for p in ev.rank_passages(body, brief.problem_statement, STATEMENT_PASSAGES)
                     if terms.statement_match(p.text)]
         if not relevant:
             log.record(AGENT, "check_founder_statement", sources=[source.url], model=None, outcome="skipped",
@@ -336,7 +340,7 @@ def investigate(
         check = Finding(f"H{n_checks}", "hypothesis_check", source.kind,
                         ev.EvidenceItem(brief.problem_statement, "customer_problem", quotes))
         classify(check, terms)
-        results = ev.assess_item(client, model, check.item, source.text, economical=True)
+        results = ev.assess_item(client, model, check.item, source.text, economical=True, exclude=headers)
         record_calls(calls, "check_founder_statement", results)
         inv.findings.append(check)
         _record_assessment(log, model, check, bool(results))

@@ -247,3 +247,53 @@ def test_counterfactual_uses_challenger_experiments_first():
     cf = explain(run(b, inv), b, chal)
     assert cf["experiments"][0]["name"] == "Changelog survey"
     assert cf["experiments"][0]["origin"] == "challenger"
+
+
+# --- reachability: each outcome follows from its conditions, and only from them ---------------------
+# Fixtures are constructed by hand (SYNTHETIC). They show the rules are reachable and tight;
+# they are not real-world validation.
+
+GO_BASE = [lambda: finding("F1", E.ESTABLISHED, "u1"), lambda: finding("F2", E.ESTABLISHED, "u2")]
+
+
+@pytest.mark.parametrize(
+    ("label", "findings"),
+    [
+        ("second finding only needs review", [GO_BASE[0], lambda: finding("F2", E.NEEDS_REVIEW, "u2")]),
+        ("second finding from the same source", [GO_BASE[0], lambda: finding("F2", E.ESTABLISHED, "u1")]),
+        ("second finding is about a different problem",
+         [GO_BASE[0], lambda: finding("F2", E.ESTABLISHED, "u2", relevance="topic")]),
+        ("second finding is off-topic", [GO_BASE[0], lambda: finding("F2", E.ESTABLISHED, "u2", relevance="off_topic")]),
+        ("second finding is a competitor", [GO_BASE[0], lambda: finding("F2", E.ESTABLISHED, "u2", claim_type="competitor")]),
+        ("a source contradicts the statement", [*GO_BASE, lambda: contra("H1", "u3")]),
+    ],
+)
+def test_go_near_misses_are_not_go(label, findings):
+    g = run(brief(), investigation(*(f() for f in findings)))
+    assert g.decision is not Decision.GO, label
+
+
+def test_go_reached_exactly_when_its_conditions_hold():
+    g = run(brief(), investigation(*(f() for f in GO_BASE)))
+    assert g.rule.id == "GO_TO_FURTHER_VALIDATION"
+
+
+@pytest.mark.parametrize(
+    ("label", "findings", "expected"),
+    [
+        ("alternative only needs review",
+         [lambda: finding("F3", E.NEEDS_REVIEW, "u3", relevance="topic"), lambda: contra("H1", "u1")],
+         "REPEAT_INSUFFICIENT_EVIDENCE"),
+        ("alternative but no contradiction",
+         [lambda: finding("F3", E.ESTABLISHED, "u3", relevance="topic")], "REPEAT_INSUFFICIENT_EVIDENCE"),
+        ("alternative, contradiction, but the statement is also supported",
+         [lambda: finding("F3", E.ESTABLISHED, "u3", relevance="topic"), lambda: contra("H1", "u1"),
+          lambda: finding("F1", E.ESTABLISHED, "u4")], "REPEAT_MIXED_EVIDENCE"),
+        ("off-topic 'alternative'",
+         [lambda: finding("F3", E.ESTABLISHED, "u3", relevance="off_topic"), lambda: contra("H1", "u1")],
+         "REPEAT_INSUFFICIENT_EVIDENCE"),
+    ],
+)
+def test_pivot_near_misses_are_not_pivot(label, findings, expected):
+    g = run(brief(), investigation(*(f() for f in findings)))
+    assert g.rule.id == expected, label

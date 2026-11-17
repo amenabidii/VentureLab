@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:24:44Z-f77b94",
+ "run_id": "run-2026-11-17T12:03:11Z-9f2050",
  "model": "qwen3:4b",
  "effort": "quick",
  "gate": "phase1_evidence_gate",
@@ -27,8 +27,8 @@
    "rule": "STOP_CONTRADICTED",
    "applies": false,
    "inputs": {
-    "supporting_findings": 2,
-    "supporting_sources": 1,
+    "supporting_findings": 0,
+    "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0
    },
@@ -38,8 +38,8 @@
    "rule": "PIVOT_ALTERNATIVE_SUPPORTED",
    "applies": false,
    "inputs": {
-    "supporting_findings": 2,
-    "supporting_sources": 1,
+    "supporting_findings": 0,
+    "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0,
     "alternative_findings": []
@@ -50,8 +50,8 @@
    "rule": "REPEAT_MIXED_EVIDENCE",
    "applies": false,
    "inputs": {
-    "supporting_findings": 2,
-    "supporting_sources": 1,
+    "supporting_findings": 0,
+    "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0
    },
@@ -79,14 +79,14 @@
    "rule": "GO_TO_FURTHER_VALIDATION",
    "applies": false,
    "inputs": {
-    "supporting_findings": 2,
-    "supporting_sources": 1,
+    "supporting_findings": 0,
+    "supporting_sources": 0,
     "contradicting_sources": 0,
     "alternatives": 0,
     "not_counted": {
      "needs_review": 0,
-     "partial": 0,
-     "off_topic": 0,
+     "partial": 1,
+     "off_topic": 1,
      "assumptions": 0
     }
    },
@@ -103,20 +103,19 @@
   "sources_total": 1,
   "sources_readable": 1,
   "sources_analysed": 1,
-  "supporting": [
-   "F1",
-   "F2"
-  ],
-  "supporting_sources": [
-   "https://news.ycombinator.com/item?id=46597069"
-  ],
+  "supporting": [],
+  "supporting_sources": [],
   "alternatives": [],
   "contradicting_checks": [],
   "contradicting_sources": [],
   "unsupported_checks": [],
   "needs_review": [],
-  "partial": [],
-  "off_topic": [],
+  "partial": [
+   "F2"
+  ],
+  "off_topic": [
+   "F1"
+  ],
   "assumptions": [],
   "established_other": [],
   "demand_signals": []
@@ -141,13 +140,24 @@
   "decision": "REPEAT",
   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
   "missing_evidence": [
-   "Established, relevant problem findings: 2 of 2 needed, from 1 of 2 sources needed.",
+   "Established, relevant problem findings: 0 of 2 needed, from 0 of 2 sources needed.",
+   "0 needs-review and 1 partial findings do not count. A person may check them against their quotes; they never count automatically.",
+   "1 findings were off-topic for this brief and were not counted.",
    "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
    "Condition 'problem_interviews' not yet measured (interviewees_confirming_problem >= 5)."
   ],
   "alternative_hypothesis": null,
   "feasibility_notes": [],
   "experiments": [
+   {
+    "assumption": "A6",
+    "name": "Ask small SaaS teams about willingness",
+    "method": "Survey 10 small SaaS teams about willingness to pay for a tool that drafts release notes from PRs",
+    "support_if": "At least 50% say they would pay 50 EUR/month",
+    "weaken_if": "At least 50% say they would not pay for it",
+    "status": "proposed, not run",
+    "origin": "challenger"
+   },
    {
     "name": "Problem interviews",
     "assumption": "A1",
@@ -170,10 +180,10 @@
  },
  "timings_s": {
   "model_load": 0.0,
-  "investigator": 72.6,
-  "challenger": 30.9,
-  "total": 103.6
+  "investigator": 51.2,
+  "challenger": 52.2,
+  "total": 103.5
  },
- "model_calls": 8,
- "model_seconds": 102.7
+ "model_calls": 5,
+ "model_seconds": 102.6
 }

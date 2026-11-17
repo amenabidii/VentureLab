@@ -429,10 +429,16 @@ def extract_claims(
     num_predict: int = 400,
     breaks: frozenset[int] = frozenset(),
     url_at: Callable[[int], str] | None = None,
+    exclude: frozenset[int] = frozenset(),
 ) -> tuple[list[EvidenceItem], LLMResult]:
-    """Ask the model which passages carry claims; Python builds the quotes."""
+    """Ask the model which passages carry claims; Python builds the quotes.
+
+    Passages in `exclude` (for example headers the application wrote itself) are
+    never shown, so they can never be quoted as evidence.
+    """
     passages = split_passages(source)
-    shown = rank_passages(passages, topic, max_passages) if max_passages else passages
+    candidates = [p for p in passages if p.id not in exclude]
+    shown = rank_passages(candidates, topic, max_passages) if max_passages else candidates
     messages = [
         {"role": "system", "content": load_prompt("investigator_extract", max_claims=max_claims)},
         {"role": "user", "content": f"TOPIC: {topic}\n\nPASSAGES:\n{numbered(shown)}"},
@@ -449,8 +455,12 @@ def extract_claims(
     return items, result
 
 
-def context_for(source: str, quotes: list[Quote], window: int = 1) -> str:
-    """The quoted passages plus `window` neighbouring passages on each side."""
+def context_for(source: str, quotes: list[Quote], window: int = 1, exclude: frozenset[int] = frozenset()) -> str:
+    """The quoted passages plus `window` neighbouring passages on each side.
+
+    Passages in `exclude` (text the application wrote, such as comment headers) are
+    left out, so they can neither inform the assessment nor satisfy the wording check.
+    """
     if not quotes or not all(q.verified for q in quotes):
         return ""
     passages = split_passages(source)
@@ -458,7 +468,14 @@ def context_for(source: str, quotes: list[Quote], window: int = 1) -> str:
     for q in quotes:
         inside = [p.id for p in passages if p.start < q.end and p.end > q.start]
         lo, hi = max(1, inside[0] - window), min(len(passages), inside[-1] + window)
-        spans.append((passages[lo - 1].start, passages[hi - 1].end))
+        run: list[int] = []
+        for pid in [*range(lo, hi + 1), None]:  # split the window around excluded passages
+            if pid is not None and pid not in exclude:
+                run.append(pid)
+                continue
+            if run:
+                spans.append((passages[run[0] - 1].start, passages[run[-1] - 1].end))
+            run = []
     merged: list[list[int]] = []
     for start, end in sorted(spans):
         if merged and start <= merged[-1][1]:
@@ -518,7 +535,7 @@ _CONTRADICTION_WORDING = re.compile(r"\bcontradict", re.IGNORECASE)
 
 def assess_item(
     client: OllamaClient, model: str, item: EvidenceItem, source: str, *, economical: bool = False,
-    assess_unpromotable: bool = True,
+    assess_unpromotable: bool = True, exclude: frozenset[int] = frozenset(),
 ) -> list[LLMResult]:
     """Fill in an item's verdict. Items without verified quotes are not sent to the model.
 
@@ -536,7 +553,7 @@ def assess_item(
         item.notes.append("not assessed: quotation not verified")
         return []
     texts = [q.text for q in item.quotes]
-    context = context_for(source, item.quotes)
+    context = context_for(source, item.quotes, exclude=exclude)
     item.unsourced = unsourced_words(item.claim, context)
     if item.unsourced:
         item.review.append("wording goes beyond the quoted text: " + ", ".join(item.unsourced))

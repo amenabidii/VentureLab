@@ -1,5 +1,5 @@
 {
- "run_id": "run-2026-11-17T11:19:37Z-ba331a",
+ "run_id": "run-2026-11-17T11:58:32Z-80ebb0",
  "model": "qwen3:4b",
  "effort": "full",
  "gate": "phase1_evidence_gate",
@@ -86,7 +86,7 @@
     "not_counted": {
      "needs_review": 0,
      "partial": 0,
-     "off_topic": 4,
+     "off_topic": 3,
      "assumptions": 0
     }
    },
@@ -116,14 +116,11 @@
   "off_topic": [
    "F1",
    "F2",
-   "F3",
-   "F4"
+   "F3"
   ],
   "assumptions": [],
   "established_other": [],
-  "demand_signals": [
-   "F4"
-  ]
+  "demand_signals": []
  },
  "failed_conditions": [],
  "unmeasured_conditions": [],
@@ -139,7 +136,7 @@
   "rule": "REPEAT_INSUFFICIENT_EVIDENCE",
   "missing_evidence": [
    "Established, relevant problem findings: 0 of 2 needed, from 0 of 2 sources needed.",
-   "4 findings were off-topic for this brief and were not counted.",
+   "3 findings were off-topic for this brief and were not counted.",
    "Demand and willingness to pay (A6): Desk research cannot establish demand or willingness to pay; only experiments with target customers can.",
    "Validation conditions: none set. Set pass marks before running any experiment."
   ],
@@ -147,11 +144,11 @@
   "feasibility_notes": [],
   "experiments": [
    {
-    "assumption": "A4",
-    "name": "Survey English-speaking indie game devs",
-    "method": "Ask a small group of English-speaking indie game developers if they use Discord and would pay for a bug report tool.",
-    "support_if": "At least 20% say they would pay for the tool.",
-    "weaken_if": "Less than 5% say they would pay for the tool.",
+    "assumption": "A1",
+    "name": "Test Discord bug tracking",
+    "method": "Ask 10 indie game developers to share their current process for tracking Discord bug reports",
+    "support_if": "They report using manual methods like spreadsheets or chat logs",
+    "weaken_if": "They use automated tools like Discord bots or dedicated bug trackers",
     "status": "proposed, not run",
     "origin": "challenger"
    },
@@ -177,10 +174,10 @@
  },
  "timings_s": {
   "model_load": 0.0,
-  "investigator": 63.8,
-  "challenger": 82.8,
-  "total": 146.7
+  "investigator": 60.4,
+  "challenger": 58.3,
+  "total": 118.8
  },
  "model_calls": 4,
- "model_seconds": 144.9
+ "model_seconds": 116.7
 }
