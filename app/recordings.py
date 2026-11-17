@@ -65,8 +65,8 @@ def _record(run_id: str) -> dict[str, Any]:
         note = (f"Historical gate rules v{version}; current rules v{RULESET_VERSION}. This decision is superseded. "
                 if superseded else "Recorded decision under the current rule version. ")
         note += "Read-only prior execution. No research is running and no historical approval authorizes a new action."
-        summary = {"id": run_id, "title": brief["brief"]["idea"], "status": "Recorded Â· superseded" if superseded else "Recorded",
-                   "phase": f"Discover Â· {gate['decision']}", "recordedAt": entry["recorded_at"],
+        summary = {"id": run_id, "title": brief["brief"]["idea"], "status": "Recorded · superseded" if superseded else "Recorded",
+                   "phase": f"Discover · {gate['decision']}", "recordedAt": entry["recorded_at"],
                    "readOnly": True, "rulesetVersion": version, "currentRulesetVersion": RULESET_VERSION,
                    "provenance": note, "executionId": execution_id}
         agents = []
@@ -80,7 +80,7 @@ def _record(run_id: str) -> dict[str, Any]:
             if not name.startswith(f"outputs/builder/{execution_id}/") or not name.endswith((".md", ".html")):
                 continue
             artifacts.append({"id": name.removeprefix("outputs/"), "title": PurePosixPath(name).name,
-                              "type": "Recorded local artifact", "status": "Historical file Â· read-only",
+                              "type": "Recorded local artifact", "status": "Historical file · read-only",
                               "description": "Committed output from a prior execution. Not newly generated or approved.",
                               "format": "html" if name.endswith(".html") else "text", "content": data.decode("utf-8"),
                               "fingerprint": entry["files"][name], "approval": "Historical record only; no active permission"})
