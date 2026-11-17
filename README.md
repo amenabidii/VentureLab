@@ -31,6 +31,14 @@ Then open <http://localhost:8000>. The first start also runs a one-shot `model-p
 service that downloads the configured model (`qwen3:4b`, about 2.5 GB); until it
 finishes the header says the model is not ready and `/health/model` returns HTTP 503.
 
+To inspect genuine prior work immediately, choose **Recorded executions** in the
+header. This read-only view needs neither the original local database nor a ready
+model. It shows committed evidence, decisions, counterfactuals and audit entries;
+older rule versions are clearly superseded and cannot authorize Builder actions.
+This is separate from **Explore demo**, which contains labelled synthetic fixtures.
+In the Decision dashboard, expand **Inspect the recorded rule checks and thresholds**
+to see why the gate stopped at a particular rule. Quotations keep their own sources.
+
 State is kept in the checkout and survives restarts: `.venturelab/` (run records,
 approval store, founder key; created on first start), `outputs/` and
 `decision_log.json`. This works on Docker Desktop (Windows, macOS) and on Linux without
@@ -69,6 +77,7 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 |---|---|
 | Docker Compose stack: app, Ollama, one-shot model pull, health checks, persistent local state | **Working** |
 | Founder web workspace: brief, workflow, evidence, Challenger, decision, counterfactual, artifacts, approvals, history | **Working**, connected to the backend |
+| Genuine committed execution browser with file-integrity checks | **Working**, read-only; historical approvals never reactivate |
 | Background runs: queued, running, completed, failed, blocked; duplicate submissions merged; queue bounded | **Working** (queue in memory; a run interrupted by a restart is reported as failed, not resumed) |
 | Founder brief validation and prohibited-category screen | **Working** |
 | Investigator: search planning, Hacker News and founder-listed page retrieval, relevance selection, quote extraction | **Working** (needs internet) |

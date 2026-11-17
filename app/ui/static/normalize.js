@@ -111,6 +111,11 @@ const schemas = {
     assessment: text(r.assessment),
     limitations: text(r.limitations),
     assumption: text(r.assumption),
+    quotations: array(r.quotations, (q) => ({
+      text: required(record(q).text),
+      url: text(q.url, ""),
+      sourceName: text(q.sourceName),
+    })),
   }),
   challenges: (r) => ({
     id: required(r.id),
@@ -131,6 +136,20 @@ const schemas = {
     risks: strings(r.risks),
     next: text(r.next),
     action: text(r.action),
+    builderAllowed: r.builderAllowed === true,
+    rulesetVersion:
+      r.rulesetVersion == null ? null : text(String(r.rulesetVersion)),
+    currentRulesetVersion:
+      r.currentRulesetVersion == null
+        ? null
+        : text(String(r.currentRulesetVersion)),
+    trace: array(r.trace, (c) => ({
+      rule: required(record(c).rule),
+      applies: choice(c.applies, [true, false]),
+      decided: choice(c.decided, [true, false]),
+      inputs: text(JSON.stringify(c.inputs ?? {})),
+    })),
+    thresholds: text(JSON.stringify(r.thresholds ?? {})),
   }),
   counterfactual: (r) =>
     Object.fromEntries(

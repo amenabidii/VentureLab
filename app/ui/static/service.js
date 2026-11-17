@@ -39,9 +39,10 @@ const run = (id, part) => `/api/runs/${encodeURIComponent(id)}/${part}`;
 export class WorkspaceService {
   constructor(mode = "live") {
     this.mode = mode;
+    this.recordings = new Map();
   }
   get live() {
-    return this.mode !== "demo";
+    return this.mode === "live";
   }
   get capabilities() {
     return this.live
@@ -49,7 +50,11 @@ export class WorkspaceService {
       : { createRun: false, approvals: false, workflow: false, builder: false };
   }
   async listRuns() {
-    return this.live ? api("/api/runs") : structuredClone(demo.runs);
+    return this.mode === "recorded"
+      ? api("/api/recordings")
+      : this.live
+        ? api("/api/runs")
+        : structuredClone(demo.runs);
   }
   async getRunStatus(id) {
     return this.read(id, "agents");
@@ -76,32 +81,63 @@ export class WorkspaceService {
     return this.read(id, "audit");
   }
   async read(id, key, empty = []) {
+    if (this.mode === "recorded") {
+      if (!this.recordings.has(id))
+        this.recordings.set(
+          id,
+          api(`/api/recordings/${encodeURIComponent(id)}`).catch((error) => {
+            this.recordings.delete(id);
+            throw error;
+          }),
+        );
+      return structuredClone((await this.recordings.get(id))[key] ?? empty);
+    }
     if (this.live) {
-      const path = { agents: "agents", findings: "findings", challenges: "challenges", decision: "decision",
-        counterfactual: "counterfactual", artifacts: "artifacts", approvals: "approvals", audit: "audit" }[key];
+      const path = {
+        agents: "agents",
+        findings: "findings",
+        challenges: "challenges",
+        decision: "decision",
+        counterfactual: "counterfactual",
+        artifacts: "artifacts",
+        approvals: "approvals",
+        audit: "audit",
+      }[key];
       return api(run(id, path));
     }
     return id === demo.runs[0].id ? structuredClone(demo[key]) : empty;
   }
   async createRun(brief) {
-    if (!this.live) throw new UnavailableError("Demo mode never starts research.");
-    const body = await api("/api/runs", { method: "POST", body: JSON.stringify(brief) });
+    if (!this.live)
+      throw new UnavailableError("Read-only mode never starts research.");
+    const body = await api("/api/runs", {
+      method: "POST",
+      body: JSON.stringify(brief),
+    });
     return body.run;
   }
   async prepareBuilder(runId) {
-    if (!this.live) throw new UnavailableError("Demo mode never prepares artifacts.");
+    if (!this.live)
+      throw new UnavailableError("Read-only mode never prepares artifacts.");
     return api(run(runId, "builder"), { method: "POST" });
   }
   async decideApproval(request, decision, { key, reason } = {}) {
-    if (!this.live) throw new UnavailableError("Demo mode can never grant approval.");
+    if (!this.live)
+      throw new UnavailableError("Read-only mode can never grant approval.");
     return api(`/api/approvals/${encodeURIComponent(request.id)}/decision`, {
       method: "POST",
-      body: JSON.stringify({ run_id: request.runId, fingerprint: request.fingerprint, decision,
-        reason: reason || "", founder_key: key || "" }),
+      body: JSON.stringify({
+        run_id: request.runId,
+        fingerprint: request.fingerprint,
+        decision,
+        reason: reason || "",
+        founder_key: key || "",
+      }),
     });
   }
   async executeApproval(request, key) {
-    if (!this.live) throw new UnavailableError("Demo mode can never execute an action.");
+    if (!this.live)
+      throw new UnavailableError("Read-only mode can never execute an action.");
     return api(`/api/approvals/${encodeURIComponent(request.id)}/execute`, {
       method: "POST",
       body: JSON.stringify({ run_id: request.runId, founder_key: key || "" }),

@@ -170,3 +170,6 @@ from app.ui.router import router as workspace_router
 from app.api import router as api_router
 app.include_router(workspace_router)
 app.include_router(api_router)
+
+from app.recordings import router as recordings_router
+app.include_router(recordings_router)

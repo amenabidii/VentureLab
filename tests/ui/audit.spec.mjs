@@ -25,7 +25,7 @@ async function mockService(page, data = clone(), options = {}) {
  async getApprovals(){return structuredClone(data.approvals);}
  async getAudit(){return structuredClone(data.audit);}
  async createRun(brief){__qa.calls.push({brief});await new Promise(r=>setTimeout(r,200));if(options.validation)throw new BriefValidationError({market:'MOCKED backend: specify a reachable market.'});if(__qa.fail)throw new Error('MOCKED network failure');return options.badRun?{}:options.unlistedRun?{...data.runs[0],id:'new-unlisted'}:data.runs[0];}
- async decideApproval(request,choice){__qa.calls.push({request,choice});await new Promise(r=>setTimeout(r,200));if(__qa.fail)throw new Error('MOCKED network failure');const row=data.approvals.find(a=>a.id===request.id);row.status=choice==='approve'?'Approved':'Rejected';return {...row,fingerprint:options.badConfirmation?'changed':row.fingerprint};}
+ async decideApproval(request,choice,options){__qa.calls.push({request,choice,options});await new Promise(r=>setTimeout(r,200));if(__qa.fail)throw new Error('MOCKED network failure');const row=data.approvals.find(a=>a.id===request.id);row.status=choice==='approve'?'Approved':'Rejected';return {...row,fingerprint:options.badConfirmation?'changed':row.fingerprint};}
  }
  export async function getModelStatus(){return {ready:false,model:'MOCKED QA model'};}
  `,
@@ -578,4 +578,44 @@ test("the Builder's real landing-page markup is readable in the preview and stay
   expect(withAttributes).toBe(0); // no attribute survives: no event handlers, links or styles
   expect(requests.some((u) => u.includes("attacker.invalid"))).toBe(false);
   expect(dialogs).toBe(0);
+});
+
+
+test("approval preserves the founder's typed reason", async ({ page }) => {
+  await mockService(page, pending(), { approvals: true });
+  await go(page, "approvals");
+  await page.locator('[id^="reason-"]').first().fill("Reviewed the interview scope; no outreach is authorized.");
+  await page.getByRole("button", {name: "Approve this action"}).click();
+  await expect.poll(async () => page.evaluate(() => __qa.calls.length)).toBe(1);
+  expect(await page.evaluate(() => __qa.calls[0].options.reason)).toBe("Reviewed the interview scope; no outreach is authorized.");
+});
+
+test("genuine recordings load without a model, remain read-only and fit mobile", async ({ page }) => {
+  const errors = [];
+  const mutations = [];
+  page.on("pageerror", error => errors.push(error.message));
+  page.on("request", request => { if(request.method() === "POST") mutations.push(request.url()); });
+  await page.setViewportSize({width: 375, height: 812});
+  await page.goto("/workspace");
+  await page.locator("#recordings-toggle").click();
+  await expect(page.locator("#recordings-toggle")).toHaveText("Return to live");
+  await go(page, "decision");
+  await expect(page.locator(".gate-trace summary")).toBeVisible();
+  await page.locator(".gate-trace summary").click();
+  await expect(page.getByRole("table", {name: "Recorded deterministic gate trace"})).toBeVisible();
+  expect(await page.locator('[data-action="prepare-builder"]').count()).toBe(0);
+  await go(page, "evidence");
+  await page.locator(".finding summary").first().click();
+  await expect(page.locator("blockquote").first()).toBeVisible();
+  await go(page, "history");
+  await expect(page.locator("tbody tr").first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const axe = await new AxeBuilder({page}).withTags(["wcag2a", "wcag2aa"]).analyze();
+  expect(axe.violations).toEqual([]);
+  await page.locator("#mode-toggle").click();
+  await expect(page.locator("#mode-toggle")).toHaveText("Exit demo");
+  await page.locator("#mode-toggle").click();
+  await expect(page.locator("#recordings-toggle")).toHaveText("Recorded executions");
+  expect(mutations).toEqual([]);
+  expect(errors).toEqual([]);
 });

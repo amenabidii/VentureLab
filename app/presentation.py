@@ -9,6 +9,8 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import urlparse
 
+from gates import RULESET_VERSION
+
 RELATIONSHIP = {"supports": "Supporting", "partially_supports": "Partially supporting",
                 "does_not_support": "Unsupported", "contradicts": "Contradictory"}
 APPROVAL_STATUS = {"pending": "Pending", "approved": "Approved", "rejected": "Rejected",
@@ -64,6 +66,7 @@ def findings(outputs: dict[str, Any]) -> list[dict[str, Any]]:
             "limitations": " ".join(limitations) or "None recorded.",
             "assumption": "; ".join(related.get(f["id"], [])) or "Not linked to a founder assumption.",
             "sources": [q["url"] for q in verified],
+            "quotations": [{"text": q["text"], "url": q["url"], "sourceName": _host(q["url"])} for q in verified],
         })
     return out
 
@@ -103,7 +106,7 @@ def challenges(outputs: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
-def decision(outputs: dict[str, Any], builder_note: str) -> dict[str, Any] | None:
+def decision(outputs: dict[str, Any], builder_note: str, *, builder_allowed: bool = False) -> dict[str, Any] | None:
     gate = outputs.get("gate")
     if not gate:
         return None
@@ -121,6 +124,12 @@ def decision(outputs: dict[str, Any], builder_note: str) -> dict[str, Any] | Non
         "risks": gate.get("feasibility_notes", []),
         "next": f"Reconsidered by: {cf['reconsidered_by']}.",
         "action": builder_note,
+        "builderAllowed": builder_allowed,
+        "rulesetVersion": gate.get("ruleset_version", 1),
+        "currentRulesetVersion": RULESET_VERSION,
+        "trace": [{"rule": c["rule"], "applies": bool(c["applies"]), "decided": bool(c["decided"]),
+                   "inputs": c.get("inputs", {})} for c in gate.get("checks", [])],
+        "thresholds": gate.get("thresholds", {}),
     }
 
 

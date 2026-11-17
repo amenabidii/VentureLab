@@ -15,6 +15,7 @@ const blankData = () => ({
 });
 const state = {
   demo: false,
+  recorded: false,
   service: new WorkspaceService(),
   runs: [],
   runId: null,
@@ -96,6 +97,7 @@ function render(focus = false) {
     main.prepend(notice);
   }
   document.querySelector("#mode-toggle").disabled = state.busy;
+  document.querySelector("#recordings-toggle").disabled = state.busy;
   if (focus) {
     main.focus();
     window.scrollTo(0, 0);
@@ -160,7 +162,9 @@ async function load(focus = false, background = false) {
     Object.assign(state, {
       runs,
       runId,
-      runDetail: Array.isArray(rawRuns) ? rawRuns.find((r) => r && r.id === runId) ?? null : null,
+      runDetail: Array.isArray(rawRuns)
+        ? (rawRuns.find((r) => r && r.id === runId) ?? null)
+        : null,
       data,
       loading: false,
       sectionErrors: errors,
@@ -208,7 +212,8 @@ main.addEventListener("submit", (event) => {
 });
 main.addEventListener("change", (event) => {
   if (event.target.id === "quick-run") state.quick = event.target.checked;
-  if (event.target.id === "founder-key") state.founderKey = event.target.value.trim();
+  if (event.target.id === "founder-key")
+    state.founderKey = event.target.value.trim();
   if (event.target.closest("#brief-form"))
     state.brief = readBrief(event.target.form);
   const key = {
@@ -325,14 +330,22 @@ main.addEventListener("click", async (event) => {
     }
   }
   if (button.dataset.action === "prepare-builder") {
-    if (!state.service.capabilities.builder || state.demo || state.busy || !state.runId) return;
+    if (
+      !state.service.capabilities.builder ||
+      state.demo ||
+      state.busy ||
+      !state.runId
+    )
+      return;
     state.busy = true;
     state.message = "";
     render();
     try {
       const result = await state.service.prepareBuilder(state.runId);
       state.message = [
-        result.created ? "The Builder prepared a request. Review it, then approve or reject it." : "A request is already open for this run.",
+        result.created
+          ? "The Builder prepared a request. Review it, then approve or reject it."
+          : "A request is already open for this run.",
         ...(result.notes || []),
       ].join(" ");
       location.hash = "approvals";
@@ -345,15 +358,19 @@ main.addEventListener("click", async (event) => {
     }
   }
   if (button.dataset.action === "execute") {
-    if (!state.service.capabilities.approvals || state.demo || state.busy) return;
-    const request = state.data.approvals.find((a) => a.id === button.dataset.request);
+    if (!state.service.capabilities.approvals || state.demo || state.busy)
+      return;
+    const request = state.data.approvals.find(
+      (a) => a.id === button.dataset.request,
+    );
     if (!request || request.status !== "Approved") return;
     state.busy = true;
     state.message = "";
     render();
     try {
       await state.service.executeApproval({ ...request }, readKey());
-      state.message = "The backend wrote the approved files locally. Nothing was published or sent.";
+      state.message =
+        "The backend wrote the approved files locally. Nothing was published or sent.";
       location.hash = "artifacts";
     } catch (error) {
       state.message = `Execution was refused: ${error?.message || "unknown error"} No files are reported as written.`;
@@ -404,6 +421,10 @@ main.addEventListener("click", async (event) => {
       failure(block);
       return;
     }
+    const approvalKey = readKey();
+    const approvalReason = document.querySelector(
+      `#reason-${CSS.escape(request.id)}`,
+    )?.value;
     state.busy = true;
     state.message = "";
     state.approvalLocks.add(request.id);
@@ -414,8 +435,8 @@ main.addEventListener("click", async (event) => {
           { ...request },
           button.dataset.choice,
           {
-            key: readKey(),
-            reason: document.querySelector(`#reason-${CSS.escape(request.id)}`)?.value,
+            key: approvalKey,
+            reason: approvalReason,
           },
         ),
       ]);
@@ -437,14 +458,17 @@ main.addEventListener("click", async (event) => {
     }
   }
 });
-document.querySelector("#mode-toggle").addEventListener("click", async () => {
+async function switchMode(mode) {
   if (state.busy) return;
   ++epoch;
   clearTimeout(poll);
-  state.demo = !state.demo;
-  state.service = new WorkspaceService(state.demo ? "demo" : "live");
+  state.demo = mode === "demo";
+  state.recorded = mode === "recorded";
+  state.service = new WorkspaceService(mode);
   Object.assign(state, {
     runId: null,
+    runDetail: null,
+    founderKey: "",
     runs: [],
     data: blankData(),
     sectionErrors: {},
@@ -458,13 +482,26 @@ document.querySelector("#mode-toggle").addEventListener("click", async () => {
   document.querySelector("#mode-toggle").textContent = state.demo
     ? "Exit demo"
     : "Explore demo";
+  document.querySelector("#recordings-toggle").textContent = state.recorded
+    ? "Return to live"
+    : "Recorded executions";
   const banner = document.querySelector("#mode-banner");
   banner.classList.toggle("demo", state.demo);
-  banner.textContent = state.demo
-    ? "MOCKED · Synthetic UI preview. No research, execution, generated artifacts or approvals are real."
-    : "Live workspace · connected to the local backend. Later phases are STUBBED.";
+  banner.textContent = state.recorded
+    ? "RECORDED EXECUTIONS · Read-only prior runs, not current research. Historical decisions may be superseded; no approval authority is restored."
+    : state.demo
+      ? "MOCKED · Synthetic UI preview. No research, execution, generated artifacts or approvals are real."
+      : "Live workspace · connected to the local backend. Later phases are STUBBED.";
   await load();
-});
+}
+document
+  .querySelector("#mode-toggle")
+  .addEventListener("click", () => switchMode(state.demo ? "live" : "demo"));
+document
+  .querySelector("#recordings-toggle")
+  .addEventListener("click", () =>
+    switchMode(state.recorded ? "live" : "recorded"),
+  );
 document.querySelector(".skip").addEventListener("click", (event) => {
   event.preventDefault();
   main.focus();

@@ -220,7 +220,7 @@ def run_decision(run_id: str, svc: Services = Depends(services)):
     blocked = _builder_blocked(svc, run, outputs)
     note = blocked or ("You may ask the Builder to prepare a validation kit for review. Nothing is written "
                        "until you approve the exact request, and nothing is ever published or sent.")
-    return view.decision(outputs, note)
+    return view.decision(outputs, note, builder_allowed=blocked is None and run["status"] == "completed")
 
 
 @router.get("/runs/{run_id}/counterfactual")

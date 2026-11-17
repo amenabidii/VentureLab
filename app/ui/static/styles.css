@@ -1086,3 +1086,23 @@ summary {
 .card > .grid-two {
   margin-bottom: 20px;
 }
+
+blockquote {
+  white-space: pre-wrap;
+}
+.gate-trace {
+  margin-top: 24px;
+}
+.gate-trace summary {
+  padding: 16px 0;
+  font-weight: 600;
+}
+.top-actions {
+  flex-wrap: wrap;
+}
+.topbar {
+  height: auto;
+  min-height: 76px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}

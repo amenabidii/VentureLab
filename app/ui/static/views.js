@@ -23,7 +23,13 @@ export const escape = (value) =>
   );
 const e = escape;
 export function badge(text) {
-  const tone = ["ESTABLISHED", "GO", "Completed", "Working", "Executed"].includes(text)
+  const tone = [
+    "ESTABLISHED",
+    "GO",
+    "Completed",
+    "Working",
+    "Executed",
+  ].includes(text)
     ? "green"
     : /STOP|Failed|Contradictory|CONTRADICTED|Rejected/.test(text)
       ? "red"
@@ -122,7 +128,7 @@ export function dashboard(s) {
     ) +
     `<section class="hero"><div><span class="eyebrow">A MORE RIGOROUS WAY FORWARD</span><h2>Conviction is a starting point.<br><span>Evidence is the next step.</span></h2><p>Investigate the opportunity. Challenge the assumptions.<br>Decide what is worth testing — and what isn’t.</p>${link("brief", "Shape your founder brief →", "button light")}</div><div class="hero-diagram" aria-label="Evidence informs challenge, then decision"><span>01 / INVESTIGATE</span><i>↓</i><span>02 / CHALLENGE</span><i>↓</i><span>03 / DECIDE</span><small>You stay in control.</small></div></section>` +
     `<div class="section-title"><h2>Your path forward</h2>${link("roadmap", "Explore all phases →", "text-link")}</div><div class="phase-strip">${phases.map((p, i) => `<a href="#${p[5] || "roadmap"}"><span class="phase-number">0${i + 1}</span><strong>${p[0]}</strong><small>${i === 0 ? "Brief available" : p[4]}</small></a>`).join("")}</div>` +
-    `<div class="section-title"><h2>Venture runs</h2>${s.demo ? badge("MOCKED fixtures") : badge("Live workspace")}</div>` +
+    `<div class="section-title"><h2>Venture runs</h2>${s.recorded ? badge("Recorded executions · read-only") : s.demo ? badge("MOCKED fixtures") : badge("Live workspace")}</div>` +
     (s.runs.length
       ? `<div class="cards">${s.runs.map((r) => `<article class="card"><span class="eyebrow">${e(r.phase)}</span><h2>${e(r.title)}</h2>${badge(r.status)}${r.recordedAt ? `<p>Recorded run (prior execution) · ${e(r.recordedAt)}</p>` : ""}<p>Run ${e(r.id)}</p><button data-run="${e(r.id)}">Open workspace →</button></article>`).join("")}</div>`
       : empty(
@@ -252,7 +258,7 @@ export function evidence(s) {
       ? visible
           .map(
             (f) =>
-              `<details class="finding card" id="finding-${e(f.id)}" ${s.focusFinding === f.id ? "open" : ""}><summary><span class="finding-id">${e(f.id)}</span><span class="finding-title">${e(f.claim)}<small>${e(f.type)} · ${e(f.sourceName)}</small></span>${badge(f.standing)}</summary><div class="finding-body"><div class="grid-two"><div><h3>Supporting quotation</h3><blockquote>${e(f.quote || "No supporting quotation provided.")}</blockquote>${source(f.url, f.sourceName)}</div><div><h3>Assessment</h3>${badge(f.relationship)}<p>${e(f.assessment)}</p></div></div><div class="grid-two"><div><h3>Limitations</h3><p>${e(f.limitations)}</p></div><div><h3>Associated assumption</h3><p>${e(f.assumption)}</p></div></div></div></details>`,
+              `<details class="finding card" id="finding-${e(f.id)}" ${s.focusFinding === f.id ? "open" : ""}><summary><span class="finding-id">${e(f.id)}</span><span class="finding-title">${e(f.claim)}<small>${e(f.type)} · ${e(f.sourceName)}</small></span>${badge(f.standing)}</summary><div class="finding-body"><div class="grid-two"><div><h3>Supporting quotation</h3>${quoteDetails(f)}</div><div><h3>Assessment</h3>${badge(f.relationship)}<p>${e(f.assessment)}</p></div></div><div class="grid-two"><div><h3>Limitations</h3><p>${e(f.limitations)}</p></div><div><h3>Associated assumption</h3><p>${e(f.assumption)}</p></div></div></div></details>`,
           )
           .join("")
       : empty(
@@ -296,7 +302,7 @@ export function decision(s) {
     ) +
     `<div class="outcomes">${OUTCOMES.map((o, i) => `<div>${badge(o)}<p>${["Proceed to further validation.", "Gather evidence and test again.", "Investigate a justified alternative.", "Do not proceed under current conditions."][i]}</p></div>`).join("")}</div>` +
     (d
-      ? `<section class="card decision"><span class="eyebrow">${s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span><h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings, s.data.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}${s.service.capabilities.builder && d.outcome !== "STOP" ? `<button data-action="prepare-builder" ${s.busy ? "disabled" : ""}>Ask the Builder to prepare a validation kit</button>` : ""}</div></section>`
+      ? `<section class="card decision"><span class="eyebrow">${s.recorded ? "RECORDED GATE RESULT · PRIOR EXECUTION" : s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span>${d.rulesetVersion && d.rulesetVersion !== d.currentRulesetVersion ? `<p class="notice error">Superseded historical decision: rule version ${e(d.rulesetVersion)}, current version ${e(d.currentRulesetVersion)}. Preserved as history; not permission to build.</p>` : ""}<h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings, s.data.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}${s.service.capabilities.builder && d.builderAllowed && d.outcome !== "STOP" ? `<button data-action="prepare-builder" ${s.busy ? "disabled" : ""}>Ask the Builder to prepare a validation kit</button>` : ""}</div>${gateTrace(d)}</section>`
       : empty(
           "No gate decision available.",
           "A recommendation appears only after the backend evaluates the evidence.",
@@ -407,3 +413,19 @@ export const renderers = {
   history,
   roadmap,
 };
+
+export function quoteDetails(f) {
+  return f.quotations?.length
+    ? f.quotations
+        .map(
+          (q) =>
+            `<blockquote>${e(q.text)}</blockquote>${source(q.url, q.sourceName)}`,
+        )
+        .join("")
+    : `<blockquote>${e(f.quote || "No supporting quotation provided.")}</blockquote>${source(f.url, f.sourceName)}`;
+}
+export function gateTrace(d) {
+  if (!d.trace?.length)
+    return '<p class="muted">No rule trace was recorded for this decision.</p>';
+  return `<details class="gate-trace"><summary>Inspect the recorded rule checks and thresholds</summary><p>Checks run in order. The first matching rule decides; later rules are not evaluated. These are recorded inputs, not an explanation invented by a model.</p><p>Recorded rule version: ${e(d.rulesetVersion ?? "Not recorded")} · Current version: ${e(d.currentRulesetVersion ?? "Not provided")}</p><div class="table-wrap"><table><caption>Recorded deterministic gate trace</caption><thead><tr><th scope="col">Rule</th><th scope="col">Matched?</th><th scope="col">Decision trigger?</th><th scope="col">Recorded inputs</th></tr></thead><tbody>${d.trace.map((c) => `<tr><td>${e(c.rule)}</td><td>${c.applies ? "Yes" : "No"}</td><td>${c.decided ? "Yes" : "No"}</td><td><pre>${e(c.inputs)}</pre></td></tr>`).join("")}</tbody></table></div><h3>Recorded thresholds</h3><pre>${e(d.thresholds)}</pre></details>`;
+}

@@ -40,7 +40,7 @@ founder's machine except inside a decision the founder submits.
 
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
-| 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Not needed (nothing leaves the machine) | **Working** in the web workspace and CLI |
+| 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
 | 2 Validate | Design an experiment that could disprove the assumption | Builder (kit), Judge (rules) | Approve exact kit and proposed thresholds | **Working** (plan and kit); recording real results is **STUBBED** |
 | 3 Build | Local landing-page prototype for the concept | Builder | Approve exact page fingerprint | **Working** after a GO decision; local files only |
 | 4 Commercial Setup | Pricing hypotheses, positioning, costs | (future) | Required for any commitment | **STUBBED** |
@@ -66,6 +66,18 @@ founder's machine except inside a decision the founder submits.
   (command-line runs write the same files to `outputs/`).
 - **Gate**: phase 1 evidence gate (below).
 
+**Remaining Discover design (STUBBED):** the Investigator would turn an ambiguous
+starting idea into candidate problem/customer pairs, compare alternatives using
+explicit founder-weighted criteria (pain, reachable customers, feasibility, cost,
+and ethical fit), and preserve sources or ASSUMPTION labels for every score.
+The founder chooses the pair; a high score alone cannot satisfy the evidence gate.
+Market definition records the customer, geography, alternatives and reachable
+channels; unsupported market-size estimates remain assumptions. The existing
+Builder supplies past-behaviour interview questions; recruiting, interviewing and
+recording answers remain manual. Interviews must ask about actual recent behaviour,
+existing workarounds and costs before proposing the product, without leading sales
+questions or interpreting polite interest as demand.
+
 ### 2. Validate
 
 - **Inputs**: the finished run, mapped by `builder_adapter.py` to the Builder's
@@ -81,6 +93,17 @@ founder's machine except inside a decision the founder submits.
 - **Gate**: founder approval of the exact kit; real results would later feed the
   `STOP_FAILED_VALIDATION_CONDITION` rule (results entry is STUBBED).
 
+**Remaining Validate design (STUBBED):** a versioned Lean Canvas would link problem,
+customer, value proposition, solution, channels, revenue, costs, key metrics and
+advantage to finding IDs or explicit assumptions. The Builder would propose a
+landing-page demand experiment with a fixed audience, duration, denominator,
+conversion definition and pass/fail criteria. Founder approval binds the exact
+page, destinations and thresholds before launch. Traffic, sign-ups and interview
+results must be observed and consented, never synthesized; duplicate or missing
+observations are flagged. Below-threshold results recommend STOP or a justified
+PIVOT; incomplete data gives REPEAT. No payment collection is part of this test.
+The current passive local page has no form or tracking and cannot measure demand.
+
 ### 3. Build
 
 - **Method**: only after a GO decision, a fixed, escaped HTML/CSS template renders a
@@ -91,20 +114,59 @@ founder's machine except inside a decision the founder submits.
   same approved folder; the workspace previews HTML only through an inert sandbox.
 - **Gate**: generation approval. It never authorizes publishing or sending.
 
+**Remaining Build design (STUBBED):** the Builder would derive a narrowly scoped
+MVP specification and acceptance criteria from validated needs, produce application
+code, user documentation and setup instructions, then run unit and user-journey
+checks in an isolated environment with no credentials. Test reports must record
+actual commands, failures and limitations. The Judge would require passing critical
+acceptance checks, explicit unresolved risks and founder review before release;
+failures return REPEAT. A static landing page is not a complete tested product.
+Application tests in this repository test VentureLab, not an automatically built MVP.
+
 ### 4. Commercial Setup (STUBBED)
 
-Would record pricing and positioning hypotheses and setup tasks for founder review.
-No accounts, contracts, regulated advice or payments are created.
+- **Agents/tools:** proposed Builder templates and deterministic completeness checks;
+  no account creation or payment provider integration.
+- **Inputs/method:** validated offer, founder constraints and observed costs. Draft
+  pricing alternatives with explicit assumptions about willingness to pay, marginal
+  cost and support time. Compare unit economics under low/base/high usage without
+  implying revenue or income is guaranteed.
+- **Outputs:** versioned pricing rationale, positioning, draft terms, privacy and
+  refund policies. Policies identify data collected, purpose, retention, deletion,
+  delivery limitations and support contact; they are drafts for founder review,
+  not legal advice. Missing jurisdiction-specific requirements are unresolved tasks.
+- **Gate:** founder accepts the exact offer and drafts; missing facts give REPEAT,
+  unacceptable privacy or ethical constraints give STOP. Approval does not permit
+  collecting payments, signing terms or publishing.
 
 ### 5. Launch (STUBBED)
 
-Would prepare launch copy and a channel experiment. Every external publish or send
-would need its own approval bound to exact content, destination and action.
+- **Agents/tools:** proposed Builder copy templates and a local mock fulfillment
+  state machine; all payment and delivery events visibly MOCKED.
+- **Inputs/method:** approved product version, pricing hypothesis and policy drafts.
+  Prepare a store page and channel-specific posts with source/ASSUMPTION labels,
+  accurate capabilities and limitations, and no invented reviews, sign-ups or urgency.
+- **Outputs:** draft store page, posts, channel experiment plan and mock delivery
+  receipt. Every external publish/send would require a separate approval bound to
+  exact content, destination, expiry and action. No such external action is built.
+- **Gate:** check content, asset version, required policy links and explicit founder
+  approval. Failed checks give REPEAT; prohibited offers give STOP. Local mock
+  fulfillment demonstrates the intended flow without customers, charges or email.
 
 ### 6. Operate & Learn (STUBBED)
 
-Would compare genuinely observed results with criteria approved before testing and
-return contradictions to Discover. No results are ever synthesized.
+- **Agents/tools:** proposed support triage, deterministic metric aggregation and
+  Challenger/ Judge review; no automatic customer replies.
+- **Inputs/method:** consented support reports and actual experiment observations,
+  with timestamps, provenance, denominators and missing-data flags. Track activation,
+  successful deliveries, failures, support burden and retention by cohort; never
+  treat simulated events as observed demand. Draft replies require founder review.
+- **Outputs:** support summary, metric definitions and a persevere/pivot memo linking
+  each conclusion to observations, the pre-set thresholds and unresolved assumptions.
+- **Gate:** persevere only when the pre-set criteria hold; PIVOT for supported
+  alternatives, REPEAT for inadequate observations, STOP for failed conditions or
+  unacceptable harm. New assumptions return to Discover; changed product versions
+  invalidate prior launch approval. No results are synthesized.
 
 ## Gates
 
@@ -158,14 +220,29 @@ two-hour expiry, and single use. The workspace cannot change any of these result
 
 ## Sale to cash
 
-Architecture only, **STUBBED**, and deliberately not implemented. VentureLab processes
-no real or sandbox payments, collects no payment credentials and spends nothing. A
-future permitted design would: create an order only after founder-approved pricing;
-treat a provider's confirmed payment event as the only trigger for delivery; revoke
-access on refund; use an idempotency key per order so a repeated event cannot deliver
-twice; and reconcile orders, payments, fees and payouts daily, flagging mismatches for
-human review. None of this exists in the code, and `outputs/payment_test_log.md` is
-intentionally absent.
+Architecture only, **STUBBED**. All proposed events below are **MOCKED**:
+VentureLab processes no real or sandbox payments, stores no payment credentials,
+and spends nothing. The stricter no-payments constraint applies to this design.
+
+```text
+founder-approved local simulation -> mock order (product version + price assumption)
+  -> mock payment-confirmed event -> one local delivery receipt
+  -> mock refund event -> revoke simulated access
+  -> reconciliation report (mock orders, payments, fees and payouts)
+```
+
+The mock order has a unique ID, explicit simulated status and approved product hash.
+A mock payment-confirmed event is the only delivery trigger; a pending or failed event
+cannot deliver. A unique event ID and order/product idempotency key prevent duplicate
+delivery on retry. Delivery writes a local receipt pointing to the approved local
+artifact, never sends email or grants real access. A mock refund revokes simulated
+access; duplicate refunds are no-ops. Out-of-order or unknown-order events are held
+for manual review, not guessed. Reconciliation compares recorded mock order totals,
+payment totals, fee assumptions and payouts and lists mismatches explicitly.
+
+These components and tests are not implemented; `outputs/payment_test_log.md` is
+intentionally absent. Any later test log must come from executing this mock flow,
+label every event MOCKED and never imply that money moved.
 
 ## Data flow
 
@@ -194,7 +271,17 @@ approval events    --> HMAC-chained approval store (authoritative) --> mirrored 
 Founder briefs, retrieved public text, model output, artifacts, approval decisions and
 audit records all stay on the local machine in `outputs/`, `decision_log.json` and the
 ignored `.venturelab/` state directory (run records, approval store, founder key).
+Public retrieval sends search queries and page requests to external sources; the
+model runs locally. The founder should avoid sensitive details in search context.
 Nothing is deleted automatically; the founder decides what to commit or share.
+
+Recorded-execution browsing is separate from live state: `app/recorded_runs.json`
+allowlists genuine committed runs and their SHA-256 file checksums. The read-only
+`/api/recordings` router verifies files before serving them; it never restores a
+SQLite run, an approval or execution authority. Earlier rule versions are explicitly
+superseded. Checksums detect changes relative to the index, not whether claims are
+true. `tools/index_recordings.py` rebuilds the index from tracked outputs and actual
+matching audit entries; review provenance before updating it.
 
 ## Built vs. stubbed
 
