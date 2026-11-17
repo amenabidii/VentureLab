@@ -34,7 +34,7 @@ Statuses: PASS, FAIL, PENDING INTEGRATION, NOT VERIFIED, STUBBED, NOT APPLICABLE
 | Requirement | Where | Verification | Status |
 |---|---|---|---|
 | No paid service required; open-weight model works locally | `config.py`, compose, `llm.py` | automated scan for paid providers; recorded runs used `qwen3:4b` locally | PASS |
-| Payments sandboxed or mocked | — | project policy forbids even sandbox payments; sale to cash is design only | STUBBED (stricter rule followed; no `payment_test_log.md`) |
+| Payments sandboxed or mocked | `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `workflow.py launch` | the case brief forbids payments of any kind, even sandbox; sale to cash is a MOCKED local simulation with signed events, idempotent delivery, refunds and reconciliation, tested in `tests/test_later_phases.py`; genuine rehearsal log in `outputs/payment_test_log.md` (8/8 checks) | PASS (MOCKED, labelled) |
 | Nothing published, sent, spent or signed without founder approval, in code | `approval.py`, `app/api.py` | M3 tests; API tests (missing key, wrong run, fingerprint, expiry, replay); bypass attempts refused on the live server; a real founder approval through the UI | PASS (nothing can be published or sent at all; approval covers local files only) |
 | Mocks labelled MOCKED/STUBBED in README and app | README, `app/main.py` FEATURES, workspace roadmap and demo banner | manual | PASS |
 | Outputs come from real runs | `outputs/`, log | `outputs/runs/<run>` and `outputs/builder/<run>` match run IDs and fingerprints in `decision_log.json` | PASS (integrated runs `run-64fdee373f244b81`, `run-2978f51dd4c040b1`) |
@@ -105,12 +105,27 @@ Existing tests already cover these, so they were not duplicated here.
 ## Contradictions found and how they were handled
 
 - `CLAUDE.md` allows payments in sandbox/test mode; the team's stricter rule forbids
-  any transaction. The stricter rule is followed; sale to cash is STUBBED.
+  any transaction (the case brief says "no payments of any kind (not even sandbox)"). The
+  stricter rule is followed; sale to cash is a labelled MOCKED simulation.
 - `main` had no README or ARCHITECTURE although `CLAUDE.md` requires them; the M3
   branch has its own versions. This branch provides integrated versions; take them
   when resolving the add/add conflicts.
 - The `main` start page listed "Founder approval" and "Builder" as STUBBED. The
   FEATURES list in `app/main.py` was updated during integration.
+
+## Six-phase coverage (added 2026-11-17)
+
+| Phase | Evidence in the repository | Status |
+|---|---|---|
+| 1 Discover | live runs in `outputs/runs/`, `outputs/phase1_*`, opportunity scorecard `phase1_step4_*` | PASS |
+| 2 Validate | Lean Canvas `phase2_step2_*` + gate; validation kit in `outputs/builder/` | PASS; real sign-up collection STUBBED |
+| 3 Build | MVP scope, DRAFT guide, executed checks `phase3_step2..4_*`, `phase3_gate_build.json` | PASS for artifacts; MVP code STUBBED |
+| 4 Commercial setup | `phase4_step1_pricing*`, `phase4_step2_*-policy-draft.md`, `phase4_gate_commercial.json` | PASS (founder-approved price, DRAFT policies) |
+| 5 Launch | `phase5_step1_*`, `phase5_step2_mock-product.md`, `phase5_step3_reconciliation.json`, `payment_test_log.md`, `phase5_gate_launch.json` | PASS (MOCKED publishing and sale to cash) |
+| 6 Operate & learn | `phase6_step1..3_*`, `phase6_gate_persevere-or-pivot.json` | PASS (memo REPEAT; rehearsal metrics MOCKED) |
+
+Phases 2–6 were run on the genuine REPEAT run `run-64fdee373f244b81` as a founder-approved
+REHEARSAL; the approvals are HMAC-signed in the local state and mirrored in `decision_log.json`.
 
 ## Open items before final submission
 

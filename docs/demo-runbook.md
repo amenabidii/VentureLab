@@ -4,6 +4,25 @@ Every step is labelled **LIVE** (runs in front of the audience) or **RECORDED** 
 earlier run, shown as such, with its run ID; the workspace marks it as a prior
 execution). Never present a recorded run as a fresh one.
 
+
+## Video script (up to 3 minutes, screen recording)
+
+1. **0:00 Workspace** (`http://localhost:8000`): open **Recorded executions**, pick the Slack-thread
+   run. Show Evidence (exact quotes with links, standings) and the Challenger review.
+2. **0:40 Decision**: REPEAT by rule `REPEAT_INSUFFICIENT_EVIDENCE`; expand the rule checks; open
+   the Counterfactual Challenge (what is missing, which experiment, no guarantee of GO).
+3. **1:15 Phases 1–6** (header link, `/phases`): each phase's gate. Open the opportunity
+   scorecard, the Lean Canvas (labels), the pricing decision (ASSUMPTION, founder-approved), the
+   store page (REHEARSAL banner, disabled checkout, no reviews).
+4. **2:00 Sale to cash**: open `payment_test_log.md`: duplicate webhook ignored, refund revokes
+   access, forged signature rejected, reconciliation balanced. Say it is MOCKED: no payments of
+   any kind.
+5. **2:30 Memo and safety**: the Phase 6 memo says REPEAT, not launch; a crypto brief stops at
+   the category screen; every approval is bound to a file fingerprint (`workflow.py approve`).
+6. **2:55** "Open source, local model, $0 API cost per run."
+
+Upload as an unlisted YouTube/Loom/Drive link and put it under `## Demo video` in the README.
+
 ## Before the session
 
 - `docker compose up -d`; wait until `/health/model` returns 200, then call

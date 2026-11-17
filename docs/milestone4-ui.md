@@ -1,5 +1,8 @@
 # Milestone 4: founder workspace
 
+> Historical milestone record. Phases 2–6 have since been implemented (`workflow.py`); the
+> current status is in the README and on the workspace's Phases 1–6 page.
+
 For the subsequent critical audit, fixes, measured performance and final verdict, see [Milestone 4 QA report](milestone4-qa.md).
 
 ## Scope and implementation status

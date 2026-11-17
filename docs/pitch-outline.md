@@ -20,8 +20,10 @@ code, and gate decisions are made by code.
 **4. Six phases (2:10–2:50).** Show the ARCHITECTURE diagram. Discover works end to end
 in the web workspace. Validate (experiment kit) works; Build (landing page) works after a
 GO decision and has been exercised only in tests so far.
-Commercial Setup, Launch and Operate & Learn are designed and labelled STUBBED.
-Payments are deliberately not implemented.
+Commercial Setup, Launch and Operate & Learn run through `workflow.py` behind founder
+approvals: price hypotheses and DRAFT policies, a store page, a MOCKED sale-to-cash path
+(signed events, idempotent delivery, refunds, reconciliation) and a persevere-or-pivot
+memo. No payments of any kind; MVP code generation is STUBBED.
 
 **5. Gates and the counterfactual (2:50–3:30).** Rule order on screen. Only
 ESTABLISHED, relevant problem findings from 2+ sources count. Missing evidence →

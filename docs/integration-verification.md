@@ -195,4 +195,5 @@ survived an application restart.
 - Bind mounts were verified on Docker Desktop for Windows and with Linux bind-mount
   semantics (checkouts owned by UID 1000 and 1001 start; one owned by root is refused); a
   physical Linux host was not used.
-- Validate-phase results entry, Commercial Setup, Launch and Operate & Learn remain STUBBED.
+- Phases 2–6 now run through `workflow.py` (see README); MVP code generation and real
+  sign-up collection remain STUBBED, and publishing and sale to cash are MOCKED.

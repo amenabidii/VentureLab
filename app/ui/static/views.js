@@ -136,7 +136,7 @@ export function dashboard(s) {
           "No venture runs are available. Submit a founder brief to start a real analysis.",
           link("brief", "Create founder brief"),
         )) +
-    `<div class="grid-two"><article class="card"><span class="eyebrow">RECENT DECISION</span>${s.data.decision ? `<h2>${badge(s.data.decision.outcome)}</h2><p>${e(s.data.decision.explanation)}</p>${link("decision", "Inspect the rule →", "text-link")}` : "<h2>No decisions yet</h2><p>A recommendation appears only after a backend gate evaluation.</p>"}</article><article class="card"><span class="eyebrow">WORKSPACE READINESS</span><h2>Built around founder control</h2><p>Research, the deterministic gate, the Builder and founder approval are connected to the local backend. Commercial Setup, Launch and Operate &amp; Learn remain STUBBED.</p>${link("approvals", "Review approval boundary →", "text-link")}</article></div>`
+    `<div class="grid-two"><article class="card"><span class="eyebrow">RECENT DECISION</span>${s.data.decision ? `<h2>${badge(s.data.decision.outcome)}</h2><p>${e(s.data.decision.explanation)}</p>${link("decision", "Inspect the rule →", "text-link")}` : "<h2>No decisions yet</h2><p>A recommendation appears only after a backend gate evaluation.</p>"}</article><article class="card"><span class="eyebrow">WORKSPACE READINESS</span><h2>Built around founder control</h2><p>Research, the deterministic gate, the Builder and founder approval are connected to the local backend. phases 2–6 run through workflow.py (sale to cash MOCKED; MVP code STUBBED).</p>${link("approvals", "Review approval boundary →", "text-link")}</article></div>`
   );
 }
 export const fields = [
