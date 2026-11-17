@@ -79,7 +79,7 @@ No research, gate or approval logic is duplicated: the API calls the existing mo
   user with a non-recursive `chown -h`, and refuses to start otherwise if a path is not
   writable. It then drops privileges (`setpriv`, `no_new_privs`) to the owner of the
   mounted `outputs/` (UID 1000 when the mount reports root). See
-  [submission-compliance.md](submission-compliance.md#reproducibility-as-actually-run).
+  the compliance notes of that time (since removed; kept in git history).
 - Background jobs: one worker thread, at most `VENTURELAB_MAX_QUEUED_RUNS` (3) runs queued
   or running. States: queued, running, completed, failed, blocked. Run records are durable
   in SQLite; the queue is in memory, so a run interrupted by a restart is marked failed
