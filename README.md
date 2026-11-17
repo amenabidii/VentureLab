@@ -89,7 +89,7 @@ briefs are in [docs/evaluation-runs.md](docs/evaluation-runs.md): four ended in
 **REPEAT**. Two **GO** results for accessible PDFs were later found to be wrong: the two
 comments counted were a quoted government report and a developer's technical criticism,
 not screen reader users' own experiences. The rule was corrected, and a rerun ended in
-**REPEAT**. No recorded run currently reaches GO. Earlier command-line runs are in
+**REPEAT**. No run under the current gate rules (version 3) reaches GO; two GOs made under superseded rules are kept unchanged, marked superseded in the app, and refused by the Builder. Earlier command-line runs are in
 `outputs/phase1_*` with their log archived in `docs/history/`. The later phases were run
 on the Slack-thread run as a founder-approved REHEARSAL (the gate said REPEAT): outputs
 `outputs/phase2_*`, `phase4_*`, `phase5_*`, `phase6_*` and `outputs/payment_test_log.md`
@@ -135,9 +135,11 @@ inventory are in [ARCHITECTURE.md](ARCHITECTURE.md); integration details are in
 
 ## Cost per run
 
-About **$0.00 per run** in API or service charges: local model, free public sources, no
-paid services (5 model calls in the measured web run; token counts are recorded per run
-in `outputs/runs/<run>/phase1_step2_investigation.json`). What it does cost: local CPU
+About **$0.00 per run** (local `qwen3:4b`, ~4,800 tokens) in API or service charges: local
+model, free public sources, no paid services. The demo run `run-a9f21cd634924cca` made 6
+Discover model calls with 3,807 prompt and 948 output tokens (recorded per call in
+`outputs/runs/<run>/phase1_step2_investigation.json` and `phase1_step3_challenge.json`); the
+Advisor's one call in phases 2–6 is not token-counted. What it does cost: local CPU
 time (about 2 to 5 minutes per run; 279 s in a fresh-clone check on 2026-11-17), the electricity for it, about 2.5 GB of disk and
 one download for `qwen3:4b`, and a little bandwidth for retrieval.
 

@@ -1465,6 +1465,64 @@
         }
       ]
     },
+    "record-0266961f4030be27": {
+      "execution_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+      "recorded_at": "2026-11-17T17:06:40Z",
+      "outputs": {
+        "gate": "outputs/phase1_gate_decision_trick_fake_reviews.json",
+        "brief": "outputs/phase1_step1_founder_brief_trick_fake_reviews.json"
+      },
+      "files": {
+        "outputs/phase1_gate_decision_trick_fake_reviews.json": "c620a3af42e0d106c416afd051715fdff870444da33687c75feb54dfb4761007",
+        "outputs/phase1_step1_founder_brief_trick_fake_reviews.json": "0319d03bc0057b64624f04695eb67ec7fa9538ec958437ade498312cc75c4a10"
+      },
+      "audit": [
+        {
+          "timestamp": "2026-11-17T17:06:40Z",
+          "agent": "orchestrator",
+          "action": "validate_brief",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+          "outcome": "prohibited_category"
+        },
+        {
+          "timestamp": "2026-11-17T17:06:40Z",
+          "agent": "orchestrator",
+          "action": "skip_research",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+          "outcome": "skipped"
+        },
+        {
+          "timestamp": "2026-11-17T17:06:40Z",
+          "agent": "gate",
+          "action": "evidence_gate",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+          "outcome": "stop"
+        },
+        {
+          "timestamp": "2026-11-17T17:06:40Z",
+          "agent": "counterfactual",
+          "action": "explain_decision",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+          "outcome": "stop"
+        }
+      ]
+    },
     "record-ecc4fb2998207204": {
       "execution_id": "run-2978f51dd4c040b1",
       "recorded_at": "2026-11-17T12:46:20Z",
@@ -2096,6 +2154,238 @@
           "approved_by": "founder",
           "run_id": "run-64fdee373f244b81",
           "outcome": "executed"
+        }
+      ]
+    },
+    "record-8f81b4814f1200c7": {
+      "execution_id": "run-a9f21cd634924cca",
+      "recorded_at": "2026-11-17T18:27:34Z",
+      "outputs": {
+        "gate": "outputs/runs/run-a9f21cd634924cca/phase1_gate_decision.json",
+        "brief": "outputs/runs/run-a9f21cd634924cca/phase1_step1_founder_brief.json",
+        "investigation": "outputs/runs/run-a9f21cd634924cca/phase1_step2_investigation.json",
+        "challenge": "outputs/runs/run-a9f21cd634924cca/phase1_step3_challenge.json"
+      },
+      "files": {
+        "outputs/runs/run-a9f21cd634924cca/phase1_gate_decision.json": "1cea76710a74319cc21fa846128277ea9f2c19b45f0542416cf1af309e02943e",
+        "outputs/runs/run-a9f21cd634924cca/phase1_step1_founder_brief.json": "24ba595fda2d17fd64f92c8a63d9b9b59bab4ef3397dcece869799123b020f08",
+        "outputs/runs/run-a9f21cd634924cca/phase1_step2_investigation.json": "56e112afdc0f4fc923b1593d407016507d407ca40e54d2c4985d367f9f6753c1",
+        "outputs/runs/run-a9f21cd634924cca/phase1_step3_challenge.json": "0fb45b4e6eda747e43bc583ec3e72f64506e05ef983b3888bb296f936d79b59c"
+      },
+      "audit": [
+        {
+          "timestamp": "2026-11-17T18:22:30Z",
+          "agent": "orchestrator",
+          "action": "validate_brief",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "accepted"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:30Z",
+          "agent": "orchestrator",
+          "action": "load_model",
+          "sources": [],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "ok"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:45Z",
+          "agent": "investigator",
+          "action": "plan_searches",
+          "sources": [],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "ok"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:47Z",
+          "agent": "investigator",
+          "action": "retrieve_source",
+          "sources": [
+            "https://hn.algolia.com/api/v1/search?query=slack+missed+messages+summary&tags=comment&hitsPerPage=10"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "available"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:47Z",
+          "agent": "investigator",
+          "action": "retrieve_source",
+          "sources": [
+            "https://hn.algolia.com/api/v1/search?query=remote+team+slack+thread+catchup&tags=comment&hitsPerPage=10"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "available"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:47Z",
+          "agent": "investigator",
+          "action": "retrieve_source",
+          "sources": [
+            "https://hn.algolia.com/api/v1/search?query=distributed+team+slack+messages+missed&tags=comment&hitsPerPage=10"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "empty"
+        },
+        {
+          "timestamp": "2026-11-17T18:22:47Z",
+          "agent": "investigator",
+          "action": "select_relevant_comments",
+          "sources": [
+            "https://news.ycombinator.com/item?id=25056920",
+            "https://news.ycombinator.com/item?id=20896857",
+            "https://news.ycombinator.com/item?id=36434999",
+            "https://news.ycombinator.com/item?id=26511270",
+            "https://news.ycombinator.com/item?id=37974338",
+            "https://news.ycombinator.com/item?id=45287622"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "ok"
+        },
+        {
+          "timestamp": "2026-11-17T18:24:12Z",
+          "agent": "investigator",
+          "action": "extract_claims",
+          "sources": [
+            "https://news.ycombinator.com/item?id=25056920",
+            "https://news.ycombinator.com/item?id=20896857",
+            "https://news.ycombinator.com/item?id=36434999",
+            "https://news.ycombinator.com/item?id=26511270",
+            "https://news.ycombinator.com/item?id=37974338",
+            "https://news.ycombinator.com/item?id=45287622"
+          ],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "ok"
+        },
+        {
+          "timestamp": "2026-11-17T18:24:12Z",
+          "agent": "investigator",
+          "action": "assess_claim",
+          "sources": [
+            "https://news.ycombinator.com/item?id=36434999"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:24:53Z",
+          "agent": "investigator",
+          "action": "assess_claim",
+          "sources": [
+            "https://news.ycombinator.com/item?id=20896857"
+          ],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:24:53Z",
+          "agent": "investigator",
+          "action": "assess_claim",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:24:53Z",
+          "agent": "investigator",
+          "action": "assess_claim",
+          "sources": [
+            "https://news.ycombinator.com/item?id=25056920"
+          ],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:25:16Z",
+          "agent": "investigator",
+          "action": "check_founder_statement",
+          "sources": [
+            "https://news.ycombinator.com/item?id=36434999"
+          ],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:25:35Z",
+          "agent": "investigator",
+          "action": "check_founder_statement",
+          "sources": [
+            "https://news.ycombinator.com/item?id=25056920"
+          ],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca"
+        },
+        {
+          "timestamp": "2026-11-17T18:27:34Z",
+          "agent": "challenger",
+          "action": "challenge_assumptions",
+          "sources": [
+            "https://news.ycombinator.com/item?id=25056920",
+            "https://news.ycombinator.com/item?id=36434999"
+          ],
+          "model": "qwen3:4b",
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "ok"
+        },
+        {
+          "timestamp": "2026-11-17T18:27:34Z",
+          "agent": "gate",
+          "action": "evidence_gate",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "repeat"
+        },
+        {
+          "timestamp": "2026-11-17T18:27:34Z",
+          "agent": "counterfactual",
+          "action": "explain_decision",
+          "sources": [],
+          "model": null,
+          "cost": 0,
+          "approved_by": null,
+          "run_id": "run-a9f21cd634924cca",
+          "outcome": "repeat"
         }
       ]
     }

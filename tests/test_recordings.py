@@ -95,5 +95,5 @@ def test_replay_preserves_historical_bytes_quotes_and_saved_approval_text(api):
             quotes = [q for q in recorded["quotes"] if q["status"] == "verified"]
             assert [(q["text"], q["url"]) for q in quotes] == [(q["text"], q["url"]) for q in shown["quotations"]]
             quote_count += len(quotes)
-    assert quote_count == 56
+    assert quote_count == 61
     assert before == {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
