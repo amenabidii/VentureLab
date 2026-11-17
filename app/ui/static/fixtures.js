@@ -1,0 +1,196 @@
+/** MOCKED: synthetic UI examples only. Never pipeline output or audit history. */
+export const demo = {
+  runs: [
+    {
+      id: "fixture-01",
+      title: "A calmer handoff for small design teams",
+      status: "MOCKED preview",
+      phase: "Validate",
+    },
+  ],
+  agents: [
+    {
+      agent: "Investigator",
+      status: "Completed",
+      task: "MOCKED: example evidence structure, not executed research.",
+    },
+    {
+      agent: "Challenger",
+      status: "Completed",
+      task: "MOCKED: examine willingness to change an existing workflow.",
+    },
+    {
+      agent: "Builder",
+      status: "Blocked",
+      task: "MOCKED: artifact generation requires scoped founder approval.",
+    },
+    {
+      agent: "Judge",
+      status: "Completed",
+      task: "MOCKED: illustrate an unmet evidence gate.",
+    },
+  ],
+  findings: [
+    {
+      id: "F-01",
+      claim: "The proposed product is a digital handoff checklist.",
+      type: "Founder input",
+      standing: "ESTABLISHED",
+      relationship: "Supporting",
+      sourceName: "Synthetic brief",
+      url: "",
+      quote: "A digital checklist for handing off design work.",
+      assessment:
+        "Established only within this synthetic brief; not a market claim.",
+      limitations: "Does not establish demand.",
+      assumption: "A focused handoff tool is useful.",
+    },
+    {
+      id: "F-02",
+      claim: "Small teams may lose context during handoffs.",
+      type: "Customer problem",
+      standing: "NEEDS_REVIEW",
+      relationship: "Partially supporting",
+      sourceName: "Illustrative source placeholder",
+      url: "https://example.org/",
+      quote: "No source quotation collected.",
+      assessment: "This synthetic example has not been verified.",
+      limitations: "No interviews or public-source evidence collected.",
+      assumption: "Context loss is frequent enough to motivate change.",
+    },
+    {
+      id: "F-03",
+      claim: "Teams would adopt a separate tool.",
+      type: "Demand",
+      standing: "ASSUMPTION",
+      relationship: "Unsupported",
+      sourceName: "Founder hypothesis",
+      url: "",
+      quote: "",
+      assessment: "No behavioral evidence supports adoption.",
+      limitations: "Existing tools may already solve the problem.",
+      assumption: "The benefit outweighs switching effort.",
+    },
+    {
+      id: "F-04",
+      claim: "Another tool would simplify the workflow.",
+      type: "Feasibility",
+      standing: "NEEDS_REVIEW",
+      relationship: "Contradictory",
+      sourceName: "Synthetic counterexample",
+      url: "",
+      quote: "This is a UI example, not a customer quotation.",
+      assessment: "Additional tools could increase coordination overhead.",
+      limitations: "Requires observation with actual teams.",
+      assumption: "More structure reduces work.",
+    },
+  ],
+  challenges: [
+    {
+      id: "C-01",
+      basis: "Assumption-based concern",
+      claim: "Willingness to adopt remains unproven.",
+      risk: "Building a new tool may add work without solving an urgent problem.",
+      severity: "High — MOCKED",
+      findings: ["F-02", "F-03"],
+      missing: [
+        "Observed handoff failures",
+        "Evidence of willingness to change",
+      ],
+      experiment:
+        "Interview five relevant teams about their most recent handoff, then test a paper checklist.",
+    },
+    {
+      id: "C-02",
+      basis: "New hypothesis",
+      claim: "A checklist inside existing tools may be more useful.",
+      risk: "This alternative is also untested.",
+      findings: ["F-04"],
+      missing: ["Comparison with current workflow"],
+      experiment:
+        "Compare a standalone prototype with a checklist in the team’s current tool.",
+    },
+  ],
+  decision: {
+    outcome: "REPEAT",
+    rule: "MOCKED_DEMAND_EVIDENCE_MISSING",
+    explanation: "Synthetic gate example: adoption evidence is missing.",
+    findings: ["F-03"],
+    missing: ["Observed customer behavior"],
+    risks: ["Switching effort may outweigh value"],
+    next: "Test the problem and adoption hypothesis before implementation.",
+    action: "Review an interview plan.",
+  },
+  counterfactual: {
+    requirement: "Evidence of a recurring, costly handoff problem",
+    limitation: "The example contains no real customer observations.",
+    experiment:
+      "Ask five teams to walk through a recent handoff and try a simple checklist.",
+    strengthen:
+      "Repeated observed problems and voluntary use in a real handoff.",
+    weaken: "Problems are rare, or existing tools resolve them adequately.",
+    gate: "MOCKED_DEMAND_EVIDENCE_MISSING",
+  },
+  artifacts: [
+    {
+      id: "A-01",
+      title: "Problem interview guide",
+      type: "Customer interview guide",
+      status: "MOCKED",
+      description: "Synthetic read-only preview of a future Builder output.",
+      content:
+        "MOCKED — UI fixture, not generated output\n\n1. Walk me through your last design handoff.\n2. Where did information go missing?\n3. What did you do to recover it?\n4. What have you already tried?\n\nRecord observations separately from interpretations.",
+      format: "text",
+      fingerprint: "fixture-v1-not-a-real-hash",
+      approval: "Not approved",
+    },
+    {
+      id: "A-02",
+      title: "Handoff concept page",
+      type: "Local landing-page prototype",
+      status: "MOCKED",
+      description: "Inert local preview. Nothing is published.",
+      content:
+        "<h1>A clearer handoff starts with a checklist.</h1><p>MOCKED concept preview. Demand has not been validated.</p><p>No sign-up form, testimonials or customer claims.</p>",
+      format: "html",
+      fingerprint: "fixture-v1-not-a-real-hash",
+      approval: "Not approved",
+    },
+    {
+      id: "A-03",
+      title: "Handoff observation experiment",
+      type: "Validation experiment kit",
+      status: "MOCKED",
+      description: "Synthetic experiment outline for display testing.",
+      content:
+        "MOCKED experiment kit\n\nHypothesis: context is lost during handoffs.\nMethod: observe a recent handoff with consent.\nCapture: missing context, recovery time, existing workarounds.\nDisconfirming signal: no recurring issue or no value from the checklist.\nReview evidence with the backend gate; no outcome is guaranteed.",
+      format: "text",
+      fingerprint: "fixture-v1-not-a-real-hash",
+      approval: "Not approved",
+    },
+  ],
+  approvals: [
+    {
+      id: "P-01",
+      runId: "fixture-01",
+      artifactId: "A-02",
+      fingerprint: "fixture-v1-not-a-real-hash",
+      action: "Generate a local prototype",
+      description:
+        "MOCKED review request; does not authorize publishing or any external action.",
+      status: "Pending — MOCKED",
+    },
+  ],
+  audit: [
+    {
+      timestamp: "2026-01-01T00:00:00Z",
+      agent: "Judge",
+      action: "MOCKED example gate evaluation",
+      model: null,
+      sources: [],
+      cost: null,
+      approved_by: null,
+      outcome: "REPEAT — synthetic example",
+    },
+  ],
+};

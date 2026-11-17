@@ -1,0 +1,14 @@
+{
+  "name": "venturelab-ui-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test *.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "prettier": "3.8.1"
+  }
+}
