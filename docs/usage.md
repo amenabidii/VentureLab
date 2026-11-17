@@ -43,6 +43,10 @@ checkout owned by your normal user; a root-owned checkout is refused with an exp
    `.venturelab/approvals.sqlite3.founder` (created on first start, kept on your
    machine), approve or reject the exact request, then **Write the approved files
    locally**. Requests expire after two hours.
+   After you run the interviews, record the totals on the written kit (**Validation
+   results**, founder key required). The validation gate compares them with the
+   approved pass mark: it cannot be lowered, the sample cannot be enlarged after the
+   fact, and a GO or STOP result is final. Results are labelled FOUNDER-REPORTED.
 6. **Decision history**: every recorded action for the run.
 
 Later phases for a completed run (each step stops at a gate until the founder approves;

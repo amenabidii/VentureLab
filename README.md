@@ -44,7 +44,7 @@ until then `/health/model` returns HTTP 503. Submit a founder brief in the works
 (a run takes about 2–4 minutes on a CPU laptop), or choose **Recorded executions** to
 browse genuine past runs without a model. Run the later phases for a finished run with
 `docker compose run --rm app python workflow.py plan --run outputs/runs/<run-id>` and
-follow the printed approval steps. Tests: `docker compose run --rm --no-deps app python -m pytest -q`.
+follow the printed approval steps. After running the interviews in an approved kit, record the totals on the written kit (**Founder approval → Validation results**); a fixed validation gate compares them with the pass mark approved beforehand. Tests: `docker compose run --rm --no-deps app python -m pytest -q`.
 Full walkthrough, CLI options and platform notes: [docs/usage.md](docs/usage.md).
 
 ## What works and what is mocked
@@ -55,21 +55,22 @@ Full walkthrough, CLI options and platform notes: [docs/usage.md](docs/usage.md)
 | Founder web workspace: brief, workflow, evidence, Challenger, decision, counterfactual, artifacts, approvals, history | **Working**, connected to the backend |
 | Genuine committed execution browser with file-integrity checks | **Working**, read-only; historical approvals never reactivate |
 | Background runs: queued, running, completed, failed, blocked; duplicate submissions merged; queue bounded | **Working** (queue in memory; a run interrupted by a restart is reported as failed, not resumed) |
-| Founder brief validation and prohibited-category screen | **Working** |
+| Founder brief validation and policy screen: excluded categories, plus requests for fake reviews, sign-ups or urgency, impersonation or promised income (policy STOP, no research, Builder blocked) | **Working** |
 | Investigator: search planning, Hacker News and founder-listed page retrieval, relevance selection, quote extraction | **Working** (needs internet) |
 | Evidence verification: exact quotes, wording and attribution checks, standing ESTABLISHED / NEEDS_REVIEW / partial / unsupported / contradicted / assumption | **Working**; known quality limits in [ARCHITECTURE.md](ARCHITECTURE.md#built-vs-stubbed) |
 | Challenger: founder assumptions with stable IDs, code-checked citations and stances, risks, experiments | **Working** |
 | Gate (GO / REPEAT / PIVOT / STOP) and Counterfactual Challenge | **Working**, deterministic Python, no model; GO needs 2 independent supporting sources (established findings, or different commenters whose own first-person words, not quoted material, fully support the problem and pass a second check) |
 | Untrusted retrieved text: comments containing instructions to an AI are never sent to the model | **Working** |
-| Builder: experiment kit and interview guide; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
+| Builder: experiment kit, interview guide and a Lean Canvas whose every box is labelled EVIDENCE, FOUNDER-STATED, PROPOSED or ASSUMPTION; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
+| Validate-phase results: the founder records observed counts against the threshold approved in the kit; a deterministic validation gate returns GO / REPEAT / STOP. Results are labelled FOUNDER-REPORTED and are not verified by VentureLab | **Working** (no real experiment results have been recorded) |
 | Phase 2 Lean Canvas: every box FOUNDER-PROVIDED, SOURCED (with quote URL and standing) or ASSUMPTION/UNKNOWN | **Working** (`agents/strategist.py`) |
 | Phase 4 pricing hypotheses (labelled ASSUMPTION) and draft terms, privacy and refund policies (DRAFT, not legal advice); price chosen only by founder approval | **Working** (`agents/commercial.py`) |
 | Phase 5 store page and launch-post drafts; publishing and posting | Drafts **Working**; publishing **MOCKED** (local only, founder approval of the exact page) |
 | Phase 5 sale to cash: payment events, automatic delivery, refunds revoke access, duplicate and forged events refused, reconciliation | **MOCKED** (`payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`): simulated test orders only, no payments of any kind, not even sandbox; log in `outputs/payment_test_log.md` |
 | Phase 6 support triage, metrics and persevere-or-pivot memo (fixed rules over real evidence only) | **Working** (`agents/operator.py`); metrics from the rehearsal are **MOCKED** and never counted as evidence; no real support requests exist yet |
-| Phase 3 MVP generation beyond the landing page; recording real interview results in the app | **STUBBED** |
+| Phase 3 MVP generation beyond the landing page | **STUBBED** |
 | "Explore demo" data in the workspace | **MOCKED**, synthetic, labelled in the interface, never stored as results |
 | Model transport and public sources in offline tests | **MOCKED** (tests only) |
 
@@ -147,7 +148,11 @@ Not yet recorded. It will be linked here ([docs/demo-runbook.md](docs/demo-runbo
 - Process real or sandbox payments, hold, move or refund money, create accounts, or
   store passwords or card numbers.
 - Support physical goods or financial, investment, crypto, health or legal advice
-  products (these stop at the category screen, and the Builder is blocked).
+  products, or ideas that depend on fake reviews, sign-ups or urgency, impersonation or
+  promised income. These end in a policy STOP before any research, with the matched
+  words shown, and the Builder is blocked.
+- Invent or estimate experiment results. Validation results are only what the founder
+  records, labelled FOUNDER-REPORTED.
 - Hide core features behind a paywall.
 
 ## How the project stays alive after the hackathon

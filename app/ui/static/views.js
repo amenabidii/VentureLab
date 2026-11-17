@@ -348,6 +348,25 @@ function approvalReason(s, a) {
     return "Confirmation is uncertain. Refresh the request before retrying.";
   return approvalBlock(a, s.data.artifacts, s.runId);
 }
+function validationBlock(s, a) {
+  const kit = (s.data.validation || []).find((v) => v.id === a.id);
+  if (a.status !== "Executed" || !kit) return "";
+  const p = kit.plan;
+  const rows = kit.observations.length
+    ? `<table class="compact"><caption>Recorded totals (cumulative, founder-reported)</caption><thead><tr><th scope="col">Recorded</th><th scope="col">Participants</th><th scope="col">Met the condition</th><th scope="col">Gate</th><th scope="col">Notes</th></tr></thead><tbody>${kit.observations.map((o) => `<tr><td>${e(o.recordedAt || "")}</td><td>${o.participants} of ${p.sampleSize}</td><td>${o.successes}</td><td>${o.outcome ? badge(o.outcome.decision) : ""}</td><td>${e(o.notes)}</td></tr>`).join("")}</tbody></table>`
+    : `<p class="muted">No results recorded. The experiment has not been reported as run.</p>`;
+  const latest = kit.latest
+    ? `<div class="notice"><strong>Validation gate: ${e(kit.latest.decision)}</strong> (<code>${e(kit.latest.rule)}</code>). ${e(kit.latest.meaning)} <strong>Next:</strong> ${e(kit.latest.nextStep)}</div>`
+    : "";
+  const canRecord =
+    s.service.capabilities.approvals && !s.demo && !kit.final;
+  const form = canRecord
+    ? `<div class="grid-two"><label class="field">Participants so far (of ${p.sampleSize})<input id="participants-${e(a.id)}" type="number" min="1" max="${p.sampleSize}" step="1" inputmode="numeric"></label><label class="field">Of those, met the condition<input id="successes-${e(a.id)}" type="number" min="0" max="${p.sampleSize}" step="1" inputmode="numeric"></label></div><label class="field full">Notes (optional)<input id="notes-${e(a.id)}" maxlength="500" placeholder="What you observed, in your words"></label><p class="muted">Enter cumulative totals from interviews you actually ran. VentureLab records them as founder-reported and does not verify them. Requires the founder key above.</p><div class="actions"><button data-action="record-result" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Record founder-reported result</button></div>`
+    : kit.final
+      ? `<p class="muted">This experiment's result is final. A new experiment needs a new approved kit.</p>`
+      : "";
+  return `<section class="validation" aria-label="Validation results"><h3>Validation results</h3><p><strong>Threshold approved before testing:</strong> ${p.threshold} of ${p.sampleSize} participants — ${e(p.metric)}. <span class="badge amber">FOUNDER-REPORTED results</span></p>${rows}${latest}${form}</section>`;
+}
 export function approvals(s) {
   return (
     heading(
@@ -362,7 +381,7 @@ export function approvals(s) {
       ? s.data.approvals
           .map(
             (a) =>
-              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl>${a.expiresAt ? `<p class="muted">Must be decided and executed before ${e(a.expiresAt)}.</p>` : ""}<div class="notice">${e(a.status === "Approved" ? "Approved. The files are written only when you execute this exact request." : approvalReason(s, a) || "Review the exact scope and the artifact preview before responding.")}</div>${a.status === "Pending" && !s.demo ? `<label class="field full">Reason for your decision (optional)<input id="reason-${e(a.id)}" maxlength="500" value="" placeholder="Optional explanation"></label>` : ""}<div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button>${a.status === "Approved" && s.service.capabilities.builder && !s.demo ? `<button data-action="execute" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Write the approved files locally</button>` : ""}</div></article>`,
+              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl>${a.expiresAt ? `<p class="muted">Must be decided and executed before ${e(a.expiresAt)}.</p>` : ""}<div class="notice">${e(a.status === "Approved" ? "Approved. The files are written only when you execute this exact request." : approvalReason(s, a) || "Review the exact scope and the artifact preview before responding.")}</div>${a.status === "Pending" && !s.demo ? `<label class="field full">Reason for your decision (optional)<input id="reason-${e(a.id)}" maxlength="500" value="" placeholder="Optional explanation"></label>` : ""}<div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button>${a.status === "Approved" && s.service.capabilities.builder && !s.demo ? `<button data-action="execute" data-request="${e(a.id)}" ${s.busy ? "disabled" : ""}>Write the approved files locally</button>` : ""}</div>${validationBlock(s, a)}</article>`,
           )
           .join("")
       : empty(

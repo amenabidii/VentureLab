@@ -41,7 +41,7 @@ founder's machine except inside a decision the founder submits.
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
-| 2 Validate | Lean Canvas; design an experiment that could disprove the assumption | Strategist (canvas), Builder (kit), Judge (rules) | Approve exact kit and proposed thresholds | **Working** (canvas, plan and kit); recording real results is **STUBBED** |
+| 2 Validate | Lean Canvas; design an experiment that could disprove the assumption, then judge its results | Strategist (canvas), Builder (kit and its canvas), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (canvas, plan, kit, founder-reported results and validation gate); landing-page demand test **STUBBED** |
 | 3 Build | Landing page; MVP scope, user guide and executed checks | Builder, Product | Approve exact page fingerprint | **Working** (landing page after GO; scope, guide, checks); MVP code **STUBBED** |
 | 4 Commercial Setup | Pricing hypotheses and draft policies | Commercial | Founder chooses the price (fingerprint-bound) | **Working** (drafts; no payments of any kind) |
 | 5 Launch | Store page, launch posts, automatic delivery | Launcher; `payments.py`, `delivery.py`, `refunds.py`, `reconcile.py` | Publish page and enable delivery, each bound to the exact file | Drafts **Working**; publishing and sale to cash **MOCKED** |
@@ -100,19 +100,35 @@ questions or interpreting polite interest as demand.
 - **Method**: the Builder writes a hypothesis, a non-leading past-behaviour interview
   guide, an ethical experiment, success and failure criteria labelled PROPOSED
   ASSUMPTION, and next steps. The model may only choose which supplied assumption to
-  test; it writes no factual prose. Nothing is sent to anyone.
-- **Outputs**: `outputs/builder/<run>/<action>/phase2_step1_validation-kit.json` / `.md`,
-  written only after approval.
-- **Gate**: founder approval of the exact kit; real results would later feed the
-  `STOP_FAILED_VALIDATION_CONDITION` rule (results entry is STUBBED).
+  test; it writes no factual prose. Nothing is sent to anyone. A **Lean Canvas**
+  (`lean_canvas.py`, no model) fills the nine boxes and labels each one EVIDENCE (an
+  ESTABLISHED finding, with its URLs), FOUNDER-STATED, PROPOSED (the kit's pass mark) or
+  ASSUMPTION, with what would test it; unknown boxes (revenue, advantage, value
+  proposition) say they are unknown instead of being filled in.
+- **Outputs**: `outputs/builder/<run>/<action>/phase2_step1_validation-kit.json` / `.md`
+  and `phase2_step1_lean-canvas.json` / `.md`, in the same fingerprinted bundle, written
+  only after approval.
+- **Gate**: founder approval of the exact kit, which fixes the success threshold and
+  sample size before any result exists. Then the **validation gate** (`validation.py`,
+  `POST /api/approvals/<id>/results`): the founder records cumulative counts against
+  that executed, unmodified kit (founder key required). Fixed rules decide:
+  `VALIDATION_THRESHOLD_MET` (GO to the next phase, never proof of demand),
+  `STOP_FAILED_VALIDATION_CONDITION` (the threshold can no longer be reached: stop or
+  pivot back to Discover) or `REPEAT_EXPERIMENT_INCOMPLETE`. A larger sample than
+  approved, falling counts, more successes than participants, results for a modified
+  kit or a superseded run are refused, and a GO or STOP result is final. Results are
+  stored in `outputs/runs/<run>/phase2_step2_validation-results.json` and
+  `phase2_gate_validation.json`, labelled FOUNDER-REPORTED (VentureLab does not verify
+  them), and each recording appends a founder entry (`approved_by: founder`) and a gate
+  entry to `decision_log.json`. The phase 1 decision is never rewritten.
 
 **Lean Canvas (Working, `agents/strategist.py`):** all nine boxes, each entry labelled
 FOUNDER-PROVIDED, SOURCED (verified quote URL plus its standing; only ESTABLISHED counts as
 established) or ASSUMPTION/UNKNOWN with the test that would resolve it. Revenue stays
 UNKNOWN until willingness to pay is measured. Outputs `phase2_step2_lean-canvas.*` and
-`phase2_gate_lean-canvas.json` (founder review; demand not evidenced).
+`phase2_gate_lean-canvas.json` (founder review; demand not evidenced). The web workspace's kit bundle carries its own canvas (`lean_canvas.py`, above), fingerprinted with the kit it belongs to.
 
-**Remaining Validate design (STUBBED):** the Builder would propose a
+**Remaining Validate design (STUBBED):** updating a canvas from recorded validation results (a new version per experiment). The Builder would propose a
 landing-page demand experiment with a fixed audience, duration, denominator,
 conversion definition and pass/fail criteria. Founder approval binds the exact
 page, destinations and thresholds before launch. Traffic, sign-ups and interview
@@ -195,8 +211,11 @@ Application tests in this repository test VentureLab, not an automatically built
 The phase 1 gate (`gates.py`) contains no model. Rules are checked in a fixed order;
 the first that applies decides, and every check up to it is recorded in the output:
 
-1. `STOP_PROHIBITED_CATEGORY`: physical goods, financial/investment/crypto, health or
-   legal advice (keyword screen, matched words are shown).
+1. `STOP_PROHIBITED_CATEGORY`, a **policy** STOP (not a verdict on the evidence):
+   physical goods, financial/investment/crypto, health or legal advice, or an idea
+   that depends on fake reviews, sign-ups or urgency, impersonation or promised income
+   (`brief.py`, keyword screen per field; a counter-measure verb right before the match,
+   as in "detects fake reviews", exempts it; matched words are shown). No research runs.
 2. `STOP_FAILED_VALIDATION_CONDITION`: a real result is below a pass mark the founder
    set before testing.
 3. `STOP_CONTRADICTED`: at least 2 independent sources contradict the problem and no
@@ -322,12 +341,13 @@ matching audit entries; review provenance before updating it.
 | Builder (kit; landing page after GO), adapter from the research run | Built, tested; kit live-run and founder-approved |
 | Founder approval: key, fingerprint, run, expiry, single use, audit | Built, tested, bypass attempts refused on the live server |
 | Lean Canvas (Phase 2) | Built, tested, run on a genuine run |
+| Validate-phase results entry and validation gate (founder-reported) | Built, tested (unit, API, browser) |
 | Pricing hypotheses and draft policies (Phase 4) | Built, tested; price set only by founder approval |
 | Store page and launch-post drafts (Phase 5) | Built, tested; publishing MOCKED |
 | Sale to cash: payment events, delivery, refunds, reconciliation (Phase 5) | MOCKED, built and tested; simulated test orders only |
 | Support, metrics, persevere-or-pivot memo (Phase 6) | Built, tested; rehearsal metrics MOCKED and excluded from evidence |
-| Validate-phase results entry; MVP generation beyond the landing page | STUBBED |
 | Real payments, publishing, posting | Not built, by rule |
+| MVP generation beyond the landing page | STUBBED |
 
 Known limits: relevance is a keyword and concept list, not semantic understanding; the
 extraction model sometimes generalises or misattributes claims (the checks hold those
@@ -340,8 +360,8 @@ key is a single-machine capability, not an account system.
 
 ## Roadmap
 
-1. Record real experiment results against the founder's pre-set pass marks and feed
-   them back into the gate (Validate, then Operate & Learn).
+1. Use recorded validation results in Operate & Learn (persevere-or-pivot memo), and
+   add demand experiments with their own denominators (landing-page sign-ups).
 2. Evidence quality: semantic relevance instead of keyword matching, stronger
    attribution checks, measured on the held-out benchmark set.
 3. Human review queue for NEEDS_REVIEW findings, recorded in the audit log.

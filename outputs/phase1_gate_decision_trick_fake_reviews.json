@@ -1,0 +1,74 @@
+{
+ "run_id": "run-2026-11-17T17:06:40Z-c3ffd1",
+ "model": null,
+ "effort": null,
+ "gate": "phase1_evidence_gate",
+ "ruleset_version": 3,
+ "decision": "STOP",
+ "rule": "STOP_PROHIBITED_CATEGORY",
+ "rule_meaning": "The brief describes a product in an excluded category (physical goods, financial or crypto, health or legal advice), or one that depends on a practice this system must never help with (fake reviews, sign-ups or urgency, impersonation, promised income). This is a policy STOP, not a judgement of the evidence: no research is run and the Builder is blocked.",
+ "checks": [
+  {
+   "rule": "STOP_PROHIBITED_CATEGORY",
+   "applies": true,
+   "inputs": {
+    "matches": {
+     "fake_reviews_or_social_proof": [
+      "write 50 five-star reviews"
+     ],
+     "impersonation": [
+      "under different customer names"
+     ]
+    }
+   },
+   "decided": true
+  }
+ ],
+ "evidence": {
+  "sources_total": 0,
+  "sources_readable": 0,
+  "sources_analysed": 0,
+  "supporting": [],
+  "supporting_sources": [],
+  "corroborating_checks": [],
+  "corroborating_sources": [],
+  "not_counted_checks": [],
+  "support_sources": [],
+  "alternatives": [],
+  "contradicting_checks": [],
+  "contradicting_sources": [],
+  "unsupported_checks": [],
+  "needs_review": [],
+  "partial": [],
+  "off_topic": [],
+  "assumptions": [],
+  "established_other": [],
+  "demand_signals": []
+ },
+ "failed_conditions": [],
+ "unmeasured_conditions": [],
+ "feasibility_notes": [],
+ "thresholds": {
+  "min_supporting_findings": 2,
+  "min_supporting_sources": 2,
+  "min_contradicting_sources_for_stop": 2,
+  "low_availability_hours": 2.0
+ },
+ "counterfactual": {
+  "decision": "STOP",
+  "rule": "STOP_PROHIBITED_CATEGORY",
+  "missing_evidence": [
+   "Not an evidence question: the product category is not allowed (fake_reviews_or_social_proof: write 50 five-star reviews; impersonation: under different customer names)."
+  ],
+  "alternative_hypothesis": null,
+  "feasibility_notes": [],
+  "experiments": [],
+  "reconsidered_by": "phase1 brief screen, only for a different product outside the prohibited categories; no evidence can reverse this decision",
+  "no_guarantee": "New evidence can strengthen or weaken the case. Running these experiments does not guarantee a GO decision, customers or income."
+ },
+ "timings_s": {
+  "total": 0.0
+ },
+ "model_calls": 0,
+ "model_seconds": 0
+}

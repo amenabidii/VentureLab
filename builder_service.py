@@ -10,6 +10,7 @@ from pydantic import Field, model_validator
 from agents.builder import assemble_kit, generate_kit, kit_markdown, model_selects
 from builder_models import BuilderInput, Contract, ExperimentKit, Identifier, LandingPageSpec
 from landing_page import render_landing_page
+from lean_canvas import LeanCanvas, build_canvas, canvas_markdown
 from llm import OllamaClient
 
 
@@ -27,6 +28,9 @@ class ArtifactBundle(Contract):
     # Integration: a landing page is only part of the bundle when the upstream gate
     # says GO (Milestone 3's rule). REPEAT and PIVOT may still get the experiment kit.
     landing_page: LandingPageSpec | None = None
+    # Added after earlier bundles were approved: absent (None) in those, and then left out
+    # of the fingerprint, so their recorded fingerprints stay valid.
+    lean_canvas: LeanCanvas | None = None
     model: str | None = None
     generator: str = Field(pattern=r"^(deterministic-template|ollama)$")
 
@@ -45,6 +49,8 @@ class ArtifactBundle(Contract):
             raise ValueError("Landing-page audience must match the brief target customer")
         if self.kit != assemble_kit(self.brief, self.kit.assumption_index):
             raise ValueError("Experiment kit is inconsistent with the validated brief and design")
+        if self.lean_canvas is not None and self.lean_canvas != build_canvas(self.brief, self.kit):
+            raise ValueError("Lean Canvas is inconsistent with the validated brief and kit")
         if (self.generator == "ollama") != bool(self.model):
             raise ValueError("Generator/model provenance mismatch")
         return self
@@ -54,6 +60,9 @@ class ArtifactBundle(Contract):
             "phase2_step1_validation-kit.json": (self.kit.model_dump_json(indent=2) + "\n").encode(),
             "phase2_step1_validation-kit.md": kit_markdown(self.kit).encode(),
         }
+        if self.lean_canvas is not None:
+            files["phase2_step1_lean-canvas.json"] = (self.lean_canvas.model_dump_json(indent=2) + "\n").encode()
+            files["phase2_step1_lean-canvas.md"] = canvas_markdown(self.lean_canvas).encode()
         if self.landing_page is not None:
             files["phase3_step1_landing-spec.json"] = (self.landing_page.model_dump_json(indent=2) + "\n").encode()
             files["phase3_step1_landing-page.html"] = render_landing_page(self.landing_page).encode()
@@ -65,7 +74,8 @@ class ArtifactBundle(Contract):
     def snapshot(self) -> tuple[dict[str, bytes], str]:
         # Includes inputs, model identity, exact output bytes and names. Template edits invalidate approval.
         files = self.files()
-        payload = {"bundle": self.model_dump(mode="json"),
+        exclude = {"lean_canvas"} if self.lean_canvas is None else set()
+        payload = {"bundle": self.model_dump(mode="json", exclude=exclude),
                    "files": {name: data.decode() for name, data in files.items()}}
         digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
         return files, digest
@@ -77,7 +87,8 @@ def prepare(brief: BuilderInput, spec: LandingPageSpec | None, client: OllamaCli
     spec = LandingPageSpec.model_validate(spec.model_dump()) if spec is not None else None
     # Provenance records "ollama" only when the model actually made the selection.
     used_model = model_selects(brief, client)
+    kit = generate_kit(brief, client)
     return ArtifactBundle(run_id=brief.run_id, artifact_identity="validation-artifacts", brief=brief,
-                          kit=generate_kit(brief, client), landing_page=spec,
+                          kit=kit, landing_page=spec, lean_canvas=build_canvas(brief, kit),
                           model=client.settings.model if used_model else None,
                           generator="ollama" if used_model else "deterministic-template")

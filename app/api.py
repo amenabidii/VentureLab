@@ -18,6 +18,7 @@ Trust model (local prototype, single founder):
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import threading
@@ -32,7 +33,8 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app import presentation as view
 from approval import ApprovalError, ApprovalStore
-from audit import append_entries, read_entries
+import validation
+from audit import AuditLog, append_entries, read_entries
 from brief import FounderBrief
 from builder_adapter import BuilderBlocked, adapt, run_outputs
 from builder_models import ApprovalDecision
@@ -47,6 +49,8 @@ MAX_ARTIFACT_BYTES = 500_000
 FILE_TITLES = {
     "phase2_step1_validation-kit.md": ("Validation experiment kit and interview guide", "Experiment kit", "text"),
     "phase2_step1_validation-kit.json": ("Validation experiment kit (structured)", "Experiment kit data", "text"),
+    "phase2_step1_lean-canvas.md": ("Lean Canvas: what is known and what is assumed", "Lean Canvas", "text"),
+    "phase2_step1_lean-canvas.json": ("Lean Canvas (structured)", "Lean Canvas data", "text"),
     "phase3_step1_landing-spec.json": ("Landing-page specification", "Landing-page data", "text"),
     "phase3_step1_landing-page.html": ("Local landing-page prototype", "Landing page", "html"),
 }
@@ -421,3 +425,112 @@ def run_artifacts(run_id: str, svc: Services = Depends(services)):
                         "format": fmt, "content": data.decode()[:MAX_ARTIFACT_BYTES],
                         "fingerprint": request.artifact_sha256, "approval": status})
     return out
+
+
+# --- Phase 2: founder-reported validation results against the approved threshold ----------------
+
+RESULTS_FILE = "phase2_step2_validation-results.json"
+VALIDATION_GATE_FILE = "phase2_gate_validation.json"
+
+
+class ResultIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    run_id: str
+    founder_key: str = Field(max_length=200)
+    participants: int = Field(ge=0, le=100)
+    successes: int = Field(ge=0, le=100)
+    notes: str = Field(default="", max_length=500)
+
+
+def _intact_executed_kit(svc: Services, action_id: str, run_id: str):
+    """The approved, executed kit whose files on disk still match the approved snapshot."""
+    request, bundle = _request_for(svc, action_id, run_id)
+    expires, expired = _expired(svc, action_id)
+    if view.approval(request, expires, expired)["status"] != "Executed":
+        raise HTTPException(409, "Results can only be recorded for a kit the founder approved and wrote")
+    directory = Path(request.destination).resolve()
+    if not directory.is_relative_to(svc.builder_root.resolve()):
+        raise HTTPException(409, "The approved kit is outside the Builder output folder")
+    for name, data in bundle.files().items():
+        path = (directory / name).resolve()
+        if path.parent != directory or not path.is_file() or path.read_bytes() != data:
+            raise HTTPException(409, "The written kit differs from the approved snapshot; results cannot be "
+                                     "recorded against it")
+    return request, bundle
+
+
+def _validation_record(svc: Services, run_id: str) -> dict[str, Any]:
+    path = svc.runs_root / run_id / RESULTS_FILE
+    if not path.is_file():
+        return {"run_id": run_id, "result_source": validation.RESULT_SOURCE, "kits": {}}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@router.get("/runs/{run_id}/validation")
+def run_validation(run_id: str, svc: Services = Depends(services)):
+    """One row per kit written after approval: its pre-approved plan and any recorded results."""
+    _run(svc, run_id)
+    kits = _validation_record(svc, run_id)["kits"]
+    rows = []
+    for request in svc.approvals.list_requests(run_id):
+        expires, expired = _expired(svc, request.action_id)
+        if view.approval(request, expires, expired)["status"] != "Executed":
+            continue
+        _, bundle = svc.approvals.inspect(request.action_id)
+        c = bundle.kit.success_criteria
+        kit = kits.get(request.action_id, {})
+        observations = kit.get("observations", [])
+        latest = observations[-1]["outcome"] if observations else None
+        rows.append({"id": request.action_id, "fingerprint": request.artifact_sha256,
+                     "plan": {"metric": c.metric, "threshold": c.threshold, "sampleSize": c.sample_size},
+                     "observations": observations, "latest": latest,
+                     "final": bool(latest and latest["decision"] in ("GO", "STOP")),
+                     "resultSource": validation.RESULT_SOURCE})
+    return rows
+
+
+@router.post("/approvals/{action_id}/results", status_code=201)
+def record_result(action_id: str, body: ResultIn, svc: Services = Depends(services)):
+    request, bundle = _intact_executed_kit(svc, action_id, body.run_id)
+    if not svc.approvals.verify_founder(body.founder_key.strip().encode("ascii", "replace")):
+        svc.approvals.record_failure("record_validation_result", ApprovalError("founder capability required"),
+                                     action_id)
+        mirror_builder_events(svc, request.run_id)
+        raise HTTPException(403, "Founder capability required; nothing was recorded")
+    try:
+        adapt(request.run_id, _outputs(svc, request.run_id))
+    except BuilderBlocked as exc:
+        raise HTTPException(409, f"{exc}. Results cannot be recorded against it.") from exc
+    criterion = bundle.kit.success_criteria
+    plan = validation.Plan(criterion.metric, criterion.threshold, criterion.sample_size)
+    with svc.builder_lock:
+        record = _validation_record(svc, request.run_id)
+        kit = record["kits"].setdefault(action_id, {
+            "fingerprint": request.artifact_sha256, "hypothesis": bundle.kit.hypothesis,
+            "plan": {"metric": plan.metric, "threshold": plan.threshold, "sample_size": plan.sample_size,
+                     "approved_before_results": True},
+            "observations": []})
+        try:
+            validation.check_observation(plan, kit["observations"], body.participants, body.successes)
+        except validation.ResultRefused as exc:
+            raise HTTPException(409, str(exc)) from exc
+        outcome = validation.evaluate(plan, body.participants, body.successes)
+        log = AuditLog(svc.log_path, request.run_id)
+        entry = log.record("founder", "record_validation_result", approved_by="founder", action_id=action_id,
+                           fingerprint=request.artifact_sha256, participants=body.participants,
+                           successes=body.successes, result_source="founder_reported")
+        observation = {"recorded_at": entry["timestamp"], "participants": body.participants,
+                       "successes": body.successes, "notes": body.notes.strip(),
+                       "result_source": validation.RESULT_SOURCE, "outcome": outcome.to_dict()}
+        kit["observations"].append(observation)
+        out = svc.runs_root / request.run_id
+        (out / RESULTS_FILE).write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        gate = {"run_id": request.run_id, "gate": "phase2_validation_gate", "action_id": action_id,
+                "plan": kit["plan"], "participants": body.participants, "successes": body.successes,
+                "result_source": validation.RESULT_SOURCE, **outcome.to_dict(), "decided_at": entry["timestamp"]}
+        (out / VALIDATION_GATE_FILE).write_text(json.dumps(gate, indent=2, ensure_ascii=False) + "\n",
+                                                encoding="utf-8")
+        log.record("gate", "validation_gate", outcome=outcome.decision.lower(), rule=outcome.rule,
+                   action_id=action_id, participants=body.participants, successes=body.successes,
+                   threshold=plan.threshold, sample_size=plan.sample_size)
+    return observation | {"action_id": action_id, "plan": kit["plan"]}

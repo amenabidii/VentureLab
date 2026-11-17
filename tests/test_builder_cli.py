@@ -20,7 +20,8 @@ def test_cli_round_trip(tmp_path, capsys):
     capsys.readouterr()
     assert main(options + ["execute", action]) == 0
     result = json.loads(capsys.readouterr().out)
-    assert len(result["files"]) == 4
+    assert len(result["files"]) == 6  # kit, Lean Canvas and landing page, each as data and readable file
+    assert any(f.endswith("phase2_step1_lean-canvas.md") for f in result["files"])
     assert main(options + ["audit"]) == 0
     assert json.loads(capsys.readouterr().out)[-1]["outcome"] == "executed"
     assert main(options + ["receipt", action]) == 0

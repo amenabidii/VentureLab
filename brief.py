@@ -101,6 +101,63 @@ PROHIBITED: dict[str, re.Pattern[str]] = {
 }
 
 
+# Practices this project must never help with, whatever the product (see the key rules:
+# no fake reviews, sign-ups or urgency, no impersonation, no promised income). A match in
+# a sentence about detecting or preventing the practice ("a tool that flags fake reviews")
+# is not counted, so anti-fraud products stay possible.
+DECEPTIVE: dict[str, re.Pattern[str]] = {
+    "fake_reviews_or_social_proof": re.compile(
+        r"\b(?:fake|bogus|paid|purchased|invented|fabricated|made[- ]up|astroturf\w*)\s+"
+        r"(?:\w+\s+){0,2}?(?:reviews?|ratings?|testimonials?|sign-?ups?|followers|likes|upvotes|endorsements?)\b"
+        r"|\b(?:write|writes|writing|generate[sd]?|generating|create[sd]?|creating|post(?:s|ing)?|buy(?:s|ing)?|"
+        r"sell(?:s|ing)?|produce[sd]?|mass[- ]produce)\s+(?:\w+\s+){0,3}?"
+        r"(?:\d+\s+)?(?:five|5)[- ]star\s+(?:reviews?|ratings?)\b"
+        r"|\b(?:inflate[sd]?|inflating|pad(?:s|ding)?)\s+(?:\w+\s+){0,2}?(?:sign-?up|waitlist|review|follower|user)"
+        r"\s*(?:counts?|numbers?|totals?)\b",
+        re.IGNORECASE,
+    ),
+    "fake_urgency_or_scarcity": re.compile(
+        r"\b(?:fake|false|artificial|manufactured|invented)\s+(?:\w+\s+){0,1}?(?:urgency|scarcity|countdowns?|"
+        r"deadlines?|stock (?:levels?|counts?))\b"
+        r"|\b(?:always|perpetual|evergreen|resetting|fake)\s+(?:\w+\s+){0,2}?(?:countdown|timer|scarcity)\w*"
+        r"|\bonly \d+ (?:left|remaining)\b",
+        re.IGNORECASE,
+    ),
+    "impersonation": re.compile(
+        r"\bimpersonat\w*"
+        r"|\b(?:pose[sd]?|posing|pretend(?:s|ed|ing)?|masquerad\w*)\s+(?:to be\s+|as\s+)"
+        r"(?:\w+\s+){0,2}?(?:customers?|users?|buyers?|people|humans?|founders?|celebrit\w+|brands?|employees?)\b"
+        r"|\bposts?\s+as\s+(?:\w+\s+){0,2}?(?:customers?|users?|buyers?|people)\b"
+        r"|\bsock ?puppet\w*"
+        r"|\bunder\s+(?:different|other|fake|false|made[- ]up|invented|several|many)\s+"
+        r"(?:customer|people'?s?|user|buyer|reviewer)?\s*names\b",
+        re.IGNORECASE,
+    ),
+    "income_promise": re.compile(
+        r"\bguarantee[sd]?\s+(?:\w+\s+){0,4}?(?:income|earnings|profits?|revenue|returns?|sales|\$|€|£)"
+        r"|\bguaranteed\s+(?:\w+\s+){0,2}?(?:income|earnings|profits?|returns?|sales|money)\b",
+        re.IGNORECASE,
+    ),
+}
+# Only a counter-measure verb right before the match (at most three words earlier) exempts it,
+# so "write fake reviews" is not excused by "detect" elsewhere in the brief.
+_COUNTER_MEASURE = re.compile(
+    r"\b(?:detect\w*|spot\w*|flag\w*|identif\w*|remov\w*|report\w*|filter\w*|moderat\w*|prevent\w*|"
+    r"block\w*|fight\w*|combat\w*|audit\w*|verif\w*|tell apart|distinguish\w*|recogni[sz]\w*|catch\w*|"
+    r"tell)\s+(?:\w+\s+){0,3}$", re.IGNORECASE)
+
+
+def _deceptive_matches(fields: list[str]) -> dict[str, list[str]]:
+    found: dict[str, set[str]] = {}
+    for field in fields:  # each field separately: words in one field never excuse another
+        for category, pattern in DECEPTIVE.items():
+            for m in pattern.finditer(field):
+                if _COUNTER_MEASURE.search(field[max(0, m.start() - 60):m.start()]):
+                    continue
+                found.setdefault(category, set()).add(" ".join(m.group(0).lower().split()))
+    return {k: sorted(v) for k, v in found.items()}
+
+
 @dataclass(frozen=True)
 class CategoryScreen:
     allowed: bool
@@ -119,4 +176,6 @@ def screen_brief(brief: FounderBrief) -> CategoryScreen:
         found = sorted({m.group(0).lower() for m in pattern.finditer(text)})
         if found:
             matches[category] = found
+    matches |= _deceptive_matches([brief.idea, brief.problem_statement, brief.target_customer, brief.market,
+                                   *brief.values_and_constraints])
     return CategoryScreen(allowed=not matches, matches=matches)
