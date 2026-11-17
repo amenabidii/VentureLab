@@ -11,6 +11,11 @@ returns GO, REPEAT, PIVOT or STOP, together with a **Counterfactual Challenge**:
 evidence or experiment could change the decision. A **Builder** turns the result into
 a validation experiment kit (and, after GO, a local landing-page prototype) that is
 written only after the founder approves the exact artifact.
+[Watch the 2:54 captioned demo (Google Drive)](https://drive.google.com/file/d/1D2DdEu9gWMbQyLhkSkQIUfdP_0CiDbu3/view?usp=sharing).
+
+- **Prohibited request → STOP:** the demo's fake-review request is refused before research; the Builder is blocked.
+- **Insufficient evidence → REPEAT:** the recorded Slack-thread run has **0 of 2 required independent supporting sources** ([gate record](outputs/phase1_gate_decision.md)).
+- **Phases 2–6 → REHEARSAL:** founder-approved local outputs demonstrate the workflow; the gate still says **DO NOT LAUNCH**.
 
 **All six phases run, each ending in a gate.** Status on `main`, from real runs:
 
