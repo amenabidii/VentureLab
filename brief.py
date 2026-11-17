@@ -172,16 +172,100 @@ _COUNTER_MEASURE = re.compile(
     r"tell)\s+(?:\w+\s+){0,3}$", re.IGNORECASE)
 
 
-def _deceptive_matches(fields: list[str]) -> dict[str, list[str]]:
+# --- broader wording: paraphrases, other languages, leetspeak (added after red-teaming) ---------
+_R = r"(?:reviews?|reveiws?|reviws?|revews?)"
+_EXTRA_PROHIBITED: dict[str, re.Pattern[str]] = {
+    "physical_goods": re.compile(
+        r"\b(?:sells? and ships?|ships? (?:\w+\s+){0,2}?(?:orders|products|goods|items|worldwide)|"
+        r"deliver(?:ed|s|y)? to (?:your|their|the) (?:door|home)|handmade soaps?|printed mugs?|sneakers|"
+        r"print[- ]on[- ]demand)\b", re.IGNORECASE),
+    "financial_investment_or_crypto": re.compile(
+        r"\b(?:web3|presales?|meme ?coins?|(?:community|new) coins?|minted|mint(?:ing)? nfts?|solana|blockchain|"
+        r"shares to buy|stocks to buy|options trading|trading alerts?|sports betting|betting tips|bets|gambling|"
+        r"casinos?|sportsbook|lottery)\b", re.IGNORECASE),
+    "health_advice": re.compile(
+        r"\b(?:(?:online |ai |virtual )therap(?:y|ists?)|therap(?:y|ist) (?:chatbots?|bots?|apps?|advice|sessions?)|"
+        r"telehealth|nutritionists?|symptoms?|vitamins?|herbal remed\w*|"
+        r"(?:for|treat\w*|cure\w*)\s+(?:people with\s+)?(?:depression|anxiety|insomnia|adhd|diabet\w*)|"
+        r"meal plans? for diabet\w*|likely condition)\b", re.IGNORECASE),
+    "legal_advice": re.compile(
+        r"\b(?:lawyers|attorneys|tax returns?|deductions? to claim|divorce|wills? and (?:testaments?|divorce)|"
+        r"ndas?|employment contracts?|which clauses)\b", re.IGNORECASE),
+}
+_EXTRA_DECEPTIVE: dict[str, re.Pattern[str]] = {
+    "fake_reviews_or_social_proof": re.compile(
+        r"\b(?:\d+|fifty|twenty|hundred|a hundred|dozens of)\s+(?:\w+\s+){0,1}?(?:five|5)[- ]?(?:stars?|\*)\s*"
+        r"(?:\w+\s+){0,1}?(?:" + _R[3:-1] + r"|ratings?)"
+        r"|\b(?:write|writes|writing|make|makes|compose|draft|type out|leave|leaves|leaving|seed|seeding|"
+        r"generate|generates|create|creates|produce|post|posts)\s+"
+        r"(?:(?!(?:to|on|of|about|replies|responses|answers|summar\w*|reports?|weekly|monthly|code|peer|performance|"
+        r"book|film|movie|game|paper|academic|literature)\b)\w+\s+){0,4}?(?:reviews|reveiws|reviws|revews)\b"
+        r"|\b(?:fake|bogus|paid|invented|fabricated|made[- ]up)\s+(?:\w+\s+){0,2}?" + _R
+        + r"|\bastroturf\w*|\bsock ?puppets?\b|\bai[- ](?:written|generated)\s+(?:\w+\s+){0,2}?(?:"
+        + _R[3:-1] + r"|testimonials?)"
+        r"|\b(?:negative|bad|1[- ]star|one[- ]star)\s+(?:" + _R[3:-1] + r"|ratings?)\s+(?:\w+\s+){0,3}?competitors?"
+        r"|\b(?:buy|buys|buying|purchase|purchasing|sell|selling)\s+(?:\w+\s+){0,3}?"
+        r"(?:followers|likes|upvotes|views|subscribers)\b"
+        r"|\b(?:bot|fake|multiple|several|many|different)\s+accounts?\s+(?:that|to|which)?\s*(?:\w+\s+){0,2}?"
+        r"(?:upvote|like|comment|review|vote|praise)"
+        r"|\b(?:testimonials?|" + _R[3:-1] + r")\s+(?:from|by|written by)\s+(?:\w+\s+){0,1}?"
+        r"(?:ai|fictional|made[- ]up|synthetic|bots?)\b"
+        r"|\bpersonas?\s+(?:who|that|to)\s+(?:\w+\s+){0,1}?(?:leave|write|post|give)\s+(?:\w+\s+){0,1}?"
+        r"(?:testimonials?|" + _R[3:-1] + r")"
+        r"|\bin the voice of\s+(?:\w+\s+){0,2}?(?:buyers|customers|users|clients|reviewers)\b"
+        r"|\bfake\s+sign\s+ups?\b|\bmade[- ]up\s+(?:e-?mails?|names|users|accounts|sign[- ]?ups?)\b"
+        r"|\bfill\w*\s+(?:\w+\s+){0,2}?(?:waitlist|wait list)\s+with\b"
+        r"|\bas if\s+(?:it|they)\s+(?:were|was|are)\s+(?:real\s+)?(?:users|customers|people|buyers)\b"
+        r"|faux (?:avis|témoignages|commentaires)|avis (?:\w+\s+){0,2}?(?:bidons?|inventés)"
+        r"|(?:تقييم\w*|مراجع\w*|شهاد\w*)[^.]{0,40}(?:مزيف\w*|وهمي\w*|مزور\w*)"
+        r"|(?:مزيف\w*|وهمي\w*|مزور\w*)[^.]{0,40}(?:تقييم\w*|مراجع\w*|شهاد\w*)", re.IGNORECASE),
+    "fake_urgency_or_scarcity": re.compile(
+        r"\bonly (?:\d+|a few|few|a handful of)\s+(?:spots?|seats?|copies|places|units|items|licen[cs]es|pieces|"
+        r"slots|left|remaining)\b|\b(?:limited stock|almost sold out|selling out fast|low stock)\b"
+        r"|\bends? in \d+ (?:minutes|hours|seconds)\s+(?:\w+\s+){0,2}?(?:every|each)\s+(?:new\s+)?"
+        r"(?:visitor|user|customer|buyer)", re.IGNORECASE),
+    "income_promise": re.compile(
+        r"(?:income|earnings|profits?|revenue|returns?|money|\$[\d,.]+k?)\s+(?:\w+\s+){0,4}?guaranteed\b"
+        r"|\bmake (?:you |them )?rich\b|\bget[- ]rich\b|\b(?:results|income|earnings|profits?) "
+        r"(?:assured|guaranteed)\b|\bcertain to (?:double|triple|increase|grow)\b", re.IGNORECASE),
+    "phishing_credentials_or_private_data": re.compile(
+        r"\bphish\w*|\b(?:collect|harvest|steal|capture)\w*\s+(?:\w+\s+){0,3}?(?:passwords?|credentials|logins?|"
+        r"card numbers?)\b|\blogin page that looks like\b|\blooks? like (?:\w+\s+){0,3}?(?:login|sign[- ]in) page"
+        r"|\bstor(?:e|es|ing)\s+(?:\w+\s+){0,2}?(?:card numbers?|credit cards?|cvvs?)\b"
+        r"|\bscrap(?:e|es|ing)\s+(?:\w+\s+){0,4}?(?:private|personal)\b", re.IGNORECASE),
+}
+_LEET = str.maketrans({"4": "a", "3": "e", "1": "i", "0": "o", "5": "s", "7": "t", "@": "a", "$": "s"})
+# A founder's own value ("No fake reviews", "never promise income") states the rule; it does not ask
+# to break it. Only honoured in the values-and-constraints field.
+_NEGATION = re.compile(r"\b(?:no|never|not|avoid\w*|without|refus\w*|ban\w*|forbid\w*|zero|don'?t|won'?t|"
+                       r"against)\s+(?:\w+\s+){0,2}$", re.IGNORECASE)
+
+
+# "for real buyers to leave reviews": the reviews are written by the buyers themselves.
+_BY_BUYERS = re.compile(r"\b(?:buyers|customers|users|clients|guests|patients|readers|students)\s+(?:to\s+)?$",
+                        re.IGNORECASE)
+
+
+def _deleet(text: str) -> str:
+    """'f4ke r3views' -> 'fake reviews'; digits next to spaces or symbols (50, 5-star, $5) are kept."""
+    return re.sub(r"(?<=[a-z])[0134579@$]+|[0134579@$]+(?=[a-z])", lambda m: m.group(0).translate(_LEET),
+                  text, flags=re.IGNORECASE)
+
+
+def _deceptive_matches(fields: list[str], values: frozenset[str] = frozenset()) -> dict[str, list[str]]:
     found: dict[str, set[str]] = {}
-    for field in fields:  # each field separately: words in one field never excuse another
-        for category, pattern in DECEPTIVE.items():
+    patterns = [(c, p) for c, p in DECEPTIVE.items()] + [(c, p) for c, p in _EXTRA_DECEPTIVE.items()]
+    for raw in fields:  # each field separately: words in one field never excuse another
+      for field in dict.fromkeys((raw, _deleet(raw))):
+        for category, pattern in patterns:
             for m in pattern.finditer(field):
                 before = field[max(0, m.start() - 60):m.start()]
                 if _COUNTER_MEASURE.search(before):
                     continue
+                if raw in values and _NEGATION.search(before):
+                    continue
                 # "ask real customers to write reviews for our shop" is the honest way to get reviews.
-                if category == "fake_reviews_or_social_proof" and _SOLICIT.search(before):
+                if category == "fake_reviews_or_social_proof" and (_SOLICIT.search(before) or _BY_BUYERS.search(before)):
                     continue
                 found.setdefault(category, set()).add(" ".join(m.group(0).lower().split()))
         for m in _AS_BRAND.finditer(field):
@@ -205,9 +289,51 @@ def screen_brief(brief: FounderBrief) -> CategoryScreen:
     text = brief.text()
     matches = {}
     for category, pattern in PROHIBITED.items():
-        found = sorted({m.group(0).lower() for m in pattern.finditer(text)})
+        found = {m.group(0).lower() for t in dict.fromkeys((text, _deleet(text))) for m in pattern.finditer(t)}
+        extra = _EXTRA_PROHIBITED.get(category)
+        if extra:
+            found |= {m.group(0).lower() for t in dict.fromkeys((text, _deleet(text))) for m in extra.finditer(t)}
         if found:
-            matches[category] = found
+            matches[category] = sorted(found)
     matches |= _deceptive_matches([brief.idea, brief.problem_statement, brief.target_customer, brief.market,
-                                   *brief.values_and_constraints])
+                                   *brief.founder_skills, *brief.values_and_constraints], frozenset(brief.values_and_constraints))
     return CategoryScreen(allowed=not matches, matches=matches)
+
+
+# --- second extension (probe set) ---
+_PROBE_DECEPTIVE = {
+ "fake_reviews_or_social_proof": (
+   r"\b(?:five|5)[- ]star\s+(?:reviews?|ratings?)\b"
+   r"|\b(?:buy|buys|buying|purchase[sd]?|purchasing)\s+(?:\w+\s+){0,2}?(?:followers|likes|upvotes|reviews?|ratings?|sign-?ups?)\b"
+   r"|\bbot accounts?\b|\bsock[- ]?puppet\w*|\bastroturf\w*"
+   r"|\b(?:reviews?|ratings?|testimonials?)\b(?:\W+\w+){0,6}?\W+(?:personas?|on behalf of|never existed|non-?existent|imaginary|fictional)\b"
+   r"|\b(?:customers?|users?|clients?|people|buyers?)\s+(?:who|that)\s+never\s+existed\b"
+   r"|\bfake\s+users?\b"
+   r"|\b\d+\s+people\s+are\s+(?:viewing|watching|looking at|buying)\b"),
+ "fake_urgency_or_scarcity": (
+   r"\bcountdowns?\b(?:\W+\w+){0,8}?\W+reset\w*"
+   r"|\bonly\s+\d+\s+(?:\w+\s+){0,2}?(?:left|remaining)\b"
+   r"|\b(?:never|doesn'?t|does not|won'?t|will not)\s+(?:actually\s+|really\s+)?expires?\b"
+   r"|\beven though (?:it|they|that) (?:won'?t|will not|isn'?t|is not|doesn'?t)\b"
+   r"|\bregardless of (?:the )?(?:real|actual) (?:stock|inventory|demand|availability)\b"),
+ "impersonation": (
+   r"\b(?:pretend\w*|pose[sd]?|posing)\s+(?:to be|as)\s+[A-Z][\w&.'-]+"
+   r"|\bas (?:if|though) (?:it|they|the \w+) (?:came|come|comes|were|was) (?:from|written by|sent by)\b"
+   r"|\b(?:tells?|claims?)\s+(?:\w+\s+){0,2}?(?:it|she|he)\s+is\s+(?:a\s+)?(?:human|real person)\b"),
+ "income_promise": (
+   r"\bguarantee\w*\b(?:\W+\w+){0,8}?\W+(?:income|earn\w*|make|profits?|revenue|returns?|money|\$|€|£)"
+   r"|(?:\$|€|£)\s?[\d,.]+k?\b(?:\W+\w+){0,5}?\W+guarantee\w*"
+   r"|\bget[- ]rich\b"
+   r"|\b(?:certain|sure|ensur\w*|promis\w*)\s+(?:\w+\s+){0,3}?(?:to\s+)?(?:earn|make)\s+(?:\w+\s+){0,2}?(?:income|money|\$|€|£|\d)"),
+}
+_PROBE_PROHIBITED = {
+ "financial_investment_or_crypto": r"\b(?:\w+coins?|web3|airdrops?|ICOs?|staking|yield farming|tokens? to buy|which (?:stocks?|tokens?|coins?) to buy|(?:sports )?betting|gambl\w*|casinos?)\b",
+ "health_advice": r"\b(?:anxiety|depression|diabet\w*|meal plans?|nutrition (?:plans?|advice)|mental health)\b",
+ "legal_advice": r"\b(?:legal (?:questions?|help|rights)|evictions?|tenants?'? rights|power of attorney)\b",
+}
+for k, extra in _PROBE_DECEPTIVE.items():
+    DECEPTIVE[k] = re.compile(DECEPTIVE[k].pattern + "|" + extra, re.IGNORECASE)
+for k, extra in _PROBE_PROHIBITED.items():
+    PROHIBITED[k] = re.compile(PROHIBITED[k].pattern + "|" + extra, re.IGNORECASE)
+# impersonation brand rule must be case-sensitive for [A-Z]; compile separately
+DECEPTIVE["impersonation"] = re.compile(DECEPTIVE["impersonation"].pattern, re.IGNORECASE)

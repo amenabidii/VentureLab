@@ -159,8 +159,10 @@ Not yet recorded. It will be linked here ([docs/demo-runbook.md](docs/demo-runbo
   store passwords or card numbers.
 - Support physical goods or financial, investment, crypto, health or legal advice
   products, or ideas that depend on fake reviews, sign-ups or urgency, impersonation or
-  promised income. These end in a policy STOP before any research, with the matched
-  words shown, and the Builder is blocked.
+  promised income. A keyword policy screen (`brief.py`, tested on more than 40 trick
+  phrasings in `tests/test_trick_briefs.py`) ends these in a policy STOP before any
+  research, with the matched words shown; it is re-applied before phases 2–6, and the
+  Builder is blocked. A keyword screen can still miss a new phrasing.
 - Invent or estimate experiment results. Validation results are only what the founder
   records, labelled FOUNDER-REPORTED.
 - Hide core features behind a paywall.

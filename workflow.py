@@ -180,6 +180,11 @@ class Context:
             "rehearsal": self.rehearsal, "decided_by": "fixed rules in workflow.py"})
 
     def require_current_rules(self):
+        from brief import FounderBrief, screen_brief  # the current policy screen, re-applied to this brief
+        screen = screen_brief(FounderBrief.model_validate(self.brief))
+        if not screen.allowed:
+            self.rec(2, "gate_check", f"STOP (policy): {screen.summary()}")
+            raise GateBlocked(f"Policy STOP under the current screen: {screen.summary()}. Later phases are blocked.")
         if self.superseded:
             self.rec(2, "gate_check", "blocked: Discover decision made by superseded gate rules")
             raise GateBlocked(f"This run's {self.decision} was decided by superseded gate rules (version "
@@ -191,6 +196,12 @@ class Context:
         if self.decision == "STOP":
             self.rec(4, "gate_check", "blocked: Discover gate decided STOP")
             raise GateBlocked("Discover gate decided STOP: later phases are blocked")
+        vpath = self.run_dir / "phase2_gate_validation.json"
+        validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
+        if (validation or {}).get("decision") == "STOP":
+            self.rec(3, "gate_check", "blocked: Phase 2 validation gate decided STOP")
+            raise GateBlocked("Phase 2 validation gate decided STOP (pre-set threshold failed): stop, or pivot "
+                              "back to Discover. Phases 3-5 are blocked.")
         if self.rehearsal:
             action = f"rehearse_after_{self.decision.lower()}"
             if not self.approvals.approved(action, self.gate_sha):
@@ -267,6 +278,9 @@ or non-leading rules were dropped by code: {dropped}.
 def plan(ctx: Context) -> list[str]:
     """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
     ctx.require_current_rules()
+    if ctx.decision == "STOP":
+        ctx.rec(2, "gate_check", "blocked: Discover gate decided STOP; no advisor call, scorecard or canvas")
+        raise GateBlocked("Discover gate decided STOP: later phases are blocked")
     advice = get_advice(ctx)  # also proposes what customers use today, which the scorecard compares against
     card = score_opportunities(ctx.brief, ctx.gate, ctx.investigation, ctx.challenge, advice)
     ctx.write("phase1_step4_opportunity-scorecard.json", card)

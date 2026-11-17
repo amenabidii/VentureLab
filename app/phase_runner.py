@@ -28,7 +28,7 @@ from app.phases import HEADERS, NAME
 
 router = APIRouter()
 RUN_ID = re.compile(r"^run-[0-9a-f]{16}$")
-FORM_HEADERS = {**HEADERS, "Content-Security-Policy": HEADERS["Content-Security-Policy"].replace(
+FORM_HEADERS = {**HEADERS, "Referrer-Policy": "same-origin", "Content-Security-Policy": HEADERS["Content-Security-Policy"].replace(
     "form-action 'none'", "form-action 'self'")}
 STEPS = (("plan", "1. Plan: scorecard, Lean Canvas, advisor proposals, MVP scope, pricing, policies"),
          ("prepare-launch", "2. Prepare launch: store page, posts, product file, acceptance checks"),
@@ -144,6 +144,9 @@ def run_step(run_id: str, step: str, request: Request, svc: Services = Depends(s
         message = f"{step} finished.{extra}"
     except workflow.GateBlocked as exc:
         message = f"Gate blocked: {exc}"
+    except ValueError as exc:  # content rules refused a draft: explain, never a 500
+        ctx.rec(3, "content_rule_block", str(exc))
+        message = f"Blocked by the content rules: {exc}. Nothing more was written for this step."
     return _page(ctx, message)
 
 

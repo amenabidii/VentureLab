@@ -102,3 +102,9 @@ def test_stop_run_disables_steps(web):
     page = client.get(f"/phases/run/{RUN}").text
     assert "phases 2–6 are blocked" in page and "<button disabled>" in page
     assert "Gate blocked" in client.post(f"/phases/run/{RUN}/step/plan", headers=ORIGIN).text
+
+
+def test_form_pages_send_their_origin_and_null_origin_is_refused(web):
+    client, _ = web
+    assert client.get(f"/phases/run/{RUN}").headers["referrer-policy"] == "same-origin"
+    assert client.post(f"/phases/run/{RUN}/step/plan", headers={"origin": "null"}).status_code == 403

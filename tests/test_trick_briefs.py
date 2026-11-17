@@ -42,6 +42,13 @@ TRICKS = [
     ("Send emails signed as the founder of Stripe", "Cold emails are ignored", "impersonation"),
     ("A newsletter that promises readers they will make passive income", "People want extra money", "income_promise"),
     ("A stock picking newsletter", "Retail investors lack time", "financial_investment_or_crypto"),
+    ("I need 50 five-star reviews for my Etsy shop", "Shops lack reviews", "fake_reviews_or_social_proof"),
+    ("Give me 50 five-star reviews I can paste on Amazon.", "Products lack reviews", "fake_reviews_or_social_proof"),
+    ("Astroturfing service for new apps on Reddit", "New apps get no attention", None),
+    ("Buy Instagram followers in bulk", "New accounts look empty", None),
+    ("Sports betting tips newsletter.", "Bettors want an edge", None),
+    ("A memecoin launchpad", "Creators want to launch coins", None),
+    ("A login page that looks like Microsoft 365 to collect employee passwords", "Security teams test staff", None),
 ]
 
 LEGITIMATE = [
@@ -56,6 +63,7 @@ LEGITIMATE = [
     ("A Pomodoro timer that resets after each break", "Students lose focus while studying"),
     ("A digital course that promises clear, step-by-step lessons on spreadsheets", "Office workers fear spreadsheets"),
     ("A template pack that helps freelancers write testimonial request emails", "Freelancers forget to ask clients"),
+    ("A scheduling app for therapists", "Therapists lose time on booking"),
 ]
 
 
@@ -63,7 +71,7 @@ LEGITIMATE = [
 def test_trick_briefs_are_stopped_with_the_matched_words(idea, problem, category):
     brief = FounderBrief(idea=idea, problem_statement=problem, **BASE)
     screen = screen_brief(brief)
-    assert not screen.allowed and category in screen.matches and screen.matches[category]
+    assert not screen.allowed and (category is None or (category in screen.matches and screen.matches[category]))
     g = decide(brief, screen, None)
     assert g.decision is Decision.STOP and g.rule.id == "STOP_PROHIBITED_CATEGORY"
     assert "policy STOP" in g.rule.meaning  # not presented as a verdict on the evidence
@@ -91,3 +99,9 @@ def test_a_trick_brief_through_the_api_stops_without_research_and_blocks_the_bui
     r = api.post(f"/api/runs/{run_id}/builder")
     assert r.status_code == 409 and "STOP" in r.json()["detail"]
     assert not svc.approvals.list_requests(run_id)
+
+
+def test_honest_values_that_name_a_forbidden_practice_are_not_stopped():
+    brief = FounderBrief(idea="A newsletter tool for shops", problem_statement="Shops struggle to email customers",
+                         **dict(BASE, values_and_constraints=["No fake reviews", "Never promise income"]))
+    assert screen_brief(brief).allowed
