@@ -11,9 +11,11 @@ import hashlib
 import hmac
 import json
 import os
+import re
 from pathlib import Path
 import secrets
 import sqlite3
+from types import SimpleNamespace
 from uuid import uuid4
 
 from builder_models import ApprovalDecision, ApprovalRequest, ApprovalStatus, AuditEvent, BuilderResult
@@ -52,6 +54,229 @@ def _parse_time(value: str) -> datetime:
 
 
 class ApprovalStore:
+    # Workflow authority is event-sourced in the SAME authenticated audit chain as
+    # Builder authority. No mutable latest-record projection can revive a rejection.
+    def _workflow_events(self, db):
+        self._verify_audit(db)
+        events = [json.loads(r[0]) for r in db.execute("SELECT event FROM audit ORDER BY sequence")]
+        return [e for e in events if e["action"].startswith("workflow_")]
+
+    def _workflow_event(self, db, action, payload, request=None, founder=False):
+        self._event(db, "workflow_" + action, json.dumps(payload, sort_keys=True),
+                    SimpleNamespace(**request) if request else None, founder=founder)
+
+    def require_founder(self, token):
+        if not self.verify_founder(token):
+            error = ApprovalError("Founder capability required")
+            self.record_failure("workflow_authentication", error)
+            raise error
+
+    @staticmethod
+    def workflow_file(path):
+        path = Path(path).absolute()
+        if path.resolve() != path or not path.is_file():
+            raise ApprovalError("Artifact missing or unsafe")
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def workflow_requests(self):
+        with self._connection() as db:
+            db.execute("BEGIN")
+            return [json.loads(e["outcome"])["request"] for e in self._workflow_events(db)
+                    if e["action"] == "workflow_request"]
+
+    @staticmethod
+    def _check_workflow_action(action):
+        if not isinstance(action, str):
+            raise ApprovalError("Unsupported workflow action")
+        if not re.fullmatch(r"(?:set_price:[a-zA-Z0-9_-]+|rehearse_after_repeat|rehearse_after_pivot|rehearse_without_validation|publish_store_page|enable_mock_delivery)", action):
+            raise ApprovalError("Unsupported workflow action")
+
+    def request_workflow(self, run_id, action, path, digest, *, expires=None):
+        self._check_workflow_action(action)
+        if self.workflow_file(path) != digest:
+            raise ApprovalError("Artifact changed")
+        request = dict(action_id=uuid4().hex, action_type=action, run_id=run_id,
+                       artifact_identity=Path(path).name, artifact_sha256=digest,
+                       destination=str(Path(path).absolute()))
+        with self._connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._verify_audit(db)
+            self._workflow_event(db, "request", {"request": request, "status": "pending",
+                "expires": expires if expires is not None else datetime.now(timezone.utc).timestamp() + self.ttl_seconds}, request)
+        return request
+
+    def decide_workflow(self, request, decision, reason, token):
+        try:
+            return self._decide_workflow(request, decision, reason, token)
+        except (ApprovalError, OSError, ValueError) as exc:
+            self.record_failure("workflow_decision_refused", exc)
+            raise
+
+    def _decide_workflow(self, request, decision, reason, token):
+        self.require_founder(token)
+        if decision not in ("approve", "reject"):
+            raise ApprovalError("Invalid decision")
+        with self._connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            events = self._workflow_events(db)
+            created = next((json.loads(e["outcome"]) for e in events
+                            if e["action"] == "workflow_request" and e["action_id"] == request["action_id"]), None)
+            if not created or created["request"] != request:
+                raise ApprovalError("Missing or mismatched request")
+            if any(e["action"] == "workflow_decision" and e["action_id"] == request["action_id"] for e in events):
+                raise ApprovalError("Request already decided; create a new request")
+            if created["expires"] < datetime.now(timezone.utc).timestamp():
+                raise ApprovalError("Request expired")
+            if self.workflow_file(request["destination"]) != request["artifact_sha256"]:
+                raise ApprovalError("Artifact changed")
+            # Never include caller-supplied secrets or raw errors in the journal.
+            self._workflow_event(db, "decision", {"decision": decision}, request, founder=True)
+
+    def _workflow_authorized(self, events, request, *, replay=False):
+        group = lambda action: "set_price" if action.startswith("set_price:") else action
+        matching = [e for e in events if e["action"] == "workflow_request"
+                    and e["run_id"] == request["run_id"] and group(e["action_type"]) == group(request["action_type"])
+                    and e["destination"] == request["destination"]]
+        if not matching or matching[-1]["action_id"] != request["action_id"]:
+            return False
+        created = json.loads(matching[-1]["outcome"])
+        if created["request"] != request:
+            return False
+        decisions = [e for e in events if e["action"] == "workflow_decision" and e["action_id"] == request["action_id"]]
+        persistent = request["action_type"].startswith(("set_price:", "rehearse_"))
+        return bool(decisions and json.loads(decisions[-1]["outcome"])["decision"] == "approve"
+                    and (persistent or replay or created["expires"] >= datetime.now(timezone.utc).timestamp())
+                    and self.workflow_file(request["destination"]) == request["artifact_sha256"])
+
+    def workflow_approved(self, request):
+        with self._connection() as db:
+            db.execute("BEGIN")
+            events = self._workflow_events(db)
+            failed = any(e["action"] == "workflow_failed" and request["action_id"] in
+                         json.loads(e["outcome"])["approvals"] for e in events)
+            if failed:
+                return False
+            completed = any(e["action"] == "workflow_completed" and request["action_id"] in
+                            json.loads(e["outcome"])["approvals"] for e in events)
+            return self._workflow_authorized(events, request, replay=completed)
+
+    def execute_workflow(self, requests, token, callback):
+        try:
+            return self._execute_workflow(requests, token, callback)
+        except (ApprovalError, OSError, ValueError) as exc:
+            self.record_failure("workflow_execution_refused", exc)
+            raise
+
+    def _execute_workflow(self, requests, token, callback):
+        """Atomically claim both launch approvals. Crash/failure consumes; success replays only the result."""
+        self.require_founder(token)
+        if sorted(r["action_type"] for r in requests) != ["enable_mock_delivery", "publish_store_page"] or len({r["run_id"] for r in requests}) != 1:
+            raise ApprovalError("Launch requires both approvals for the same run")
+        ids = sorted(r["action_id"] for r in requests)
+        identity = hashlib.sha256(json.dumps(ids).encode()).hexdigest()
+        with self._connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            events = self._workflow_events(db)
+            done = next((json.loads(e["outcome"]) for e in events if e["action"] == "workflow_completed"
+                         and json.loads(e["outcome"])["execution"] == identity), None)
+            if not all(self._workflow_authorized(events, r, replay=bool(done)) for r in requests):
+                raise ApprovalError("Missing, rejected, stale or expired workflow approval")
+            if done:
+                self._workflow_event(db, "replay", {"execution": identity}, founder=True)
+                return done["result"]
+            if any(e["action"] == "workflow_claimed" and set(ids).intersection(json.loads(e["outcome"])["approvals"]) for e in events):
+                raise ApprovalError("Launch already claimed; in progress, interrupted or failed (consumed)")
+            self._workflow_event(db, "claimed", {"execution": identity, "approvals": ids}, founder=True)
+        try:
+            result = callback()
+        except BaseException:
+            with self._connection() as db:
+                db.execute("BEGIN IMMEDIATE")
+                self._verify_audit(db)
+                self._workflow_event(db, "failed", {"execution": identity, "approvals": ids})
+            raise
+        with self._connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._verify_audit(db)
+            self._workflow_event(db, "completed", {"execution": identity, "approvals": ids, "result": result}, founder=True)
+        return result
+
+    def import_workflow_legacy(self, state, run_id, resolve, token, *, apply=False):
+        """Explicit per-run migration. Dry run by default; never used by normal execution.
+
+        Legacy per-record MACs cannot prove a list was never truncated. The human
+        must review that limitation before explicitly importing their local state.
+        """
+        self.require_founder(token)
+        source = Path(state) / "workflow_approvals.json"
+        key_path = Path(state) / "workflow.founder"
+        if source.is_symlink() or key_path.is_symlink():
+            raise ApprovalError("Unsafe legacy state")
+        key = _secret(key_path, False)
+        records = json.loads(source.read_text(encoding="utf-8"))
+        if not isinstance(records, list) or not all(isinstance(r, dict) for r in records):
+            raise ApprovalError("Invalid legacy records")
+        # Validate the entire list before grouping: otherwise tampering with a
+        # rejection's action/run could move it out of the history being imported.
+        invalid_history = False
+        for rec in records:
+            body = json.dumps({k: rec.get(k) for k in ("run_id", "action", "sha256", "decision", "reason", "at")}, sort_keys=True)
+            mac = hmac.new(key, body.encode(), hashlib.sha256).hexdigest()
+            signature = rec.get("mac")
+            if not isinstance(signature, str) or not hmac.compare_digest(signature, mac):
+                invalid_history = True
+        report, accepted, groups = [], [], {}
+        for rec in records:
+            if rec.get("run_id") == run_id:
+                action = rec.get("action", "")
+                if not isinstance(action, str):
+                    report.append({"action": None, "status": "refused: malformed action"})
+                    continue
+                group = "set_price" if action.startswith("set_price:") else action
+                groups.setdefault(group, []).append(rec)
+        for group, rows in groups.items():
+            last = rows[-1]
+            status = "eligible"
+            try:
+                if invalid_history:
+                    raise ApprovalError("invalid MAC in legacy history; entire import refused")
+                if last.get("decision") != "approve":
+                    raise ApprovalError("latest decision is not approval")
+                self._check_workflow_action(last["action"])
+                path = resolve(last["action"])
+                if self.workflow_file(path) != last["sha256"]:
+                    raise ApprovalError("stale SHA-256")
+                expires = None
+                if not last["action"].startswith(("set_price:", "rehearse_")):
+                    expires = _parse_time(last["at"]).timestamp() + self.ttl_seconds
+                    if expires < datetime.now(timezone.utc).timestamp():
+                        raise ApprovalError("legacy execution approval expired; request fresh approval")
+                accepted.append((last, path, expires))
+            except (ApprovalError, ValueError, KeyError, OSError, RuntimeError) as exc:
+                status = "refused: " + (str(exc) if isinstance(exc, ApprovalError) else type(exc).__name__)
+            report.append({"action": last.get("action"), "sha256": last.get("sha256"), "status": status})
+        marker = hashlib.sha256((str(source.absolute()) + run_id).encode()).hexdigest()
+        if apply:
+            with self._connection() as db:
+                db.execute("BEGIN IMMEDIATE")
+                events = self._workflow_events(db)
+                if any(e["action"] == "workflow_import_started" and json.loads(e["outcome"])["import_id"] == marker for e in events):
+                    raise ApprovalError("Legacy import already attempted for this run")
+                if any(e["action"] == "workflow_request" and e["run_id"] == run_id for e in events):
+                    raise ApprovalError("New approval history already exists for this run; legacy import refused")
+                self._workflow_event(db, "import_started", {"import_id": marker}, founder=True)
+            for rec, path, expires in accepted:
+                req = self.request_workflow(run_id, rec["action"], path, rec["sha256"], expires=expires)
+                self.decide_workflow(req, "approve", "Legacy signed founder decision", token)
+            for row in report:
+                if row["status"] == "eligible":
+                    row["status"] = "imported"
+        with self._connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._verify_audit(db)
+            self._workflow_event(db, "import_report", {"apply": apply, "run_id": run_id, "records": report}, founder=True)
+        return report
+
     def __init__(self, database: Path, output_root: Path, ttl_seconds: float = DEFAULT_TTL_SECONDS):
         self.ttl_seconds = ttl_seconds
         self.database = Path(database).absolute()

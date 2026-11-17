@@ -15,19 +15,16 @@ Gates, enforced in code:
   automatic delivery (MOCKED) needs approval of the exact product file fingerprint.
 - Phase 6: the persevere-or-pivot memo uses fixed rules over real evidence only.
 
-Approvals live in `<state>/workflow_approvals.json`, each signed with a founder key in
-`<state>/workflow.founder` (created on first approval, mode 600). A hand-edited or
-re-used approval for different content fails verification. Every action is appended to
+Approvals live in the shared ApprovalStore (`<state>/approvals.sqlite3`). CLI commands
+prompt for the founder capability. Legacy JSON approvals are inert until explicitly imported. Every action is appended to
 `decision_log.json`. Nothing is published, sent, spent or signed: those steps are MOCKED.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
-import hmac
 import json
 import os
-import secrets
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +36,8 @@ from agents.operator import memo_markdown, mocked_metrics, persevere_or_pivot, t
 from agents.product import PROTOTYPE, acceptance_checks, mvp_scope, prototype_html, user_guide
 from agents.strategist import build_lean_canvas, lean_canvas_markdown, score_opportunities, scorecard_markdown
 from audit import AuditLog
+from approval import ApprovalError, ApprovalStore
+from getpass import getpass
 from config import get_settings
 from gates import RULESET_VERSION
 from delivery import DeliveryService
@@ -66,66 +65,81 @@ def now() -> str:
 # --- founder approvals ------------------------------------------------------------------
 
 class Approvals:
-    """Founder approvals bound to (run, action, file SHA-256), HMAC-signed with a local key."""
+    """Adapter only: all authority and execution history lives in ApprovalStore."""
 
-    def __init__(self, state_dir: Path, run_id: str):
-        self.run_id = run_id
-        self.state = state_dir
-        self.file = state_dir / "workflow_approvals.json"
-        self.key_file = state_dir / "workflow.founder"
+    def __init__(self, state_dir, run_id, run_dir=None, out=None, store=None, token=None, log=None):
+        self.run_id, self.run_dir, self.out = run_id, run_dir, out
+        self.store = store or ApprovalStore(Path(state_dir) / "approvals.sqlite3",
+                                            Path(get_settings().output_dir) / "builder")
+        self.token, self.log = token, log
 
-    def _key(self, create: bool) -> bytes:
-        if self.key_file.is_symlink():
-            raise GateBlocked("Founder key file must not be a symlink")
-        if not self.key_file.exists():
-            if not create:
-                raise GateBlocked("No founder approvals exist yet")
-            self.state.mkdir(parents=True, exist_ok=True)
-            fd = os.open(self.key_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, "w") as f:
-                f.write(secrets.token_hex(32))
-        return self.key_file.read_text().strip().encode()
+    def path(self, action):
+        if action.startswith("rehearse_"):
+            return self.run_dir / "phase1_gate_decision.json"
+        names = {"set_price": "phase4_step1_pricing.json", "publish_store_page": "phase5_step1_store-page.html",
+                 "enable_mock_delivery": "phase5_step2_mock-product.md"}
+        kind = action.split(":", 1)[0]
+        if kind not in names:
+            raise GateBlocked("Unsupported workflow action")
+        path = self.out / names[kind]
+        if kind == "set_price" and action.split(":", 1)[-1] not in {
+                o["id"] for o in json.loads(path.read_text(encoding="utf-8"))["options"]}:
+            raise GateBlocked("Unknown price choice")
+        return path
 
-    def _mac(self, key: bytes, record: dict) -> str:
-        body = json.dumps({k: record.get(k) for k in ("run_id", "action", "sha256", "decision", "reason", "at")},
-                          sort_keys=True)
-        return hmac.new(key, body.encode(), hashlib.sha256).hexdigest()
+    def mirror(self):
+        if self.log is None:
+            return
+        from audit import file_lock, read_entries
+        # SQLite is the authoritative journal. This JSON file is a rebuildable mirror.
+        with file_lock(self.log):
+            entries = read_entries(self.log)
+            identity = lambda e: (e.get("timestamp"), e.get("action"), e.get("action_id"), e.get("outcome"))
+            seen = {identity(e) for e in entries}
+            for event in self.store.audit_events():
+                if event["action"].startswith("workflow_") and identity(event) not in seen:
+                    entries.append(dict(event, recorded_in="approval_store"))
+            self.log.parent.mkdir(parents=True, exist_ok=True)
+            self.log.write_text(json.dumps(entries, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    def records(self) -> list[dict]:
-        return json.loads(self.file.read_text(encoding="utf-8")) if self.file.exists() else []
+    def record(self, action, digest, decision, reason):
+        try:
+            self.store.require_founder(self.token)
+            request = self.store.request_workflow(self.run_id, action, self.path(action), digest)
+            self.store.decide_workflow(request, decision, reason, self.token)
+            return dict(run_id=self.run_id, action=action, sha256=digest, decision=decision, at=now())
+        except ApprovalError as exc:
+            self.store.record_failure("workflow_decision", exc)
+            raise GateBlocked(str(exc)) from exc
+        finally:
+            self.mirror()
 
-    def record(self, action: str, digest: str, decision: str, reason: str) -> dict:
-        key = self._key(create=True)
-        rec = {"run_id": self.run_id, "action": action, "sha256": digest, "decision": decision, "reason": reason,
-               "at": now(), "decided_by": "founder"}
-        rec["mac"] = self._mac(key, rec)
-        self.file.write_text(json.dumps(self.records() + [rec], indent=1), encoding="utf-8")
-        return rec
+    def request(self, action, digest):
+        path = str(self.path(action).absolute())
+        return next((r for r in reversed(self.store.workflow_requests()) if r["run_id"] == self.run_id
+                     and r["action_type"] == action and r["destination"] == path
+                     and r["artifact_sha256"] == digest), None)
 
-    def approved(self, action: str, digest: str) -> bool:
-        if not self.key_file.exists():
-            return False
-        key = self._key(create=False)
-        latest = None
-        for rec in self.records():
-            if rec.get("run_id") == self.run_id and rec.get("action") == action and rec.get("sha256") == digest:
-                if not hmac.compare_digest(rec.get("mac", ""), self._mac(key, rec)):
-                    raise GateBlocked(f"Approval record for {action} failed verification")
-                latest = rec
-        return bool(latest and latest["decision"] == "approve")
+    def approved(self, action, digest):
+        try:
+            request = self.request(action, digest)
+            return bool(request and self.store.workflow_approved(request))
+        except ApprovalError as exc:
+            raise GateBlocked(str(exc)) from exc
 
-    def chosen(self, prefix: str, digest: str) -> str | None:
-        for rec in reversed(self.records()):
-            if (rec.get("run_id") == self.run_id and rec["action"].startswith(prefix) and rec["sha256"] == digest
-                    and self.approved(rec["action"], digest)):
-                return rec["action"][len(prefix):]
+    def chosen(self, prefix, digest):
+        for request in reversed(self.store.workflow_requests()):
+            action = request["action_type"]
+            if request["run_id"] == self.run_id and action.startswith(prefix) and request["artifact_sha256"] == digest:
+                if self.approved(action, digest):
+                    return action[len(prefix):]
         return None
 
 
 # --- run context ----------------------------------------------------------------------------
 
 class Context:
-    def __init__(self, run_dir: Path, out: Path, log: Path, state: Path, use_model: bool = True):
+    def __init__(self, run_dir: Path, out: Path, log: Path, state: Path, use_model: bool = True, *, store=None, founder_token=None):
         self.run_dir, self.out = run_dir, out
         self.use_model = use_model
         load = lambda name: (json.loads((run_dir / name).read_text(encoding="utf-8"))  # noqa: E731
@@ -142,7 +156,7 @@ class Context:
         self.gate_sha = sha256((run_dir / "phase1_gate_decision.json").read_bytes())
         # The later phases are their own execution, linked to (not mixed into) the Discover run.
         self.log = AuditLog(log, f"{self.run_id}:phases-2-6")
-        self.approvals = Approvals(state, self.run_id)
+        self.approvals = Approvals(state, self.run_id, run_dir, out, store, founder_token, log)
         vpath = run_dir / "phase2_gate_validation.json"
         self.validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
         self.validated = (self.validation or {}).get("decision") == "GO"
@@ -290,6 +304,7 @@ or non-leading rules were dropped by code: {dropped}.
 
 def plan(ctx: Context) -> list[str]:
     """Phase 1 scorecard, Phase 2 Lean Canvas, then Phase 3 scope and Phase 4 drafts. Nothing is chosen."""
+    ctx.approvals.store.require_founder(ctx.approvals.token)
     ctx.require_current_rules()
     if ctx.decision == "STOP":
         ctx.rec(2, "gate_check", "blocked: Discover gate decided STOP; no advisor call, scorecard or canvas")
@@ -355,6 +370,7 @@ def plan(ctx: Context) -> list[str]:
 
 
 def prepare_launch(ctx: Context) -> list[str]:
+    ctx.approvals.store.require_founder(ctx.approvals.token)
     ctx.require_rehearsal_approval()
     pricing_path = ctx.out / "phase4_step1_pricing.json"
     p_sha = sha256(pricing_path.read_bytes())
@@ -395,6 +411,7 @@ def prepare_launch(ctx: Context) -> list[str]:
 
 
 def launch(ctx: Context) -> dict:
+    ctx.approvals.store.require_founder(ctx.approvals.token)
     ctx.require_rehearsal_approval()
     page = ctx.out / "phase5_step1_store-page.html"
     product_file = ctx.out / "phase5_step2_mock-product.md"
@@ -412,6 +429,19 @@ def launch(ctx: Context) -> dict:
         ctx.gate_file(5, "launch", "BLOCKED", [{"check": f"founder approved {m}", "passed": False} for m in missing], [])
         raise GateBlocked("Missing founder approval: " + ", ".join(
             f"{m} {page_sha if m == 'publish_store_page' else prod_sha}" for m in missing))
+    requests = [ctx.approvals.request("publish_store_page", page_sha),
+                ctx.approvals.request("enable_mock_delivery", prod_sha)]
+    try:
+        return ctx.approvals.store.execute_workflow(requests, ctx.approvals.token,
+            lambda: _launch_claimed(ctx, page_sha, prod_sha))
+    except ApprovalError as exc:
+        ctx.approvals.store.record_failure("workflow_execute", exc)
+        raise GateBlocked(str(exc)) from exc
+    finally:
+        ctx.approvals.mirror()
+
+
+def _launch_claimed(ctx, page_sha, prod_sha):
     ctx.rec(5, "publish_store_page", "MOCKED: published to local preview only, nothing online", approved=True,
             sha256=page_sha)
 
@@ -517,6 +547,9 @@ def main(argv=None) -> int:
         sp = sub.add_parser(name)
         sp.add_argument("--run", type=Path, required=True)
         sp.add_argument("--no-model", action="store_true", help="use the labelled deterministic fallback")
+    migration = sub.add_parser("import-legacy", help="Preview verified legacy approvals; --apply explicitly imports once")
+    migration.add_argument("--run", type=Path, required=True)
+    migration.add_argument("--apply", action="store_true")
     ap = sub.add_parser("approve", help="founder decision; confirm by typing 'APPROVE <action>'")
     ap.add_argument("--run", type=Path, required=True, help="the Discover run this approval is for")
     ap.add_argument("action")
@@ -525,25 +558,37 @@ def main(argv=None) -> int:
     ap.add_argument("--reject", action="store_true")
     args = p.parse_args(argv)
     try:
+        ctx = Context(args.run, args.out, args.log, args.state, use_model=not getattr(args, "no_model", True))
+        ctx.approvals.token = getpass("Founder key (hidden): ").strip().encode("ascii")
+        ctx.approvals.store.require_founder(ctx.approvals.token)
+        if args.cmd == "import-legacy":
+            try:
+                report = ctx.approvals.store.import_workflow_legacy(args.state, ctx.run_id,
+                    ctx.approvals.path, ctx.approvals.token, apply=args.apply)
+                print(json.dumps(report, indent=2))
+                return 0
+            finally:
+                ctx.approvals.mirror()
         if args.cmd == "approve":
             decision = "reject" if args.reject else "approve"
+            print(f"Run: {ctx.run_id}\nAction: {args.action}\nSHA-256: {args.sha256}")
+            print(f"Type exactly: {decision.upper()} {args.action}", flush=True)
             typed = sys.stdin.readline().strip()
             if typed != f"{decision.upper()} {args.action}":
                 print(f"Not recorded. Type exactly: {decision.upper()} {args.action}", file=sys.stderr)
                 return 2
             run_id = json.loads((args.run / "phase1_gate_decision.json").read_text(encoding="utf-8"))["run_id"]
-            rec = Approvals(args.state, run_id).record(args.action, args.sha256, decision, args.reason)
+            rec = ctx.approvals.record(args.action, args.sha256, decision, args.reason)
             AuditLog(args.log, f"{run_id}:phases-2-6").record(
                 "approval", f"founder_{decision}", model=None, cost=0,
                 approved_by="founder" if decision == "approve" else None,
                 outcome=f"{decision}: {args.action}", sha256=args.sha256, reason=args.reason)
             print(json.dumps({k: rec[k] for k in ("run_id", "action", "sha256", "decision", "at")}, indent=1))
             return 0
-        ctx = Context(args.run, args.out, args.log, args.state, use_model=not args.no_model)
         result = {"plan": plan, "prepare-launch": prepare_launch, "launch": launch}[args.cmd](ctx)
         print(json.dumps(result, indent=1))
         return 0
-    except GateBlocked as exc:
+    except (GateBlocked, ApprovalError) as exc:
         print(f"Gate blocked: {exc}", file=sys.stderr)
         return 3
 

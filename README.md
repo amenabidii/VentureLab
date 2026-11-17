@@ -60,7 +60,7 @@ until then `/health/model` returns HTTP 503. Submit a founder brief in the works
 (a run takes about 2–5 minutes on a CPU laptop), or choose **Recorded executions** to
 browse genuine past runs without a model. Try the working Phase 3 MVP at <http://localhost:8000/mvp> (no model needed). Then open **Phases 1–6** in the header, choose
 your finished run and click through phases 2–6 (plan, approve, prepare launch, approve, launch);
-each approval asks for the founder key in `.venturelab/approvals.sqlite3.founder`. The same
+each approval and execution asks for the founder key in `.venturelab/approvals.sqlite3.founder`. The same
 steps run from the command line with `docker compose run --rm app python workflow.py plan --run
 outputs/runs/<run-id>`. After running the interviews in an approved kit, record the totals on the written kit (**Founder approval → Validation results**); a fixed validation gate compares them with the pass mark approved beforehand. Tests: `docker compose run --rm --no-deps app python -m pytest -q`.
 Full walkthrough, CLI options and platform notes: [docs/usage.md](docs/usage.md).
