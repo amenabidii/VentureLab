@@ -27,3 +27,14 @@ def test_cli_round_trip(tmp_path, capsys):
     receipt = json.loads(capsys.readouterr().out)
     assert receipt["request"]["status"] == "executed"
     assert receipt["artifact_sha256_matches_current_renderer"] is True
+
+
+def test_exported_paths_are_relative_to_the_working_directory(tmp_path, monkeypatch, capsys):
+    import json as _json
+    from pathlib import Path as _Path
+    monkeypatch.chdir(tmp_path)
+    source = _Path(__file__).parent / "fixtures/builder_input.json"
+    assert main(["--state", "state/db.sqlite3", "--outputs", "out", "prepare", str(source)]) == 0
+    request = _json.loads(capsys.readouterr().out)
+    assert request["destination"].startswith("out/synthetic-unit-test/")
+    assert str(tmp_path) not in request["destination"]

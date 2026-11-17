@@ -24,7 +24,7 @@ or reject, and execute the resulting action as described in the guide.
 |---|---|
 | FastAPI health checks and Ollama client | **Working** — Milestone 1 foundation |
 | Evidence verification primitives | **Working** — Milestone 1 tests; not the complete research workflow |
-| Experiment-kit generator | **Working** — deterministic kit, JSON and Markdown; optional Ollama hypothesis drafting has MOCKED offline coverage, live test is opt-in |
+| Experiment-kit generator | **Working** — kit, JSON and Markdown. With `--model`, the local open-weight model (`qwen3` via Ollama) selects which supplied assumption to test; the experiment text stays deterministic. Offline model tests are MOCKED; the demo run used a live `qwen3:0.6b` |
 | Local landing-page generator | **Working** — escaped template, responsive layout, actual desktop/mobile browser tests |
 | Founder approval and local execution | **Working** — persistent, fingerprint-bound, one-use backend enforcement through the local CLI |
 | Investigator, Challenger, Judge, orchestration and Counterfactual Challenge integration | **STUBBED** in this branch — Milestone 2 owned by Amen; no integration claim |

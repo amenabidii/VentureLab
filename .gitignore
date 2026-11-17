@@ -58,3 +58,4 @@ docs/benchmarks.json
 # Local Builder approval state and independent run artifacts
 .venturelab/
 outputs/*/
+!outputs/venturelab-m3/

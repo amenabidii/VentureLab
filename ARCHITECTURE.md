@@ -89,8 +89,10 @@ transaction simulations or fabricated payment logs in Milestone 3.
 ## Data flow
 
 `Milestone2Adapter.to_builder_input()` is a protocol for future mapping, not a fake
-adapter. A validated brief and landing specification feed preparation. Optional
-Ollama drafting changes only the hypothesis; the rest uses deterministic templates.
+adapter. A validated brief and landing specification feed preparation. With `--model`,
+the local Ollama model selects which supplied assumption the experiment tests (only
+when there is more than one); everything else uses deterministic templates, so the
+model never introduces factual prose, findings or HTML.
 The complete bundle is fingerprinted and stored pending review. A trusted local
 founder explicitly approves/rejects the same fingerprint, and execution consumes
 that approval before file writes. Audit events retain the official action/source/

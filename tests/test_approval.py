@@ -24,7 +24,8 @@ def store(tmp_path):
 
 def decide(store, request, decision="approve", digest=None):
     return store.decide(ApprovalDecision(action_id=request.action_id, artifact_sha256=digest or request.artifact_sha256,
-                                        decision=decision, actor="founder", reason="SIMULATED founder decision in unit test"))
+                                        decision=decision, actor="founder", reason="SIMULATED founder decision in unit test"),
+                        founder_token=store.founder_path.read_bytes())
 
 
 def test_approval_creation(store, bundle):
@@ -82,8 +83,8 @@ def test_different_action_not_authorized(store, bundle):
 def test_different_destination_not_authorized(store, bundle, tmp_path):
     request = store.create(bundle)
     decide(store, request)
-    other = ApprovalStore(store.database, tmp_path / "elsewhere")
     with pytest.raises(ApprovalError, match="destination"):
+        other = ApprovalStore(store.database, tmp_path / "elsewhere")
         other.execute(request.action_id)
 
 
@@ -171,6 +172,7 @@ def test_stored_draft_change_before_decision_blocked(store, bundle):
     altered = bundle.model_copy(update={"artifact_identity": "different"})
     with sqlite3.connect(store.database) as db:
         db.execute("UPDATE approvals SET bundle=? WHERE action_id=?", (altered.model_dump_json(), request.action_id))
-    with pytest.raises(ApprovalError, match="changed"):
+    with pytest.raises(ApprovalError, match="integrity"):
         decide(store, request)
-    assert store.inspect(request.action_id)[0].status == ApprovalStatus.PENDING
+    with pytest.raises(ApprovalError, match="integrity"):
+        store.inspect(request.action_id)

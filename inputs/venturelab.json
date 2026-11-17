@@ -4,18 +4,30 @@
     "business_idea": "An open-source AI co-founder that helps entrepreneurs investigate digital startup ideas and design validation experiments",
     "target_customer": "Entrepreneurs investigating an early-stage digital product idea",
     "core_problem": "Founders may struggle to distinguish supported claims from assumptions and choose a practical next validation experiment",
-    "main_assumptions": ["Entrepreneurs have recently struggled to turn an uncertain startup assumption into a concrete validation experiment"],
+    "main_assumptions": [
+      "Entrepreneurs have recently struggled to turn an uncertain startup assumption into a concrete validation experiment",
+      "Entrepreneurs would accept an AI tool that challenges their assumptions instead of agreeing with them",
+      "Entrepreneurs prefer a local, open-source tool over a hosted service for early idea research"
+    ],
     "supporting_evidence": [],
-    "founder_constraints": ["Hackathon prototype with two developers", "No paid AI services or payments", "Local artifacts only; founder approval before artifact generation"],
+    "founder_constraints": [
+      "Hackathon prototype with two developers",
+      "No paid AI services or payments",
+      "Local artifacts only; founder approval before artifact generation"
+    ],
     "product_category": "digital_product"
   },
   "landing_page": {
     "product_name": "VentureLab",
     "headline": "Put your startup assumptions to the test.",
     "value_proposition": "Explore an AI co-founder concept that helps turn uncertain digital-product ideas into practical validation experiments.",
-    "target_audience": "Entrepreneurs exploring an early-stage digital product",
+    "target_audience": "Entrepreneurs investigating an early-stage digital product idea",
     "problem": "An idea can sound convincing while its central assumptions still need evidence.",
     "proposed_solution": "Investigate the idea, challenge unsupported assumptions, and prepare an experiment for founder review.",
-    "features": ["Structured hypotheses and customer-discovery interview guides", "Explicit proposed success criteria and evidence that could weaken a hypothesis", "Local concept pages with founder approval before generation"]
+    "features": [
+      "Structured hypotheses and customer-discovery interview guides",
+      "Explicit proposed success criteria and evidence that could weaken a hypothesis",
+      "Local concept pages with founder approval before generation"
+    ]
   }
 }

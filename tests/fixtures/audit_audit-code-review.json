@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "run_id": "audit-code-review",
+    "business_idea": "A code review coordination tool",
+    "target_customer": "Maintainers of small open-source software projects",
+    "core_problem": "Code review requests get lost between discussion threads",
+    "main_assumptions": [
+      "Maintainers recently searched multiple threads to identify a pending code review",
+      "The proposed organization of this workflow may be useful"
+    ],
+    "supporting_evidence": [],
+    "founder_constraints": [
+      "SYNTHETIC AUDIT FIXTURE ONLY",
+      "Voluntary adult interviews; no spending or personal data collection"
+    ],
+    "product_category": "digital_product",
+    "experiment_design": {
+      "sample_size": 6,
+      "success_minimum": 4,
+      "recall_days": 30,
+      "assumption_index": 0
+    }
+  },
+  "landing_page": {
+    "product_name": "ReviewQueue",
+    "headline": "Make code reviews easier to organize.",
+    "value_proposition": "A proposed coordination board for tracking review requests.",
+    "target_audience": "Maintainers of small open-source software projects",
+    "problem": "Code review requests get lost between discussion threads",
+    "proposed_solution": "A code review coordination tool",
+    "features": [
+      "Review request queues",
+      "Repository task grouping",
+      "Maintainer-defined checklists"
+    ]
+  }
+}

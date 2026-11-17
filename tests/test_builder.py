@@ -131,18 +131,28 @@ def test_html_injection_is_text(payload):
     assert "<script>" not in page and "<img " not in page
 
 
+def _two_assumptions(payload):
+    payload["brief"]["main_assumptions"] = [
+        "Facilitators recently spent time reconstructing preparation checklists",
+        "Facilitators would switch tools for a shared checklist (SYNTHETIC TEST FIXTURE)",
+    ]
+    return payload
+
+
 def test_mocked_model_path(payload, fake_ollama):
-    fake = fake_ollama(chat_replies=['{"hypothesis":"Facilitators recently recreated workshop checklists."}'])
+    payload = _two_assumptions(payload)
+    fake = fake_ollama(chat_replies=['{"assumption_index":0}'])
     with_client = fake.client()
     try:
         bundle = prepare(BuilderInput.model_validate(payload["brief"]), LandingPageSpec.model_validate(payload["landing_page"]), with_client)
     finally:
         with_client.close()
     assert bundle.generator == "ollama"
-    assert "recreated" in bundle.kit.hypothesis
+    assert bundle.brief.main_assumptions[0] in bundle.kit.hypothesis
 
 
 def test_mocked_unsafe_model_rejected(payload, fake_ollama):
+    payload = _two_assumptions(payload)
     fake = fake_ollama(chat_replies=['{"hypothesis":"Guaranteed success"}'] * 2)
     from llm import LLMError
     client = fake.client()
@@ -151,3 +161,40 @@ def test_mocked_unsafe_model_rejected(payload, fake_ollama):
             generate_kit(BuilderInput.model_validate(payload["brief"]), client)
     finally:
         client.close()
+
+
+def test_mocked_out_of_range_selection_rejected(payload, fake_ollama):
+    payload = _two_assumptions(payload)
+    fake = fake_ollama(chat_replies=['{"assumption_index":7}'])
+    client = fake.client()
+    try:
+        with pytest.raises(ValueError):
+            generate_kit(BuilderInput.model_validate(payload["brief"]), client)
+    finally:
+        client.close()
+
+
+def test_single_assumption_never_claims_model_provenance(payload, fake_ollama):
+    fake = fake_ollama(chat_replies=[])
+    client = fake.client()
+    try:
+        bundle = prepare(BuilderInput.model_validate(payload["brief"]),
+                         LandingPageSpec.model_validate(payload["landing_page"]), client)
+    finally:
+        client.close()
+    assert bundle.generator == "deterministic-template" and bundle.model is None
+
+
+def test_interviewer_brief_names_the_problem_and_withholds_the_pitch(payload):
+    kit = generate_kit(BuilderInput.model_validate(payload["brief"]))
+    assert payload["brief"]["core_problem"] in kit.interviewer_brief
+    assert "Do not describe or show the proposed solution" in kit.interviewer_brief
+
+
+def test_markdown_report_is_readable_and_inert(payload):
+    payload["brief"]["main_assumptions"] = ["# heading [link](https://example.org) <b>x</b> *bold*"]
+    md = prepare(BuilderInput.model_validate(payload["brief"]),
+                 LandingPageSpec.model_validate(payload["landing_page"])).files()["phase2_step1_validation-kit.md"].decode()
+    assert r"\# heading \[link\](https://example.org) &lt;b&gt;x&lt;/b&gt; \*bold\*" in md
+    assert "<b>" not in md and r"\." not in md and r"\-" not in md
+    assert "1. Tell me about the last time" in md

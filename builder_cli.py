@@ -5,6 +5,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import sqlite3
 
 from approval import ApprovalError, ApprovalStore
 from builder_models import ApprovalDecision, BuilderInput, LandingPageSpec
@@ -12,9 +13,25 @@ from builder_service import prepare
 from llm import OllamaClient
 
 
+def _portable(value, base: Path):
+    """Show paths under the working directory relative to it, so exported receipts and
+    decision logs do not embed the local account's absolute path. Display only: the
+    approval store keeps and verifies the absolute destination."""
+    if isinstance(value, dict):
+        return {key: _portable(item, base) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_portable(item, base) for item in value]
+    if isinstance(value, str) and value.startswith(str(base)):
+        try:
+            return Path(value).relative_to(base).as_posix()
+        except ValueError:
+            return value
+    return value
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--state", type=Path, default=Path(".venturelab/builder.sqlite3"))
+    parser.add_argument("--state", type=Path, default=Path(".venturelab/builder-v2.sqlite3"))
     parser.add_argument("--outputs", type=Path, default=Path("outputs"))
     commands = parser.add_subparsers(dest="command", required=True)
     make = commands.add_parser("prepare", help="Prepare a reviewable request; no output files are written")
@@ -33,11 +50,23 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("action_id")
     commands.add_parser("audit", help="Print recorded events as compatible decision-log JSON")
     args = parser.parse_args(argv)
-    store = ApprovalStore(args.state, args.outputs)
+    store = None
     try:
+        store = ApprovalStore(args.state, args.outputs)
         if args.command == "prepare":
-            payload = json.loads(args.input.read_text(encoding="utf-8-sig"))
-            if set(payload) != {"brief", "landing_page"}:
+            with args.input.open("rb") as source:
+                raw = source.read(262145)
+            if len(raw) > 262144:
+                raise ValueError("Input exceeds 256 KiB")
+            def unique_keys(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise ValueError("Duplicate JSON object key")
+                    result[key] = value
+                return result
+            payload = json.loads(raw.decode("utf-8-sig"), object_pairs_hook=unique_keys)
+            if not isinstance(payload, dict) or set(payload) != {"brief", "landing_page"}:
                 raise ValueError("Input requires exactly brief and landing_page")
             brief = BuilderInput.model_validate(payload["brief"])
             spec = LandingPageSpec.model_validate(payload["landing_page"])
@@ -60,14 +89,21 @@ def main(argv: list[str] | None = None) -> int:
                       "note": "Founder approval gate only; no business GO/REPEAT/PIVOT/STOP decision."}
         elif args.command == "decide":
             result = store.decide(ApprovalDecision(action_id=args.action_id, artifact_sha256=args.sha256,
-                                  decision=args.decision, actor="founder", reason=args.reason)).model_dump(mode="json")
+                                  decision=args.decision, actor="founder", reason=args.reason),
+                                  founder_token=store.founder_path.read_bytes()).model_dump(mode="json")
         elif args.command == "execute":
             result = store.execute(args.action_id).model_dump(mode="json")
         else:
             result = store.audit_events()
-        print(json.dumps(result, indent=2, ensure_ascii=True))
+        print(json.dumps(_portable(result, Path.cwd().absolute()), indent=2, ensure_ascii=True))
         return 0
-    except (ValueError, OSError, ApprovalError, RuntimeError) as exc:
+    except (ValueError, OSError, RuntimeError, TypeError, sqlite3.Error, RecursionError) as exc:
+        if store is not None and not isinstance(exc, ApprovalError):
+            try:
+                store.record_failure("prepare_artifacts" if args.command == "prepare" else args.command,
+                                     exc, getattr(args, "action_id", None))
+            except (ApprovalError, OSError, sqlite3.Error):
+                pass  # Corrupt/unavailable audit storage must fail closed, never fabricate a log.
         print(f"Builder failed: {exc}", file=sys.stderr)
         return 1
 
