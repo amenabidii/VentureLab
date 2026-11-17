@@ -54,7 +54,7 @@ ran as a founder-approved REHEARSAL). Run files are in `outputs/runs/run-a9f21cd
 | **Design the business** | Lean Canvas: nine boxes, each FOUNDER-STATED, EVIDENCE or ASSUMPTION | [`agents/strategist.py`](agents/strategist.py) `build_lean_canvas`, [`lean_canvas.py`](lean_canvas.py) | [`phase2_step2_lean-canvas.md`](outputs/phase2_step2_lean-canvas.md), [`phase2_gate_lean-canvas.json`](outputs/phase2_gate_lean-canvas.json) | **Working** |
 | | Landing-page demand test: local page (after GO only) with no form or tracking | [`landing_page.py`](landing_page.py) | none for this run (REPEAT: no landing page) | Page **Working**; collecting real sign-ups **STUBBED** |
 | | Waitlist-threshold gate: a target fixed before testing, e.g. 100 sign-ups in 14 days; 12 arrive → STOP (stop or pivot back to Discover), never a lowered target | [`validation.py`](validation.py), test [`test_validation_results.py`](tests/test_validation_results.py) | none: no real results recorded yet (results are FOUNDER-REPORTED) | **Working** (rule tested); real sign-up data **STUBBED** |
-| **Build the product** | MVP scope and acceptance criteria, DRAFT user guide, checks that actually execute | [`agents/product.py`](agents/product.py) | [`phase3_step2_mvp-scope.json`](outputs/phase3_step2_mvp-scope.json), [`phase3_step3_user-guide-draft.md`](outputs/phase3_step3_user-guide-draft.md), [`phase3_step4_acceptance-checks.json`](outputs/phase3_step4_acceptance-checks.json), [`phase3_gate_build.json`](outputs/phase3_gate_build.json) | **Working**; MVP application code **STUBBED** |
+| **Build the product** | Clickable prototype of the core job (linked screens, labelled placeholders, no script), MVP scope and acceptance criteria, DRAFT user guide, checks that actually execute (a user-journey walk through the prototype, plus a real-browser click-through test) | [`agents/product.py`](agents/product.py), tests [`test_prototype.py`](tests/test_prototype.py) | [`phase3_step1_prototype.html`](outputs/phase3_step1_prototype.html), [`phase3_step2_mvp-scope.json`](outputs/phase3_step2_mvp-scope.json), [`phase3_step3_user-guide-draft.md`](outputs/phase3_step3_user-guide-draft.md), [`phase3_step4_acceptance-checks.json`](outputs/phase3_step4_acceptance-checks.json), [`phase3_gate_build.json`](outputs/phase3_gate_build.json) | Prototype and checks **Working**; MVP production code **STUBBED** |
 | **Set the price and policies** | Test prices (ASSUMPTION), price chosen only by founder approval; DRAFT terms, privacy and refund policies (not legal advice) | [`agents/commercial.py`](agents/commercial.py) | [`phase4_step1_pricing-decision.md`](outputs/phase4_step1_pricing-decision.md), [`phase4_step2_terms-policy-draft.md`](outputs/phase4_step2_terms-policy-draft.md), [`phase4_step2_privacy-policy-draft.md`](outputs/phase4_step2_privacy-policy-draft.md), [`phase4_step2_refund-policy-draft.md`](outputs/phase4_step2_refund-policy-draft.md), [`phase4_gate_commercial.json`](outputs/phase4_gate_commercial.json) | **Working** (no payments of any kind) |
 | **Open the store; deliver automatically** | Store page and launch posts; publishing needs approval of the exact page | [`agents/launcher.py`](agents/launcher.py) | [`phase5_step1_store-page.html`](outputs/phase5_step1_store-page.html), [`phase5_step1_launch-posts.md`](outputs/phase5_step1_launch-posts.md) | Drafts **Working**; publishing **MOCKED** |
 | | Automatic delivery after payment, refunds revoke access, idempotency, reconciliation | [`payments.py`](payments.py), [`delivery.py`](delivery.py), [`refunds.py`](refunds.py), [`reconcile.py`](reconcile.py) | [`payment_test_log.md`](outputs/payment_test_log.md), [`phase5_step3_reconciliation.json`](outputs/phase5_step3_reconciliation.json), [`phase5_gate_launch.json`](outputs/phase5_gate_launch.json) | **MOCKED** (simulated test orders, no payments) |
@@ -191,12 +191,20 @@ The current passive local page has no form or tracking and cannot measure demand
   same approved folder; the workspace previews HTML only through an inert sandbox.
 - **Gate**: generation approval. It never authorizes publishing or sending.
 
-**MVP scope, guide and checks (Working, `agents/product.py`):** a scope and acceptance
-criteria from the brief (thresholds labelled ASSUMPTION), a DRAFT user guide, and
-acceptance checks that actually execute against the generated artifacts
-(`phase3_step2_mvp-scope.json`, `phase3_step3_user-guide-draft.md`,
-`phase3_step4_acceptance-checks.json`, `phase3_gate_build.json`). Launch refuses to run
-unless every check passed. The MVP's own code is not generated.
+**Clickable prototype, MVP scope, guide and checks (Working, `agents/product.py`):** a scope
+and acceptance criteria from the brief (thresholds labelled ASSUMPTION); a **clickable
+prototype** of the core job (`phase3_step1_prototype.html`: start, choose your own material,
+review the result with every point linked to its source, check and give feedback, then
+questions for a usability session), built only from the founder's words and labelled
+PLACEHOLDERs, with screens joined by in-page links and shown with CSS `:target`, so it has no
+script, form, network or account; a DRAFT user guide; and acceptance checks that actually
+execute (`phase3_step4_acceptance-checks.json`, `phase3_gate_build.json`): a user-journey walk
+follows every link from the start screen and checks that the end is reachable, every screen
+is reachable, no link is dead and every result point links to its source (AC2), plus checks on
+the guide, policies and store page. `tests/test_prototype.py` shows the checks fail on broken
+prototypes and clicks through the page in a real browser (Chromium/Edge, opt-in). Launch
+refuses to run unless every check passed. The MVP's production code is not generated: the
+prototype shows the intended flow, it does not perform the core job.
 
 **Remaining Build design (STUBBED):** the Builder would derive a narrowly scoped
 MVP specification and acceptance criteria from validated needs, produce application
@@ -391,7 +399,8 @@ matching audit entries; review provenance before updating it.
 | Sale to cash: payment events, delivery, refunds, reconciliation (Phase 5) | MOCKED, built and tested; simulated test orders only |
 | Support, metrics, persevere-or-pivot memo (Phase 6) | Built, tested; rehearsal metrics MOCKED and excluded from evidence |
 | Real payments, publishing, posting | Not built, by rule |
-| MVP generation beyond the landing page | STUBBED |
+| Clickable prototype of the core job with an executed user-journey check (Phase 3) | Built, tested (unit and real browser), run on a genuine run |
+| MVP production code generation | STUBBED |
 
 Known limits: relevance is a keyword and concept list, not semantic understanding; the
 extraction model sometimes generalises or misattributes claims (the checks hold those

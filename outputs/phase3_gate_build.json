@@ -1,7 +1,7 @@
 {
  "run_id": "run-a9f21cd634924cca",
  "phase": 3,
- "decision": "ARTIFACTS PASSED (MVP code STUBBED)",
+ "decision": "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)",
  "checks": [
   {
    "check": "user guide marked DRAFT and code STUBBED",
@@ -10,6 +10,41 @@
   },
   {
    "check": "user guide passes content rules",
+   "passed": true,
+   "detail": "builder_models.check_content"
+  },
+  {
+   "check": "prototype: user journey reaches the end by clicking",
+   "passed": true,
+   "detail": "start -> step-1 -> step-2 -> step-3 -> done"
+  },
+  {
+   "check": "prototype: every screen reachable from the start",
+   "passed": true,
+   "detail": "8/8 screens; unreachable: none"
+  },
+  {
+   "check": "prototype: no dead links",
+   "passed": true,
+   "detail": "all links resolve"
+  },
+  {
+   "check": "prototype: every result point links to its original source (AC2)",
+   "passed": true,
+   "detail": "3/3 points"
+  },
+  {
+   "check": "prototype: no script, form or external asset",
+   "passed": true,
+   "detail": "phase3_step1_prototype.html"
+  },
+  {
+   "check": "prototype labelled PROTOTYPE and production code STUBBED",
+   "passed": true,
+   "detail": "phase3_step1_prototype.html"
+  },
+  {
+   "check": "prototype passes content rules",
    "passed": true,
    "detail": "builder_models.check_content"
   },

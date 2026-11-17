@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'">
+<title>Concept for remote engineers and product managers on distributed teams — clickable prototype</title>
+<style>
+body{margin:0;font:17px/1.6 system-ui,sans-serif;color:#17251f;background:#f6f7f2}
+.wrap{max-width:760px;margin:auto;padding:20px 16px}
+.banner{background:#24475a;color:#fff;padding:10px 14px;border-radius:8px;font-weight:600}
+.screen{display:none;background:#fff;border:1px solid #d4ddd4;border-radius:12px;padding:22px;margin:18px 0}
+.screen:target,body:not(:has(.screen:target)) #start{display:block}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:10px 16px;border-radius:8px;background:#1f5d46;color:#fff;text-decoration:none}
+.ph{display:inline-block;background:#fff4d6;border:1px dashed #a07a12;padding:2px 8px;border-radius:6px}
+.point{margin:8px 0} small{color:#4a5a52}
+</style>
+</head>
+<body><div class="wrap">
+<p class="banner" role="status">CLICKABLE PROTOTYPE — placeholders only, no working functionality; production code STUBBED. Nothing is read, stored or sent.</p>
+<section class="screen" id="start"><h1>Concept for remote engineers and product managers on distributed teams</h1>
+<p><b>For:</b> remote engineers and product managers on distributed teams</p>
+<p><b>Problem (FOUNDER-STATED):</b> Remote workers waste time catching up on long Slack threads they missed.</p>
+<p><b>Core job:</b> A browser extension that summarises long Slack threads a remote team member missed, linking each point back to the original message.</p>
+<p class="nav"><a class="btn" href="#step-1">Start the core job</a></p></section>
+<section class="screen" id="step-1"><h2>Step 1 of 3: Choose your own material</h2>
+<p class="ph">PLACEHOLDER: the material you choose for the core job appears here. The prototype reads nothing.</p>
+<p>Honoured in this step:</p><ul><li>Value: Respect privacy, no dark patterns</li><li>Constraint: Messages are only read in workspaces that install the extension</li></ul>
+<p class="nav"><a class="btn" href="#step-2">Continue</a> <a class="btn" href="#start">Back</a></p></section>
+<section class="screen" id="step-2"><h2>Step 2 of 3: Review the result</h2>
+<p>Each point of the result links back to where it came from.</p>
+<ol><li class="point"><span class="ph">PLACEHOLDER result point 1</span> <a class="source-link" href="#source-1">Open original source 1</a></li><li class="point"><span class="ph">PLACEHOLDER result point 2</span> <a class="source-link" href="#source-2">Open original source 2</a></li><li class="point"><span class="ph">PLACEHOLDER result point 3</span> <a class="source-link" href="#source-3">Open original source 3</a></li></ol>
+<p class="nav"><a class="btn" href="#step-3">Continue</a> <a class="btn" href="#step-1">Back</a></p></section>
+<section class="screen" id="source-1"><h2>Original source 1</h2><p class="ph">PLACEHOLDER: the original item that point 1 came from opens here, unchanged.</p><p class="nav"><a class="btn" href="#step-2">Back to the result</a></p></section>
+<section class="screen" id="source-2"><h2>Original source 2</h2><p class="ph">PLACEHOLDER: the original item that point 2 came from opens here, unchanged.</p><p class="nav"><a class="btn" href="#step-2">Back to the result</a></p></section>
+<section class="screen" id="source-3"><h2>Original source 3</h2><p class="ph">PLACEHOLDER: the original item that point 3 came from opens here, unchanged.</p><p class="nav"><a class="btn" href="#step-2">Back to the result</a></p></section>
+<section class="screen" id="step-3"><h2>Step 3 of 3: Check and give feedback</h2>
+<p>Results can be wrong; the original source is always the reference.</p>
+<p>What a usability session checks:</p><ul><li><b>AC1</b> A target customer completes the core job unaided in one session. <small>(ASSUMPTION (threshold set by the founder before testing))</small></li><li><b>AC2</b> The output links every point back to its original source. <small>(FOUNDER-STATED (from the idea))</small></li><li><b>AC3</b> No data is read outside what the user explicitly installs it for. <small>(FOUNDER-STATED (from values/constraints))</small></li></ul>
+<p class="nav"><a class="btn" href="#done">Finish</a> <a class="btn" href="#step-2">Back</a></p></section>
+<section class="screen" id="done"><h2>End of the prototype journey</h2>
+<p>Questions for the founder to ask after a session (about what the tester did, not a pitch):</p>
+<ol><li>At each screen, what did you expect to happen next?</li><li>Where did you hesitate or go back, and why?</li><li>Tell me about the last time you did this job without the prototype. What did you do?</li></ol>
+<p class="nav"><a class="btn" href="#start">Restart</a></p></section>
+</div></body></html>

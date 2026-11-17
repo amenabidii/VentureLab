@@ -17,6 +17,13 @@ A browser extension that summarises long Slack threads a remote team member miss
 2. Do the core job once on your own material.
 3. Check every result against its original source before relying on it.
 
+## Try the clickable prototype
+
+Open `phase3_step1_prototype.html` in a browser and click through: start, choose your own
+material, review the result (each point links to its original source), then check and give
+feedback. It is a PROTOTYPE for usability sessions: placeholders stand in for real material
+and nothing is read, stored or sent.
+
 ## Limits
 
 - Results can be wrong; the original source is always the reference.

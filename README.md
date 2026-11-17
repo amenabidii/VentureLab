@@ -18,7 +18,7 @@ written only after the founder approves the exact artifact.
 |---|---|---|---|
 | 1 Discover | **Find opportunities**: sharpen the idea, score it against alternatives, define the market, Mom Test customer interviews | Investigator retrieves and verifies quotes; Challenger; opportunity scorecard; past-behaviour interview questions and recruiting post; deterministic gate + Counterfactual Challenge | **Working** (live `qwen3:4b`, Hacker News retrieval); holding the interviews is manual (**STUBBED**) |
 | 2 Validate | **Design the business**: Lean Canvas, landing-page demand test, waitlist-threshold gate | Lean Canvas with every entry sourced or labelled; validation kit; landing page after GO; fixed gate on a target set in advance (100 sign-ups in 14 days, 12 arrive → STOP or pivot) | **Working**; collecting real sign-ups **STUBBED** |
-| 3 Build | **Build the product**: tested MVP and user docs | MVP scope, draft user guide, executed acceptance checks | **Working** for these artifacts; MVP application code **STUBBED** |
+| 3 Build | **Build the product**: tested MVP and user docs | Clickable prototype of the core job, MVP scope, draft user guide, executed checks (user-journey walk through the prototype, real-browser click-through test) | **Working**; MVP production code **STUBBED** |
 | 4 Commercial setup | **Set the price and policies** | Price hypotheses (ASSUMPTION), price set only by founder approval, DRAFT terms/privacy/refund | **Working** (no payments of any kind) |
 | 5 Launch | **Open the store; deliver automatically** | Store page and post drafts; signed payment events, idempotent delivery, refunds, reconciliation | Drafts **Working**; publishing and sale to cash **MOCKED** |
 | 6 Operate & learn | **Operate & learn**: support, metrics, persevere-or-pivot memo | Real-request triage, metrics, memo by fixed rules | **Working**; rehearsal metrics **MOCKED**, never evidence |
@@ -76,7 +76,8 @@ Full walkthrough, CLI options and platform notes: [docs/usage.md](docs/usage.md)
 | Phase 5 store page and launch-post drafts; publishing and posting | Drafts **Working**; publishing **MOCKED** (local only, founder approval of the exact page) |
 | Phase 5 sale to cash: payment events, automatic delivery, refunds revoke access, duplicate and forged events refused, reconciliation | **MOCKED** (`payments.py`, `delivery.py`, `refunds.py`, `reconcile.py`): simulated test orders only, no payments of any kind, not even sandbox; log in `outputs/payment_test_log.md` |
 | Phase 6 support triage, metrics and persevere-or-pivot memo (fixed rules over real evidence only) | **Working** (`agents/operator.py`); metrics from the rehearsal are **MOCKED** and never counted as evidence; no real support requests exist yet |
-| Phase 3 MVP generation beyond the landing page | **STUBBED** |
+| Phase 3 clickable prototype (`outputs/phase3_step1_prototype.html`) with executed user-journey checks: end reachable, no dead links, every result point linked to its source | **Working** (`agents/product.py`, `tests/test_prototype.py`); placeholders only |
+| Phase 3 MVP production code generation | **STUBBED** |
 | "Explore demo" data in the workspace | **MOCKED**, synthetic, labelled in the interface, never stored as results |
 | Model transport and public sources in offline tests | **MOCKED** (tests only) |
 

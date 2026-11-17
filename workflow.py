@@ -35,7 +35,7 @@ from agents.advisor import advise
 from agents.commercial import pricing_hypotheses, pricing_markdown, policy_drafts, product_name
 from agents.launcher import launch_posts, store_page_html
 from agents.operator import memo_markdown, mocked_metrics, persevere_or_pivot, triage_support
-from agents.product import acceptance_checks, mvp_scope, user_guide
+from agents.product import PROTOTYPE, acceptance_checks, mvp_scope, prototype_html, user_guide
 from agents.strategist import build_lean_canvas, lean_canvas_markdown, score_opportunities, scorecard_markdown
 from audit import AuditLog
 from config import get_settings
@@ -271,7 +271,9 @@ def plan(ctx: Context) -> list[str]:
     scope = mvp_scope(ctx.brief, canvas)
     ctx.write("phase3_step2_mvp-scope.json", scope)
     ctx.write("phase3_step3_user-guide-draft.md", user_guide(ctx.brief, scope))
-    ctx.rec(3, "define_mvp_scope_and_guide", "drafted; MVP code generation STUBBED")
+    ctx.rec(3, "define_mvp_scope_and_guide", "drafted; MVP production code STUBBED")
+    ctx.write(PROTOTYPE, prototype_html(ctx.brief, scope, product_name(ctx.brief)))
+    ctx.rec(3, "build_clickable_prototype", f"{PROTOTYPE}: placeholders, no working functionality")
     pricing = pricing_hypotheses(ctx.brief, ctx.decision, advice)
     _, p_sha = ctx.write("phase4_step1_pricing.json", pricing)
     ctx.write("phase4_step1_pricing.md", pricing_markdown(pricing))
@@ -317,9 +319,11 @@ def prepare_launch(ctx: Context) -> list[str]:
     _, prod_sha = ctx.write("phase5_step2_mock-product.md", package)
     checks = acceptance_checks(ctx.out, "phase3_step3_user-guide-draft.md")
     ctx.write("phase3_step4_acceptance-checks.json", {"run_id": ctx.run_id, "checks": checks,
-                                                      "scope": "VentureLab's generated artifacts; MVP code STUBBED"})
+                                                      "scope": "clickable prototype (user-journey walk) and VentureLab's "
+                                                               "generated artifacts; MVP production code STUBBED"})
     passed = all(c["passed"] for c in checks)
-    ctx.gate_file(3, "build", "ARTIFACTS PASSED (MVP code STUBBED)" if passed else "REPEAT", checks, [])
+    ctx.gate_file(3, "build", "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)" if passed else "REPEAT",
+                  checks, [])
     ctx.rec(3, "run_acceptance_checks", f"{sum(c['passed'] for c in checks)}/{len(checks)} passed")
     return [f"publish_store_page {page_sha}", f"enable_mock_delivery {prod_sha}"]
 
