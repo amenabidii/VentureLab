@@ -1,8 +1,8 @@
 # Integration verification (Milestone 6)
 
 Branch `integration/venturelab-complete`, built in a separate worktree from `origin/main`.
-This document covers the integration only; project-wide submission documentation is
-prepared separately (Milestone 5).
+This document covers the integration; the project-wide README, ARCHITECTURE and
+submission documents come from Milestone 5 and were updated to the integrated state.
 
 ## Sources integrated
 
@@ -12,6 +12,7 @@ prepared separately (Milestone 5).
 | Milestone 2 quality fixes | `fix/milestone2-evidence-quality` | `ac7afd5` | `af75334`, no conflicts |
 | Milestone 3 Builder and approvals | `feature/milestone3-builder` | `b2a2f26` | `2e1c1c9`, conflict in `decision_log.json` |
 | Milestone 4 founder workspace | `feature/milestone4-ui` | `60281e1` | `8c22392`, conflict in `.dockerignore` |
+| Milestone 5 submission documents and compliance tests | `feature/milestone5-submission` | `8148b5c` | after the integration commit `6b8e9f5`; conflicts in `README.md`, `ARCHITECTURE.md` |
 
 Conflict resolutions:
 - `decision_log.json`: each branch had committed the log of its own demo. Neither was
@@ -21,6 +22,11 @@ Conflict resolutions:
   excluded nested `node_modules`; all entries kept.
 - `app/main.py` merged automatically: the old status page moved to `/diagnostics`, the
   workspace is served at `/`, and the new API router is registered.
+- `README.md`, `ARCHITECTURE.md` (Milestone 3 and Milestone 5 both added them): resolved
+  from Milestone 5's versions, which already followed the required headings and
+  described the Builder, then corrected to the integrated state (web workspace connected,
+  Builder gate rule, approval trust model, measured runs). `docs/submission-compliance.md`
+  and `docs/demo-runbook.md` were updated the same way.
 
 ## Architecture of the integrated application
 
@@ -124,11 +130,13 @@ the store remains authoritative. Every entry has `timestamp`, `agent`, `action`,
 
 | Suite | Result | Notes |
 |---|---|---|
-| Python offline (all milestones + integration) | 389 passed, 29 skipped | skipped = live model and browser opt-in tests |
-| `tests/test_integration_api.py` | 21 passed | MOCKED model and sources; real code paths |
+| Python, all milestones + integration + Milestone 5 compliance (host, with git) | 418 passed, 29 skipped | skipped = opt-in live-model and browser tests, run separately below |
+| of which `tests/test_submission_compliance.py` | 29 passed | none skipped |
+| of which `tests/test_integration_api.py` | 21 passed | MOCKED model and sources; real code paths |
+| Milestone 3 Builder browser tests (Edge) | 20 passed | `VENTURELAB_BROWSER_TESTS=1` |
 | JavaScript unit (`tests/ui/*.test.mjs`) | 20 passed | live adapter test rewritten for the real backend |
-| Browser (Playwright, Edge) | 27 passed | MOCKED service transport, isolated state |
-| Live model tests | see below | real Ollama `qwen3:4b` |
+| Workspace browser tests (Playwright, Edge) | 27 passed | MOCKED service transport, isolated state |
+| Live model tests (real Ollama `qwen3:4b`) | 9 passed | Milestone 2 pipeline and Challenger, Milestone 3 Builder |
 
 Browser-test changes: the copy "No venture runs are available." was kept; one assertion that
 submission is disabled (a Milestone 4 stub) now expects it enabled; the Playwright server runs
@@ -149,6 +157,26 @@ interface (kit only, because the gate said REPEAT). Live bypass attempts against
 server were refused: execute without a key (403), with a guessed key (403), with another
 run's ID (409), and an approval with a forged key (403); the request stayed pending and no
 files existed. The STOP run's Builder request was refused (409).
+
+The founder then made the decision in the workspace (request `a378ad72272e488f88811606add5bba0`):
+
+| Time (UTC) | Event (approval store, mirrored to `decision_log.json`) | approved_by |
+|---|---|---|
+| 12:45:38 | `prepare_artifacts`, prepared for review (model `qwen3:4b` chose the assumption) | null |
+| 12:45:38 | `request_approval`, pending | null |
+| 12:46:34–35 | the bypass attempts above, each recorded as failed | null |
+| 13:07:32 | `approval_decision`, approved: "Reviewed the exact kit and fingerprint" | founder |
+| 13:07:53 | `execute_artifacts`, execution started | founder |
+| 13:07:54 | `execute_artifacts`, executed | founder |
+
+Verification after execution: status Executed; stored fingerprint
+`a9a631548a2762d72e2ac2c57e29e9c23e560df5116dc16f062db4ea9ee07c18` equals the fingerprint
+recomputed from the approved bundle; both files in
+`outputs/builder/run-64fdee373f244b81/a378ad72272e488f88811606add5bba0/` match the approved
+bytes exactly (`phase2_step1_validation-kit.md` SHA-256 `0cc5ebdd…afd94`,
+`phase2_step1_validation-kit.json` SHA-256 `81b9945c…d5d0e`); all 29 `decision_log.json`
+entries pass the schema check at that point. Run records and the pending request also
+survived an application restart.
 
 ## Known limitations
 
