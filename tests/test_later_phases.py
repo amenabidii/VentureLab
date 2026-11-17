@@ -121,6 +121,38 @@ def test_full_rehearsal_writes_every_phase_with_named_outputs(tmp_path, monkeypa
     assert {e["agent"] for e in log} >= {"strategist", "commercial", "launcher", "operator", "approval"}
 
 
+def test_every_phase_gate_ends_in_go_repeat_pivot_or_stop_and_says_do_not_launch(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path))  # Discover decided REPEAT: everything later is a rehearsal
+    assert full_flow(cli, monkeypatch) == 0
+    gates = {p.name: json.loads(p.read_text()) for p in cli.out.glob("phase*_gate_*.json")}
+    assert {"phase2_gate_lean-canvas.json", "phase3_gate_build.json", "phase4_gate_commercial.json",
+            "phase5_gate_launch.json", "phase6_gate_persevere-or-pivot.json"} <= set(gates)
+    for name, g in gates.items():
+        assert g["outcome"] in workflow.OUTCOMES, name
+        assert g["launch_recommendation"].startswith("DO NOT LAUNCH"), name
+    assert gates["phase2_gate_lean-canvas.json"]["outcome"] == "REPEAT"          # demand not evidenced
+    revenue = [c for c in gates["phase2_gate_lean-canvas.json"]["checks"] if c["check"].startswith("revenue")]
+    assert revenue and revenue[0]["passed"] is False                            # a model proposal is not evidence
+    assert gates["phase6_gate_persevere-or-pivot.json"]["outcome"] == "REPEAT"
+    memo = (cli.out / "phase6_step3_persevere-or-pivot-memo.md").read_text()
+    assert "**Launch recommendation: DO NOT LAUNCH." in memo
+
+
+def test_after_go_a_passing_gate_does_not_say_do_not_launch_but_the_memo_still_can(tmp_path, monkeypatch):
+    cli = CLI(tmp_path, make_run(tmp_path, "GO"))
+    assert cli("plan") == 0
+    cli.approve(monkeypatch, "set_price:pro-8", cli.sha("phase4_step1_pricing.json"))
+    assert cli("prepare-launch") == 0
+    build = json.loads((cli.out / "phase3_gate_build.json").read_text())
+    assert build["outcome"] == "GO" and not build["launch_recommendation"].startswith("DO NOT LAUNCH")
+    assert json.loads((cli.out / "phase2_gate_lean-canvas.json").read_text())["outcome"] == "REPEAT"
+    cli.approve(monkeypatch, "publish_store_page", cli.sha("phase5_step1_store-page.html"))
+    cli.approve(monkeypatch, "enable_mock_delivery", cli.sha("phase5_step2_mock-product.md"))
+    assert cli("launch") == 0
+    memo = json.loads((cli.out / "phase6_gate_persevere-or-pivot.json").read_text())
+    assert memo["outcome"] == "REPEAT" and memo["launch_recommendation"].startswith("DO NOT LAUNCH")  # no real results
+
+
 def test_price_is_never_chosen_without_the_founder(tmp_path, monkeypatch):
     cli = CLI(tmp_path, make_run(tmp_path))
     cli.approve(monkeypatch, "rehearse_after_repeat", cli.gate_sha())
@@ -230,6 +262,18 @@ def test_lean_canvas_labels_every_entry_and_never_invents_demand(tmp_path):
     assert quoted and all(e["label"].startswith("ASSUMPTION (quote found, not established") for e in quoted)
     assert {e["label"].split(" ")[0] for e in entries} <= {"FOUNDER-STATED", "EVIDENCE", "ASSUMPTION"}
     assert canvas["summary"]["established_entries"] == 0
+    assert set(canvas["summary"]["boxes_without_evidence"]) == set(canvas["canvas"])  # nothing is evidenced
+
+
+def test_a_model_price_anchor_does_not_count_as_revenue_evidence(tmp_path):
+    run = make_run(tmp_path)
+    load = lambda n: json.loads((run / n).read_text())  # noqa: E731
+    advice = {"source": "model", "label": "ASSUMPTION (proposed by qwen3:4b; not evidence)", "current_alternatives": [],
+              "channels": [], "value_proposition": None, "key_metric": None, "price_anchor": "What they spend today"}
+    canvas = build_lean_canvas(BRIEF, load("phase1_gate_decision.json"), load("phase1_step2_investigation.json"),
+                               load("phase1_step3_challenge.json"), advice)
+    assert "revenue_streams" not in canvas["summary"]["unknown_boxes"]       # the box is filled ...
+    assert "revenue_streams" in canvas["summary"]["boxes_without_evidence"]  # ... but not evidenced
 
 
 def test_prices_are_assumptions_and_no_payments_exist():

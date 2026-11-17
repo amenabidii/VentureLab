@@ -55,4 +55,5 @@ A Lean Canvas is a set of hypotheses. Labels show where each entry came from; no
 ## Evidence summary
 
 - Entries backed by a verified quote: 4 (established: 0)
-- Boxes with no evidence at all: none
+- Boxes without any EVIDENCE entry: problem, customer_segments, unique_value_proposition, solution, channels, revenue_streams, cost_structure, key_metrics, unfair_advantage
+- Boxes with nothing but an open question: none

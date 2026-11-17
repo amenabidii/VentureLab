@@ -95,6 +95,9 @@ def build_lean_canvas(brief: dict, gate: dict, investigation: dict | None, chall
         "canvas": {box: [e.to_dict() for e in entries] for box, entries in canvas.items()},
         "summary": {"boxes": len(BOXES), "sourced_entries": sourced, "established_entries": established,
                     "unknown_boxes": [b for b, es in canvas.items() if all(e.label == UNKNOWN for e in es)],
+                    # A box counts as evidenced only with an EVIDENCE entry (an ESTABLISHED finding);
+                    # founder statements and model proposals fill a box but never evidence it.
+                    "boxes_without_evidence": [b for b, es in canvas.items() if not any(e.label == EVIDENCE for e in es)],
                     "founder_assumptions_under_test": unsupported},
         "note": "A Lean Canvas is a set of hypotheses. Labels show where each entry came from; "
                 "nothing here is evidence of demand.",
@@ -226,5 +229,6 @@ def lean_canvas_markdown(data: dict) -> str:
     lines += ["## Evidence summary", "",
               f"- Entries backed by a verified quote: {s['sourced_entries']} "
               f"(established: {s['established_entries']})",
-              f"- Boxes with no evidence at all: {', '.join(s['unknown_boxes']) or 'none'}", ""]
+              f"- Boxes without any EVIDENCE entry: {', '.join(s['boxes_without_evidence']) or 'none'}",
+              f"- Boxes with nothing but an open question: {', '.join(s['unknown_boxes']) or 'none'}", ""]
     return "\n".join(lines)

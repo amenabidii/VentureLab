@@ -2,6 +2,8 @@
 
 **Recommendation: REPEAT**
 
+**Launch recommendation: DO NOT LAUNCH. The evidence does not support launching: Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.**
+
 Rule applied: Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.
 
 ## What the decision rests on

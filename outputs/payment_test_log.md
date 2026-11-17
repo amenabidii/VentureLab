@@ -1,6 +1,6 @@
 # Payment and delivery test log (MOCKED)
 
-Run `run-a9f21cd634924cca` · 2026-11-17T18:35:58Z · Discover gate **REPEAT** · REHEARSAL.
+Run `run-a9f21cd634924cca` · 2026-11-17T19:53:50Z · Discover gate **REPEAT** · REHEARSAL.
 
 Everything below is a local simulation produced by `workflow.py launch`: a MOCKED payment provider
 (`payments.py`), SIMULATED test buyers, signed webhook events, automatic delivery (`delivery.py`),

@@ -1,6 +1,7 @@
 {
  "recommendation": "REPEAT",
  "rule": "Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.",
+ "launch_recommendation": "DO NOT LAUNCH. The evidence does not support launching: Not enough real evidence: the Discover gate decided REPEAT, and no real experiment results exist yet.",
  "discover_decision": "REPEAT",
  "validation_gate": null,
  "real_experiment_results": {},

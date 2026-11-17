@@ -1,15 +1,22 @@
 {
  "run_id": "run-a9f21cd634924cca",
  "phase": 2,
+ "outcome": "REPEAT",
  "decision": "REVIEW",
+ "launch_recommendation": "DO NOT LAUNCH: the Discover gate decided REPEAT; this phase ran only as a founder-approved REHEARSAL, so its outcome is not a reason to launch.",
  "checks": [
   {
    "check": "every box filled or labelled ASSUMPTION",
    "passed": true
   },
   {
-   "check": "revenue streams evidenced",
-   "passed": true
+   "check": "revenue streams evidenced (an ESTABLISHED finding, not a proposal)",
+   "passed": false
+  },
+  {
+   "check": "demand test passed its pre-set threshold (validation gate, founder-reported)",
+   "passed": false,
+   "detail": "no real results recorded yet"
   }
  ],
  "founder_approvals": [],

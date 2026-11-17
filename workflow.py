@@ -45,6 +45,9 @@ from payments import MockPaymentProvider, Order
 from reconcile import reconcile
 
 AGENTS = {0: "advisor", 1: "strategist", 2: "strategist", 3: "product", 4: "commercial", 5: "launcher", 6: "operator"}
+OUTCOMES = ("GO", "REPEAT", "PIVOT", "STOP")
+# The Phase 6 memo's recommendation, expressed as a gate outcome.
+MEMO_OUTCOME = {"PERSEVERE": "GO", "REPEAT": "REPEAT", "PIVOT": "PIVOT", "PIVOT OR STOP": "STOP", "STOP": "STOP"}
 
 
 class GateBlocked(RuntimeError):
@@ -155,9 +158,24 @@ class Context:
                         approved_by="founder" if approved else None, outcome=outcome, phase=phase,
                         rehearsal=self.rehearsal, discover_run_id=self.run_id, **extra)
 
-    def gate_file(self, phase: int, name: str, decision: str, checks: list[dict], approvals: list[str]):
+    def gate_file(self, phase: int, name: str, decision: str, checks: list[dict], approvals: list[str],
+                  outcome: str | None = None):
+        """Every phase gate ends in GO, REPEAT, PIVOT or STOP (None while it waits for the founder),
+        plus an explicit launch recommendation: anything short of a real GO says do not launch."""
+        if outcome not in (None, *OUTCOMES):
+            raise ValueError(f"gate outcome must be one of {OUTCOMES}")
+        if outcome is None:
+            launch = "DO NOT LAUNCH: this gate is waiting for a founder decision."
+        elif self.decision != "GO":
+            launch = (f"DO NOT LAUNCH: the Discover gate decided {self.decision}; this phase ran only as a "
+                      "founder-approved REHEARSAL, so its outcome is not a reason to launch.")
+        elif outcome != "GO":
+            launch = f"DO NOT LAUNCH: this gate's outcome is {outcome}."
+        else:
+            launch = "Go on to the next phase only with the founder's approval. GO is not proof of demand."
         return self.write(f"phase{phase}_gate_{name}.json", {
-            "run_id": self.run_id, "phase": phase, "decision": decision, "checks": checks,
+            "run_id": self.run_id, "phase": phase, "outcome": outcome, "decision": decision,
+            "launch_recommendation": launch, "checks": checks,
             "founder_approvals": approvals, "discover_decision": self.decision,
             "rehearsal": self.rehearsal, "decided_by": "fixed rules in workflow.py"})
 
@@ -261,11 +279,27 @@ def plan(ctx: Context) -> list[str]:
     ctx.write("phase2_step2_lean-canvas.md", lean_canvas_markdown(canvas))
     ctx.rec(2, "build_lean_canvas", "drafted", sources=sources)
     complete = all(canvas["canvas"][b] for b in canvas["canvas"])
+    revenue_evidenced = "revenue_streams" not in canvas["summary"]["boxes_without_evidence"]
+    # Demand is decided only by the validation gate on real, founder-reported results against a
+    # threshold approved in advance (e.g. 100 waitlist sign-ups in 14 days; 12 arrive -> STOP).
+    vpath = ctx.run_dir / "phase2_gate_validation.json"
+    validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
+    if ctx.decision == "STOP":
+        outcome = "STOP"
+    elif validation and validation.get("decision") in ("GO", "STOP"):
+        outcome = validation["decision"]
+    else:
+        outcome = "REPEAT"
     ctx.gate_file(2, "lean-canvas", "REVIEW" if complete else "REPEAT",
                   [{"check": "every box filled or labelled ASSUMPTION", "passed": complete},
-                   {"check": "revenue streams evidenced", "passed": "revenue_streams" not in canvas["summary"]["unknown_boxes"]}],
-                  [])
-    ctx.rec(2, "lean_canvas_gate", "founder review required; demand not evidenced")
+                   {"check": "revenue streams evidenced (an ESTABLISHED finding, not a proposal)", "passed": revenue_evidenced},
+                   {"check": "demand test passed its pre-set threshold (validation gate, founder-reported)",
+                    "passed": bool(validation and validation.get("decision") == "GO"),
+                    "detail": (f"{validation.get('decision')}: {validation.get('rule')}" if validation
+                               else "no real results recorded yet")}],
+                  [], outcome=outcome)
+    ctx.rec(2, "lean_canvas_gate", f"{outcome}: founder review required; demand not evidenced"
+            if outcome == "REPEAT" else f"{outcome}: from the validation gate")
 
     ctx.require_rehearsal_approval()
     scope = mvp_scope(ctx.brief, canvas)
@@ -285,7 +319,8 @@ def plan(ctx: Context) -> list[str]:
     choice = ctx.approvals.chosen("set_price:", p_sha)
     if choice:
         ctx.gate_file(4, "commercial", "REHEARSAL GO" if ctx.rehearsal else "GO (founder approved price)",
-                      [{"check": "price chosen by founder", "passed": True, "choice": choice}], [f"set_price:{choice}"])
+                      [{"check": "price chosen by founder", "passed": True, "choice": choice}], [f"set_price:{choice}"],
+                      outcome="GO")
         return [f"price already approved by the founder: {choice}"]
     ctx.gate_file(4, "commercial", "AWAITING FOUNDER", [{"check": "price chosen by founder", "passed": False}], [])
     needed = [f"set_price:<{'|'.join(o['id'] for o in pricing['options'])}> {p_sha}"]
@@ -305,7 +340,8 @@ def prepare_launch(ctx: Context) -> list[str]:
     ctx.write("phase4_step1_pricing-decision.md",
               pricing_markdown({**pricing, "founder_choice": choice}))
     ctx.gate_file(4, "commercial", "GO (founder approved price)" if not ctx.rehearsal else "REHEARSAL GO",
-                  [{"check": "price chosen by founder", "passed": True, "choice": choice}], [f"set_price:{choice}"])
+                  [{"check": "price chosen by founder", "passed": True, "choice": choice}], [f"set_price:{choice}"],
+                  outcome="GO")
     ctx.rec(4, "commercial_gate", f"price approved: {choice}", approved=True)
 
     product = product_name(ctx.brief)
@@ -323,7 +359,7 @@ def prepare_launch(ctx: Context) -> list[str]:
                                                                "generated artifacts; MVP production code STUBBED"})
     passed = all(c["passed"] for c in checks)
     ctx.gate_file(3, "build", "PROTOTYPE AND ARTIFACTS PASSED (production code STUBBED)" if passed else "REPEAT",
-                  checks, [])
+                  checks, [], outcome="GO" if passed else "REPEAT")
     ctx.rec(3, "run_acceptance_checks", f"{sum(c['passed'] for c in checks)}/{len(checks)} passed")
     return [f"publish_store_page {page_sha}", f"enable_mock_delivery {prod_sha}"]
 
@@ -388,7 +424,7 @@ def launch(ctx: Context) -> dict:
         ctx.rec(5, "mock_payment_event", s["result"], event=s["event"], order=s["order"])
     ctx.rec(5, "reconcile", "balanced" if recon["balanced"] else "mismatch", mismatches=recon["mismatches"])
     ctx.gate_file(5, "launch", ("REHEARSAL PASSED" if ctx.rehearsal else "GO") if passed else "REPEAT", checks,
-                  ["publish_store_page", "enable_mock_delivery"])
+                  ["publish_store_page", "enable_mock_delivery"], outcome="GO" if passed else "REPEAT")
 
     support = triage_support(ctx.run_dir / "support_inbox.json")
     ctx.write("phase6_step1_support.json", support)
@@ -403,7 +439,8 @@ def launch(ctx: Context) -> dict:
     ctx.write("phase6_step3_persevere-or-pivot-memo.md", memo_markdown(memo, support))
     ctx.gate_file(6, "persevere-or-pivot", memo["recommendation"],
                   [{"check": "real experiment results available", "passed": bool(memo["real_experiment_results"])},
-                   {"check": "mocked metrics excluded from evidence", "passed": True}], [])
+                   {"check": "mocked metrics excluded from evidence", "passed": True}], [],
+                  outcome=MEMO_OUTCOME[memo["recommendation"]])
     ctx.rec(6, "persevere_or_pivot", memo["recommendation"], rule=memo["rule"])
     return {"payment_tests_passed": passed, "memo": memo["recommendation"]}
 

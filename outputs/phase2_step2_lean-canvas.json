@@ -166,6 +166,17 @@
   "sourced_entries": 4,
   "established_entries": 0,
   "unknown_boxes": [],
+  "boxes_without_evidence": [
+   "problem",
+   "customer_segments",
+   "unique_value_proposition",
+   "solution",
+   "channels",
+   "revenue_streams",
+   "cost_structure",
+   "key_metrics",
+   "unfair_advantage"
+  ],
   "founder_assumptions_under_test": [
    "A1",
    "A2",

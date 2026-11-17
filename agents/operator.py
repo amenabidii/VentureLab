@@ -84,7 +84,10 @@ def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, valida
             next_steps.insert(0, f"Decide before testing (proposed stop rule, {advice['label']}): {advice['kill_criterion']}")
         if advice.get("riskiest_assumption"):
             next_steps.insert(0, f"Test the riskiest assumption first ({advice['label']}): {advice['riskiest_assumption']}")
-    return {"recommendation": rec, "rule": rule, "discover_decision": decision,
+    launch = ("Launch may be prepared, step by step, each behind the founder's approval. This is not proof of "
+              "demand or of future sales." if rec == "PERSEVERE" else
+              f"DO NOT LAUNCH. The evidence does not support launching: {rule}")
+    return {"recommendation": rec, "rule": rule, "launch_recommendation": launch, "discover_decision": decision,
             "validation_gate": ({k: validation.get(k) for k in ("decision", "rule", "participants", "successes",
                                                                  "result_source")} if validation else None),
             "real_experiment_results": results, "mocked_metrics_used_as_evidence": False,
@@ -98,6 +101,8 @@ def memo_markdown(memo: dict, support: dict) -> str:
     return f"""# Phase 6, step 3: Persevere-or-pivot memo
 
 **Recommendation: {memo['recommendation']}**
+
+**Launch recommendation: {memo['launch_recommendation']}**
 
 Rule applied: {memo['rule']}
 

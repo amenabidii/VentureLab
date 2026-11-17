@@ -41,7 +41,10 @@ def _decision(path: Path) -> str:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return "unreadable"
-    return str(data.get("decision", "—"))
+    decision = str(data.get("decision", "—"))
+    # Phase gates written by workflow.py also carry go / repeat / pivot / stop and a launch recommendation.
+    shown = f"{data['outcome']} · {decision}" if data.get("outcome") and data["outcome"] != decision else decision
+    return f"{shown} · {data['launch_recommendation']}" if data.get("launch_recommendation") else shown
 
 
 @router.get("/phases", response_class=HTMLResponse, include_in_schema=False)

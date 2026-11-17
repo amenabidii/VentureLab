@@ -1,7 +1,9 @@
 {
  "run_id": "run-a9f21cd634924cca",
  "phase": 6,
+ "outcome": "REPEAT",
  "decision": "REPEAT",
+ "launch_recommendation": "DO NOT LAUNCH: the Discover gate decided REPEAT; this phase ran only as a founder-approved REHEARSAL, so its outcome is not a reason to launch.",
  "checks": [
   {
    "check": "real experiment results available",
