@@ -81,18 +81,26 @@ Existing tests already cover these, so they were not duplicated here.
 - **Merge rehearsal** of all branches: see
   [integration-handoff.md](integration-handoff.md).
 - **Persistent state from an empty checkout** (2026-11-17, after the integration was
-  merged): the app container starts as root only to prepare `.venturelab/`, then runs as
-  the owner of the mounted `outputs/` folder (UID 1000 when the mount reports root),
-  never as root. Isolated Compose projects with no `.venturelab/` were tested on Docker
-  Desktop for Windows (real relative bind mounts) and with Linux bind-mount semantics
-  (folders inside Docker Desktop's Linux VM, where Docker creates a missing mount source
-  as root) for checkouts owned by UID 0, 1000 and 1001. In every case: the app became
-  healthy; a run record and its outputs were written; the approval store and founder
-  key were created; execution with a wrong key or before approval was refused; a
+  merged): `docker-entrypoint.sh` validates the three state mounts as root, then runs the
+  app as the owner of the mounted `outputs/` folder (UID 1000 when the mount reports
+  root), never as root and with `no_new_privs`. Its only privileged change is a
+  non-recursive `chown -h` of `.venturelab/` when that folder is empty and root-owned
+  (what Docker creates for a missing mount source) in a checkout owned by a normal user.
+  Symlinks at the three paths, and bind mounts whose resolved source (from
+  `/proc/self/mountinfo`) is not the expected sibling on one device, are refused.
+  Isolated Compose projects with no `.venturelab/` were tested on Docker Desktop for
+  Windows (real relative bind mounts) and with Linux bind-mount semantics (folders inside
+  Docker Desktop's Linux VM) for checkouts owned by UID 1000 and 1001. In every case: the
+  app became healthy; a run record and its outputs were written; the approval store and
+  founder key were created; execution with a wrong key or before approval was refused; a
   SIMULATED approval on a synthetic fixture wrote the files once; run state survived a
-  container restart; and a replay after the restart was refused. Before the fix, the
-  Linux case crash-looped with `sqlite3.OperationalError: unable to open database file`.
-  The Docker layer cache was warm and no model was pulled in these tests.
+  container restart; and a replay after the restart was refused. A checkout owned by
+  root is refused with an explanation, and nothing in it changes owner. Before the fix,
+  the Linux case crash-looped with `sqlite3.OperationalError: unable to open database
+  file`. `tests/test_entrypoint_security.py` holds the attack cases (symlinked mount
+  roots and files, relative traversal, redirection of all three into one foreign folder,
+  nested links, non-empty root-owned state); its Docker scenarios run with
+  `VENTURELAB_DOCKER_TESTS=1`. The Docker layer cache was warm and no model was pulled.
 
 ## Contradictions found and how they were handled
 
