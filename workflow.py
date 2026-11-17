@@ -7,7 +7,8 @@
 
 Gates, enforced in code:
 - STOP from the Discover gate blocks every later phase.
-- REPEAT or PIVOT allows later phases only as a REHEARSAL, after an explicit founder
+- REPEAT or PIVOT (or GO without a passed Phase 2 validation gate) allows later phases only as a
+  REHEARSAL, after an explicit founder
   approval (`rehearse_after_<decision>`); every rehearsal artifact is labelled.
 - Phase 4: the price is the founder's approved choice (`set_price:<option>`), never a model's.
 - Phase 5: publishing the store page (MOCKED) needs approval of the exact page fingerprint;
@@ -142,7 +143,14 @@ class Context:
         # The later phases are their own execution, linked to (not mixed into) the Discover run.
         self.log = AuditLog(log, f"{self.run_id}:phases-2-6")
         self.approvals = Approvals(state, self.run_id)
-        self.rehearsal = self.decision != "GO"
+        vpath = run_dir / "phase2_gate_validation.json"
+        self.validation = json.loads(vpath.read_text(encoding="utf-8")) if vpath.exists() else None
+        self.validated = (self.validation or {}).get("decision") == "GO"
+        # Normal progression needs Discover GO *and* a passed Phase 2 validation gate (pre-set threshold,
+        # founder-reported results). Anything less runs only as a founder-approved, labelled REHEARSAL.
+        self.rehearsal = self.decision != "GO" or not self.validated
+        self.rehearsal_action = (f"rehearse_after_{self.decision.lower()}" if self.decision != "GO"
+                                 else "rehearse_without_validation")
         # Same rule as the Builder: a decision made by superseded gate rules unlocks nothing.
         self.superseded = self.gate.get("ruleset_version") != RULESET_VERSION
         out.mkdir(parents=True, exist_ok=True)
@@ -169,6 +177,9 @@ class Context:
         elif self.decision != "GO":
             launch = (f"DO NOT LAUNCH: the Discover gate decided {self.decision}; this phase ran only as a "
                       "founder-approved REHEARSAL, so its outcome is not a reason to launch.")
+        elif self.rehearsal:
+            launch = ("DO NOT LAUNCH: the Phase 2 validation gate has not passed its pre-set threshold; this phase "
+                      "ran only as a founder-approved REHEARSAL.")
         elif outcome != "GO":
             launch = f"DO NOT LAUNCH: this gate's outcome is {outcome}."
         else:
@@ -203,11 +214,13 @@ class Context:
             raise GateBlocked("Phase 2 validation gate decided STOP (pre-set threshold failed): stop, or pivot "
                               "back to Discover. Phases 3-5 are blocked.")
         if self.rehearsal:
-            action = f"rehearse_after_{self.decision.lower()}"
+            action = self.rehearsal_action
             if not self.approvals.approved(action, self.gate_sha):
                 self.rec(4, "gate_check", f"blocked: needs founder approval {action}")
-                raise GateBlocked(f"Discover decided {self.decision}. To rehearse later phases anyway, the "
-                                  f"founder must approve: {action} {self.gate_sha}")
+                why = (f"Discover decided {self.decision}" if self.decision != "GO"
+                       else "Discover decided GO but the Phase 2 validation gate has not passed")
+                raise GateBlocked(f"{why}. To rehearse later phases anyway, the founder must approve: "
+                                  f"{action} {self.gate_sha}")
 
 
 # --- commands -------------------------------------------------------------------------------

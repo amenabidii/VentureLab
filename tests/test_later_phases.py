@@ -138,19 +138,40 @@ def test_every_phase_gate_ends_in_go_repeat_pivot_or_stop_and_says_do_not_launch
     assert "**Launch recommendation: DO NOT LAUNCH." in memo
 
 
-def test_after_go_a_passing_gate_does_not_say_do_not_launch_but_the_memo_still_can(tmp_path, monkeypatch):
-    cli = CLI(tmp_path, make_run(tmp_path, "GO"))
+def _validation(run, decision):
+    (run / "phase2_gate_validation.json").write_text(json.dumps({"decision": decision, "rule": f"SYNTHETIC_{decision}"}))
+
+
+@pytest.mark.parametrize(("validation", "needs_rehearsal"), [(None, True), ("REPEAT", True), ("GO", False)])
+def test_after_discover_go_normal_progression_needs_a_passed_validation_gate(tmp_path, monkeypatch, validation,
+                                                                          needs_rehearsal):
+    run = make_run(tmp_path, "GO")
+    if validation:
+        _validation(run, validation)          # SYNTHETIC gate record, as written by the validation gate
+    cli = CLI(tmp_path, run)
+    if needs_rehearsal:
+        assert cli("plan") == 3                                    # blocked: REPEAT/missing never becomes GO
+        assert cli.approve(monkeypatch, "rehearse_without_validation", cli.gate_sha()) == 0
     assert cli("plan") == 0
     cli.approve(monkeypatch, "set_price:pro-8", cli.sha("phase4_step1_pricing.json"))
     assert cli("prepare-launch") == 0
     build = json.loads((cli.out / "phase3_gate_build.json").read_text())
-    assert build["outcome"] == "GO" and not build["launch_recommendation"].startswith("DO NOT LAUNCH")
-    assert json.loads((cli.out / "phase2_gate_lean-canvas.json").read_text())["outcome"] == "REPEAT"
+    assert build["outcome"] == "GO" and build["rehearsal"] is needs_rehearsal
+    assert build["launch_recommendation"].startswith("DO NOT LAUNCH") is needs_rehearsal
     cli.approve(monkeypatch, "publish_store_page", cli.sha("phase5_step1_store-page.html"))
     cli.approve(monkeypatch, "enable_mock_delivery", cli.sha("phase5_step2_mock-product.md"))
     assert cli("launch") == 0
     memo = json.loads((cli.out / "phase6_gate_persevere-or-pivot.json").read_text())
-    assert memo["outcome"] == "REPEAT" and memo["launch_recommendation"].startswith("DO NOT LAUNCH")  # no real results
+    # A passed validation gate is the only route to PERSEVERE; anything less says do not launch.
+    assert memo["launch_recommendation"].startswith("DO NOT LAUNCH") is needs_rehearsal
+
+
+def test_a_validation_stop_blocks_phases_3_to_5_even_with_a_rehearsal_approval(tmp_path, monkeypatch):
+    run = make_run(tmp_path, "GO")
+    _validation(run, "STOP")
+    cli = CLI(tmp_path, run)
+    cli.approve(monkeypatch, "rehearse_without_validation", cli.gate_sha())
+    assert cli("plan") == 3 and not (cli.out / "phase4_step1_pricing.json").exists()
 
 
 def test_price_is_never_chosen_without_the_founder(tmp_path, monkeypatch):

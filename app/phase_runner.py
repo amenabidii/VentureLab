@@ -56,11 +56,13 @@ def _ctx(svc: Services, run_id: str) -> workflow.Context:
 def pending(ctx: workflow.Context) -> list[dict[str, Any]]:
     """What still needs the founder, computed from files and signed approvals."""
     items, appr = [], ctx.approvals
-    if ctx.decision in ("REPEAT", "PIVOT"):
-        action = f"rehearse_after_{ctx.decision.lower()}"
+    if ctx.rehearsal and ctx.decision != "STOP":
+        action = ctx.rehearsal_action
         if not appr.approved(action, ctx.gate_sha):
+            why = (f"although Discover decided {ctx.decision}" if ctx.decision != "GO"
+                   else "although the Phase 2 validation gate has not passed")
             items.append({"action": action, "sha": ctx.gate_sha, "choices": None, "file": None,
-                          "what": f"Run phases 2–6 as a labelled REHEARSAL although Discover decided {ctx.decision}"})
+                          "what": f"Run phases 2–6 as a labelled REHEARSAL {why}"})
     pricing = ctx.out / "phase4_step1_pricing.json"
     if pricing.exists():
         sha = workflow.sha256(pricing.read_bytes())
