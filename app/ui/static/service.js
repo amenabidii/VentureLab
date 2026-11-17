@@ -1,4 +1,5 @@
 import { demo } from "./fixtures.js";
+import { modelStatus } from "./normalize.js";
 export class UnavailableError extends Error {}
 /** Override this adapter at integration. No speculative HTTP endpoints are called.
  * Each method returns a Promise; binding implementations must normalize to contracts.js.
@@ -63,5 +64,8 @@ export async function getModelStatus(fetcher = fetch) {
   });
   if (!response.ok && response.status !== 503)
     throw new Error("Model status could not be read.");
-  return response.json();
+  const status = modelStatus(await response.json());
+  if (!response.ok && status.ready)
+    throw new Error("Contradictory readiness response.");
+  return status;
 }

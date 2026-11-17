@@ -14,6 +14,12 @@ export const STANDINGS = ["ESTABLISHED", "NEEDS_REVIEW", "ASSUMPTION"];
 export const OUTCOMES = ["GO", "REPEAT", "PIVOT", "STOP"];
 export function safeURL(value) {
   try {
+    if (
+      typeof value !== "string" ||
+      !/^https?:\/\/[^/]/i.test(value) ||
+      /[\u0000-\u0020\u007f\\]/.test(value)
+    )
+      return null;
     const url = new URL(value);
     return ["https:", "http:"].includes(url.protocol) &&
       !url.username &&
@@ -24,7 +30,7 @@ export function safeURL(value) {
     return null;
   }
 }
-export function validateBrief(brief) {
+export function validateBrief(brief = {}) {
   const errors = {};
   for (const key of [
     "idea",
@@ -35,7 +41,7 @@ export function validateBrief(brief) {
     "values",
     "constraints",
   ]) {
-    if (!String(brief[key] ?? "").trim())
+    if (typeof brief[key] !== "string" || !brief[key].trim())
       errors[key] =
         "Please describe this field; use “None” if there are no constraints.";
     else if (brief[key].length > 4000)
@@ -44,24 +50,38 @@ export function validateBrief(brief) {
   if (String(brief.idea ?? "").trim().length < 20)
     errors.idea = "Describe your idea in at least 20 characters.";
   if (
-    brief.hours === "" ||
+    !numericInput(brief.hours) ||
     !Number.isFinite(Number(brief.hours)) ||
     Number(brief.hours) < 1 ||
     Number(brief.hours) > 168
   )
     errors.hours = "Enter between 1 and 168 hours per week.";
   if (
-    brief.budget === "" ||
+    !numericInput(brief.budget) ||
     !Number.isFinite(Number(brief.budget)) ||
-    Number(brief.budget) < 0
+    Number(brief.budget) < 0 ||
+    Number(brief.budget) > Number.MAX_SAFE_INTEGER / 100
   )
-    errors.budget = "Enter a budget of zero or more.";
+    errors.budget =
+      "Enter a non-negative budget below 90 trillion to preserve numeric precision.";
   if (!["EGP", "USD", "EUR"].includes(brief.currency))
     errors.currency = "Choose a supported budget currency.";
-  if (brief.sources.length > 10 || brief.sources.some((url) => !safeURL(url)))
+  if (
+    brief.sources != null &&
+    (!Array.isArray(brief.sources) ||
+      brief.sources.length > 10 ||
+      brief.sources.some((url) => !safeURL(url)))
+  )
     errors.sources =
       "Use up to 10 complete HTTP or HTTPS source URLs, one per line, without credentials.";
   return errors;
+}
+function numericInput(value) {
+  return (
+    typeof value === "number" ||
+    (typeof value === "string" &&
+      /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value.trim()))
+  );
 }
 export function filterFindings(findings, standing = "", type = "") {
   return findings.filter(

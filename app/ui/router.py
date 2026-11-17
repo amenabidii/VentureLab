@@ -22,6 +22,6 @@ def workspace():
 @router.get("/workspace/assets/{name}", include_in_schema=False)
 def asset(name: str):
     # An explicit allowlist prevents filesystem traversal and configuration exposure.
-    if name not in {"app.js", "views.js", "service.js", "contracts.js", "fixtures.js", "styles.css"}:
+    if name not in {"app.js", "views.js", "service.js", "contracts.js", "fixtures.js", "styles.css", "normalize.js", "preview.js"}:
         raise HTTPException(404)
     return FileResponse(ASSETS / name, headers=HEADERS)

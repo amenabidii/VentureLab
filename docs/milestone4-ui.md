@@ -1,5 +1,7 @@
 # Milestone 4: founder workspace
 
+For the subsequent critical audit, fixes, measured performance and final verdict, see [Milestone 4 QA report](milestone4-qa.md).
+
 ## Scope and implementation status
 
 The founder interface is available at `/` and `/workspace`. The existing foundation status page is retained at `/diagnostics`; `/health`, `/health/model` and `/health/inference` retain their original behavior. This branch is based on foundation commit `b72f907` and intentionally does not import uncommitted Milestone 2 or 3 work.
@@ -29,12 +31,14 @@ No production run, evidence, decision, audit entry or artifact is fabricated. An
 - `app/ui/static/views.js`: pure, escaped renderers for eleven screens and shared presentation components.
 - `app/ui/static/contracts.js`: provisional JSDoc types, local usability validation, safe external URL handling and filtering.
 - `app/ui/static/service.js`: centralized asynchronous adapter boundary. No invented HTTP paths.
+- `app/ui/static/normalize.js`: runtime presentation validation, payload limits, backend field-error mapping and approval display guards.
+- `app/ui/static/preview.js`: passive HTML reconstruction inside an opaque sandbox.
 - `app/ui/static/fixtures.js`: explicitly MOCKED examples for UI development.
 - `tests/test_ui.py`: delivery, headers, assets and read-only route checks.
 - `tests/ui/`: Node unit tests and actual Playwright browser interactions; dependencies are test-only.
 - `app/main.py`: only the old root route moves to `/diagnostics` and the new router is registered. Coordinate those two edits when integrating other workstreams.
 
-The interface uses native browser modules, CSS and system fonts. There are no runtime JavaScript packages, external font/icon services, paid services or frontend build steps. The existing Dockerfile copies and serves the assets without modification. Playwright and Prettier are development-only dependencies pinned in `tests/ui/package-lock.json`; Node is unnecessary in the production image.
+The interface uses native browser modules, CSS and system fonts. There are no runtime JavaScript packages, external font/icon services, paid services or frontend build steps. The existing Dockerfile copies and serves the assets without modification. Playwright, axe-core and Prettier are development-only dependencies pinned in `tests/ui/package-lock.json`; Node is unnecessary in the production image.
 
 ## Screens and navigation
 
@@ -65,7 +69,7 @@ Layouts adapt at 1150px and 760px. Mobile navigation scrolls horizontally; audit
 
 ## Provisional contracts and adapter boundary
 
-`contracts.js` defines presentation types for `FounderBrief`, `Run`, `AgentStatus`, `Finding`, `Challenge`, `Decision`, `Counterfactual`, `Artifact`, `Approval` and `AuditEntry`. These are documentation types, not authoritative domain schemas. Backend data must be validated and normalized at the integration boundary before rendering.
+`contracts.js` defines presentation types for `FounderBrief`, `Run`, `AgentStatus`, `Finding`, `Challenge`, `Decision`, `Counterfactual`, `Artifact`, `Approval` and `AuditEntry`. These are provisional presentation types, not authoritative domain schemas. `normalize.js` now validates responses before rendering, rejects invalid critical classifications/identities and bounds payloads. Missing optional text is explicitly marked Not provided; missing lists become empty lists; missing costs remain null. Integrating adapters must map authoritative backend schemas into this boundary without inventing data.
 
 Implement or replace the methods in `WorkspaceService`; keep endpoint choices centralized there:
 
@@ -80,17 +84,17 @@ Implement or replace the methods in `WorkspaceService`; keep endpoint choices ce
 | `getCounterfactual(runId)` | `Counterfactual` or `null`; hypothetical evidence must remain hypothetical |
 | `listArtifacts(runId)` | `Artifact[]`; bounded content, no arbitrary local paths |
 | `getApprovals(runId)` | `Approval[]`; server-owned status and exact identity/fingerprint |
-| `decideApproval(request, choice)` | Backend acknowledgment; refresh authoritative request state before displaying a changed status |
+| `decideApproval(request, choice)` | A complete confirmed Approval object with matching identity, action, fingerprint and terminal status; refetch authoritative request state before displaying the changed status |
 | `getAudit(runId)` | `AuditEntry[]`; normalize authoritative Milestone 2 schema, preserving null/absent values |
 
 Capabilities default to `false`: `createRun`, `workflow`, `approvals`. Enable each only after its backend implementation, authorization and error mapping have been verified. Demo mode must never enable approval or execution. The live fallback returns empty lists and null decisions, not fixtures. Both mutation methods throw `UnavailableError` on this branch even if called directly.
 
-No workflow URL is proposed as an existing endpoint. The only fetched endpoint is the inspected `/health/model`, refreshed every 30 seconds with a 15-second status-check timeout. Actual inference is not subject to that timeout. Integrate long-running analysis as durable run creation followed by status retrieval; `workflow` enables five-second polling while the workflow screen is open. Do not hold a frontend request open expecting immediate model completion. Run creation and approval retries require server-side idempotency; the UI does not automatically retry mutations after ambiguous failures.
+No workflow URL is proposed as an existing endpoint. The only fetched endpoint is the inspected `/health/model`, refreshed every 30 seconds with a 15-second status-check timeout. Actual inference is not subject to that timeout. Integrate long-running analysis as durable run creation followed by status retrieval; `workflow` enables polling five seconds after the preceding read completes while the workflow screen is visible. Navigation does not start overlapping reads. Do not hold a frontend request open expecting immediate model completion. Run creation and approval retries require server-side idempotency; the UI does not automatically retry mutations after ambiguous failures.
 
 ### Milestone 2 integration
 
-1. Confirm the actual run, brief, evidence, decision, counterfactual and audit APIs/schemas. Normalize them in `service.js`; add runtime response validation and tests for malformed data.
-2. Map presentation brief keys to the authoritative brief schema; return field errors from server validation. Preserve user-entered values rather than inventing missing details.
+1. Confirm the actual run, brief, evidence, decision, counterfactual and audit APIs/schemas. Map them in `service.js` to the runtime-validated presentation contracts in `normalize.js`; add tests against real responses, including malformed data.
+2. Map presentation brief keys to the authoritative brief schema; map server field errors to `BriefValidationError` from `normalize.js`. The UI preserves input and focuses the invalid field; ambiguous transport failures lock resubmission to avoid blind duplicates. Preserve user-entered values rather than inventing missing details.
 3. Supply persisted run IDs and real statuses. Preserve timestamps for recorded runs.
 4. Preserve findings, classifications, quotations, limitations and source URLs without promoting assumptions to established evidence.
 5. Enable run creation and workflow capabilities only once working. Add contract tests against the actual backend, including slow jobs, failures and stale responses.
@@ -150,7 +154,7 @@ Coverage includes startup and headers, every navigation view, required brief fie
 
 - Text is escaped at render boundaries; text previews use `textContent`.
 - External source links permit only HTTP/HTTPS without embedded credentials and use `noopener noreferrer` plus a no-referrer document policy. The frontend never fetches user source URLs.
-- HTML previews use an opaque sandboxed iframe, remove active elements and all attributes, and add a deny-all CSP. Scripts, forms, external assets and navigation links are disabled. Styling is intentionally stripped; this is a content preview, not a full-fidelity landing-page renderer.
+- HTML previews use an opaque sandboxed iframe, reconstruct only an allowlisted passive HTML vocabulary with no copied attributes from inert template content, and add a deny-all CSP. Scripts, forms, external assets and navigation links are disabled. Styling is intentionally stripped; this is a content preview, not a full-fidelity landing-page renderer.
 - Assets are served from a fixed allowlist. No local artifact paths, private configuration or arbitrary filenames are exposed.
 - Approval cannot be granted locally; disabled controls and throwing adapters are not a substitute for future backend authorization.
 - No external side effects, payments, credentials, telemetry, persistent browser storage or paid APIs are introduced.
@@ -163,7 +167,7 @@ Live M2/M3 integrations are unavailable on the inspected foundation and remain S
 Project-wide README/ARCHITECTURE, official CLAUDE.md, model settings, Dockerfile/Compose definitions and all M2/M3-owned modules are unchanged. The only packaging adjustment adds `**/node_modules` to `.dockerignore` so nested test dependencies are excluded from the production image. The integrating maintainer should coordinate the required project-wide capability table and final submission documentation; this isolated workstream does not rewrite those files.
 
 
-## Verification record (2026-11-17)
+## Original implementation verification (2026-11-17)
 
 - Python suite, including all existing Milestone 1 tests: **109 passed, 7 skipped**. Seven opt-in live Ollama tests were skipped; no actual model inference was claimed. One dependency deprecation warning was reported.
 - Node adapter/rendering tests: **10 passed**.

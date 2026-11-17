@@ -167,6 +167,7 @@ nav a[aria-current] {
 }
 .sidebar-footer a {
   color: #b9d8d3;
+  text-decoration: underline;
 }
 .status-dot {
   display: inline-block;
@@ -1061,4 +1062,27 @@ main:focus {
 }
 .sidebar {
   overflow-y: auto;
+}
+/* Long untrusted content must not expand cards or the page viewport. */
+main {
+  overflow-wrap: anywhere;
+}
+.finding-title,
+.filters label,
+.agent > div,
+.page-heading > div {
+  min-width: 0;
+}
+.badge {
+  white-space: normal;
+}
+.summary,
+summary {
+  overflow-wrap: anywhere;
+}
+.finding summary:focus-visible {
+  outline-offset: -4px;
+}
+.card > .grid-two {
+  margin-bottom: 20px;
 }

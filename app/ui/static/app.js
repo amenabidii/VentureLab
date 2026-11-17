@@ -1,5 +1,7 @@
 import { WorkspaceService, getModelStatus } from "./service.js";
 import { validateBrief } from "./contracts.js";
+import { normalize, approvalBlock, BriefValidationError } from "./normalize.js";
+import { inertPreview } from "./preview.js";
 import { pages, renderers, loading, errorView, escape } from "./views.js";
 const blankData = () => ({
   agents: [],
@@ -25,10 +27,20 @@ const state = {
   claimType: "",
   auditAgent: "",
   focusFinding: "",
+  evidencePage: 0,
+  loading: false,
+  loadError: false,
+  sectionErrors: {},
+  message: "",
+  approvalLocks: new Set(),
+  submitLocked: false,
+  submittedRunId: null,
 };
 const main = document.querySelector("#main");
-let epoch = 0;
-let poll;
+let epoch = 0,
+  poll,
+  previewTrigger;
+let activeReads = 0;
 function route() {
   const [page, id] = location.hash.slice(1).split("/");
   try {
@@ -36,8 +48,18 @@ function route() {
   } catch {
     state.focusFinding = "";
   }
-  return renderers[page] ? page : "dashboard";
+  return Object.hasOwn(renderers, page) ? page : "dashboard";
 }
+const sections = {
+  workflow: ["agents"],
+  evidence: ["findings"],
+  challenger: ["challenges", "findings"],
+  decision: ["decision", "findings"],
+  counterfactual: ["counterfactual"],
+  artifacts: ["artifacts"],
+  approvals: ["approvals", "artifacts"],
+  history: ["audit"],
+};
 function render(focus = false) {
   const page = route();
   document.querySelector("#nav").innerHTML = pages
@@ -50,23 +72,60 @@ function render(focus = false) {
     (p) => p[0] === page,
   )[1];
   document.title = `${pages.find((p) => p[0] === page)[1]} · VentureLab`;
-  main.innerHTML = renderers[page](state);
+  const independent = ["brief", "roadmap"].includes(page);
+  if (!independent && state.loading) main.innerHTML = loading();
+  else if (
+    !independent &&
+    (state.loadError || sections[page]?.some((key) => state.sectionErrors[key]))
+  )
+    main.innerHTML = errorView();
+  else main.innerHTML = renderers[page](state);
+  if (page === "dashboard" && Object.keys(state.sectionErrors).length)
+    main.insertAdjacentHTML(
+      "afterbegin",
+      '<p class="notice error" role="alert">Some outputs could not be read. Open the relevant view to retry; missing data is not a gate result.</p>',
+    );
+  if (state.message) {
+    const notice = document.createElement("p");
+    notice.className = "notice error";
+    notice.setAttribute("role", "alert");
+    notice.textContent = state.message;
+    main.prepend(notice);
+  }
+  document.querySelector("#mode-toggle").disabled = state.busy;
   if (focus) {
     main.focus();
     window.scrollTo(0, 0);
   }
 }
-async function load(focus = false) {
-  const ticket = ++epoch;
-  main.innerHTML = loading();
+function schedulePoll() {
+  clearTimeout(poll);
+  if (
+    state.service.capabilities.workflow &&
+    route() === "workflow" &&
+    activeReads === 0 &&
+    !state.busy &&
+    !document.hidden
+  )
+    poll = setTimeout(() => load(false, true), 5000);
+}
+async function load(focus = false, background = false) {
+  activeReads++;
+  const ticket = ++epoch,
+    service = state.service;
+  clearTimeout(poll);
+  state.loading = !background;
+  state.loadError = false;
+  if (!background) render();
   try {
-    const service = state.service;
-    const runs = await service.listRuns();
-    const runId = runs.some((r) => r.id === state.runId)
-      ? state.runId
-      : runs[0]?.id;
-    const data = blankData();
-    if (runId) {
+    const runs = normalize("runs", await service.listRuns());
+    const runId = state.runId ?? runs[0]?.id;
+    const data = blankData(),
+      errors = {};
+    const missingRun = runId && !runs.some((r) => r.id === runId);
+    if (missingRun) {
+      for (const key of Object.keys(data)) errors[key] = true;
+    } else if (runId) {
       const methods = {
         agents: "getRunStatus",
         findings: "getFindings",
@@ -79,15 +138,42 @@ async function load(focus = false) {
       };
       await Promise.all(
         Object.entries(methods).map(async ([key, method]) => {
-          data[key] = await service[method](runId);
+          try {
+            data[key] = normalize(key, await service[method](runId));
+          } catch {
+            errors[key] = true;
+          }
         }),
       );
     }
-    if (ticket !== epoch) return;
-    Object.assign(state, { runs, runId, data });
-    render(focus);
+    if (ticket !== epoch || service !== state.service) return false;
+    if (missingRun)
+      state.message =
+        "The selected run is not in the backend run list. Refresh its status or select another run from Overview. No other run has been substituted.";
+    Object.assign(state, {
+      runs,
+      runId,
+      data,
+      loading: false,
+      sectionErrors: errors,
+    });
+    if (!errors.approvals && !errors.artifacts) state.approvalLocks.clear();
+    // A slow read must not destroy the caret or reset a brief being edited.
+    if (!["brief", "roadmap"].includes(route())) render(focus);
+    schedulePoll();
+    return true;
   } catch {
-    if (ticket === epoch) main.innerHTML = errorView();
+    if (ticket !== epoch) return false;
+    state.loading = false;
+    state.loadError = true;
+    state.data = blankData();
+    state.runs = [];
+    if (!["brief", "roadmap"].includes(route())) render();
+    schedulePoll();
+    return false;
+  } finally {
+    activeReads--;
+    schedulePoll();
   }
 }
 function readBrief(form) {
@@ -107,12 +193,14 @@ main.addEventListener("submit", (event) => {
   event.preventDefault();
   state.brief = readBrief(event.target);
   state.errors = validateBrief(state.brief);
-  state.review = Object.keys(state.errors).length === 0;
+  state.review = !Object.keys(state.errors).length;
   render();
   if (!state.review) document.querySelector('[aria-invalid="true"]')?.focus();
   else main.focus();
 });
 main.addEventListener("change", (event) => {
+  if (event.target.closest("#brief-form"))
+    state.brief = readBrief(event.target.form);
   const key = {
     standing: "standing",
     "claim-type": "claimType",
@@ -121,55 +209,103 @@ main.addEventListener("change", (event) => {
   if (key) {
     const id = event.target.id;
     state[key] = event.target.value;
+    state.evidencePage = 0;
+    state.focusFinding = "";
+    if (location.hash.includes("/"))
+      history.replaceState(null, "", "#evidence");
     render();
     document.getElementById(id)?.focus();
   }
 });
-function showFailure(message) {
-  const node = document.createElement("div");
-  node.className = "notice error";
-  node.setAttribute("role", "alert");
-  node.textContent = message;
-  main.prepend(node);
+function failure(message) {
+  state.message = message;
+  render();
 }
 main.addEventListener("click", async (event) => {
   const button = event.target.closest("button");
   if (!button || button.disabled) return;
   if (button.dataset.run) {
     state.runId = button.dataset.run;
+    state.data = blankData();
+    state.message = "";
     location.hash = "workflow";
     await load();
   }
-  if (button.dataset.action === "retry") await load();
-  if (button.dataset.action === "edit") {
+  if (
+    button.dataset.action === "retry" ||
+    button.dataset.action === "refresh-approvals"
+  ) {
+    state.message = "";
+    await load();
+  }
+  if (button.dataset.action === "edit" && !state.busy) {
     state.review = false;
+    state.message = "";
+    render();
+    document.getElementById("idea")?.focus();
+  }
+  if (button.dataset.action === "new-brief" && !state.busy) {
+    state.brief = { currency: "EGP", sources: [] };
+    state.review = false;
+    state.submitLocked = false;
+    state.submittedRunId = null;
+    state.message = "";
     render();
   }
+  if (button.dataset.page) {
+    state.evidencePage += Number(button.dataset.page);
+    state.focusFinding = "";
+    history.replaceState(null, "", "#evidence");
+    render();
+    main.querySelector(".finding summary")?.focus();
+  }
   if (button.dataset.action === "submit") {
-    if (!state.service.capabilities.createRun || state.busy) return;
+    if (
+      !state.service.capabilities.createRun ||
+      state.demo ||
+      state.busy ||
+      state.submitLocked ||
+      state.submittedRunId
+    )
+      return;
+    state.errors = validateBrief(state.brief);
+    if (Object.keys(state.errors).length) {
+      state.review = false;
+      render();
+      return;
+    }
     state.busy = true;
+    state.message = "";
     render();
     try {
-      const run = await state.service.createRun({
-        ...state.brief,
-        hours: Number(state.brief.hours),
-        budget: Number(state.brief.budget),
-      });
+      const [run] = normalize("runs", [
+        await state.service.createRun({
+          ...state.brief,
+          hours: Number(state.brief.hours),
+          budget: Number(state.brief.budget),
+        }),
+      ]);
+      state.submittedRunId = run.id;
       state.runId = run.id;
       location.hash = "workflow";
       await load();
-    } catch {
-      render();
-      showFailure(
-        "Submission was not confirmed. Your brief is preserved. Check the backend run list before retrying to avoid a duplicate run.",
-      );
+    } catch (error) {
+      if (error instanceof BriefValidationError) {
+        state.errors = error.fields;
+        state.review = false;
+        state.message =
+          "The backend rejected this brief. Correct the highlighted fields; no run was confirmed.";
+      } else {
+        // A transport failure may occur after server acceptance; prevent a blind duplicate retry.
+        state.submitLocked = true;
+        state.message =
+          "Submission was not confirmed. Your brief is preserved. Check backend run records before preparing another submission; this action will not be retried automatically.";
+      }
     } finally {
       state.busy = false;
-      const submit = main.querySelector('[data-action="submit"]');
-      if (submit) {
-        submit.disabled = false;
-        submit.textContent = "Submit and start analysis";
-      }
+      render();
+      if (!state.review) main.querySelector('[aria-invalid="true"]')?.focus();
+      schedulePoll();
     }
   }
   if (button.dataset.preview) {
@@ -177,32 +313,13 @@ main.addEventListener("click", async (event) => {
       (a) => a.id === button.dataset.preview,
     );
     if (!artifact) return;
+    previewTrigger = artifact.id;
     const panel = document.querySelector("#preview-panel");
     panel.innerHTML = `<article class="card"><div class="section-title"><h2>${escape(artifact.title)} · Read-only preview</h2><button data-action="close-preview" class="quiet">Close preview</button></div><p>${state.demo ? "MOCKED synthetic fixture. " : ""}Scripts, forms, links and network access are disabled in HTML previews.</p><div id="preview-content"></div></article>`;
     const content = panel.querySelector("#preview-content");
-    if (artifact.format === "html") {
-      // Inert iframe: opaque origin, no scripts, no forms, no network and no navigation links.
-      const frame = document.createElement("iframe");
-      frame.setAttribute("sandbox", "");
-      frame.referrerPolicy = "no-referrer";
-      frame.title = artifact.title + " — inert preview";
-      const parsed = new DOMParser().parseFromString(
-        artifact.content,
-        "text/html",
-      );
-      parsed
-        .querySelectorAll(
-          "script,style,link,meta,base,iframe,object,embed,form,input,button,textarea,select,svg,math",
-        )
-        .forEach((n) => n.remove());
-      parsed.querySelectorAll("*").forEach((n) => {
-        for (const attr of [...n.attributes]) n.removeAttribute(attr.name);
-      });
-      frame.srcdoc =
-        '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; form-action &#39;none&#39;; base-uri &#39;none&#39;">' +
-        parsed.body.innerHTML;
-      content.append(frame);
-    } else {
+    if (artifact.format === "html")
+      content.append(inertPreview(artifact.content, artifact.title));
+    else {
       const pre = document.createElement("pre");
       pre.textContent = artifact.content;
       content.append(pre);
@@ -212,40 +329,75 @@ main.addEventListener("click", async (event) => {
   }
   if (button.dataset.action === "close-preview") {
     document.querySelector("#preview-panel").replaceChildren();
-    main.querySelector("[data-preview]")?.focus();
+    [...main.querySelectorAll("[data-preview]")]
+      .find((b) => b.dataset.preview === previewTrigger)
+      ?.focus();
   }
   if (button.dataset.approval) {
-    if (!state.service.capabilities.approvals || state.busy) return;
+    if (
+      !state.service.capabilities.approvals ||
+      state.demo ||
+      state.busy ||
+      state.approvalLocks.has(button.dataset.approval)
+    )
+      return;
     const request = state.data.approvals.find(
       (a) => a.id === button.dataset.approval,
     );
     if (!request) return;
+    const block = approvalBlock(request, state.data.artifacts, state.runId);
+    if (block) {
+      failure(block);
+      return;
+    }
     state.busy = true;
+    state.message = "";
+    state.approvalLocks.add(request.id);
     render();
     try {
-      await state.service.decideApproval(request, button.dataset.choice);
-      await load();
+      const [result] = normalize("approvals", [
+        await state.service.decideApproval(
+          { ...request },
+          button.dataset.choice,
+        ),
+      ]);
+      if (
+        ["id", "runId", "artifactId", "fingerprint", "action"].some(
+          (key) => result[key] !== request[key],
+        ) ||
+        result.status !==
+          (button.dataset.choice === "approve" ? "Approved" : "Rejected")
+      )
+        throw new Error("Mismatched confirmation");
+      await load(); // Render only authoritative refreshed records, never an optimistic local status.
     } catch {
-      showFailure(
-        "The backend did not confirm this decision. No successful approval is being reported. Refresh the request before retrying.",
-      );
+      state.message =
+        "The backend did not confirm this decision. No successful approval is being reported. Refresh the request before retrying.";
     } finally {
       state.busy = false;
-      main.querySelectorAll("[data-approval]").forEach((b) => {
-        const a = state.data.approvals.find((a) => a.id === b.dataset.approval);
-        b.disabled =
-          !state.service.capabilities.approvals || a?.status !== "Pending";
-      });
+      render();
+      schedulePoll();
     }
   }
 });
 document.querySelector("#mode-toggle").addEventListener("click", async () => {
+  if (state.busy) return;
+  ++epoch;
+  clearTimeout(poll);
   state.demo = !state.demo;
   state.service = new WorkspaceService(state.demo ? "demo" : "live");
-  state.runId = null;
-  state.standing = "";
-  state.claimType = "";
-  state.auditAgent = "";
+  Object.assign(state, {
+    runId: null,
+    runs: [],
+    data: blankData(),
+    sectionErrors: {},
+    standing: "",
+    claimType: "",
+    auditAgent: "",
+    evidencePage: 0,
+    message: "",
+  });
+  state.approvalLocks.clear();
   document.querySelector("#mode-toggle").textContent = state.demo
     ? "Exit demo"
     : "Explore demo";
@@ -256,26 +408,32 @@ document.querySelector("#mode-toggle").addEventListener("click", async () => {
     : "Live workspace · Workflow integrations are STUBBED on this foundation branch.";
   await load();
 });
+document.querySelector(".skip").addEventListener("click", (event) => {
+  event.preventDefault();
+  main.focus();
+  main.scrollIntoView();
+});
 window.addEventListener("hashchange", () => {
   if (location.hash.startsWith("#evidence/")) {
     state.standing = "";
     state.claimType = "";
   }
   render(true);
-  clearInterval(poll);
-  if (state.service.capabilities.workflow && route() === "workflow")
-    poll = setInterval(() => load(), 5000);
+  schedulePoll();
 });
+document.addEventListener("visibilitychange", schedulePoll);
 async function refreshModel() {
+  if (document.hidden) return;
   const status = document.querySelector("#model-status");
   try {
     const model = await getModelStatus();
     status.textContent = model.ready
       ? `${model.model} · Available`
-      : `${model.model || "Local model"} · Not ready`;
+      : `${model.model} · Not ready`;
     status.className = model.ready ? "ready" : "";
   } catch {
     status.textContent = "Model status unavailable";
+    status.className = "";
   }
 }
 render();

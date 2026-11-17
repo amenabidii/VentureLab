@@ -1,4 +1,5 @@
 import { safeURL, STANDINGS, OUTCOMES, filterFindings } from "./contracts.js";
+import { approvalBlock } from "./normalize.js";
 export const pages = [
   ["dashboard", "Overview", "◈"],
   ["brief", "Founder brief", "＋"],
@@ -32,22 +33,24 @@ export function badge(text) {
   return `<span class="badge ${tone}">${e(text)}</span>`;
 }
 export const link = (route, label, cls = "button") =>
-  `<a class="${cls}" href="#${route}">${e(label)}</a>`;
+  `<a class="${e(cls)}" href="#${e(route)}">${e(label)}</a>`;
 export function source(url, label) {
   const safe = safeURL(url);
   return safe
     ? `<a href="${e(safe)}" target="_blank" rel="noopener noreferrer">${e(label || safe)} ↗</a>`
-    : `<span class="muted">${e(label || "No source URL provided")}</span>`;
+    : `<span class="muted">${e((label ? label + " · " : "") + (url ? "Unsafe or malformed source URL — link disabled" : "No source URL provided"))}</span>`;
 }
 const list = (values) =>
   values?.length
     ? `<ul class="detail-list">${values.map((x) => `<li>${e(x)}</li>`).join("")}</ul>`
     : '<p class="muted">Not provided.</p>';
-const refs = (ids) =>
+const refs = (ids, findings = []) =>
   ids?.length
     ? ids
         .map((id) =>
-          link(`evidence/${encodeURIComponent(id)}`, id, "reference"),
+          findings.some((f) => f.id === id)
+            ? link(`evidence/${encodeURIComponent(id)}`, id, "reference")
+            : `<span class="badge amber">${e(id)} · Reference unavailable</span>`,
         )
         .join(" ")
     : '<span class="muted">No evidence references.</span>';
@@ -65,7 +68,7 @@ export const phases = [
     "Define the opportunity",
     "Founder brief and sourced findings",
     "Evidence quality and permitted scope",
-    "In progress",
+    "Intake working · Research STUBBED",
     "brief",
   ],
   [
@@ -197,8 +200,8 @@ export function brief(s) {
     ) +
     `<div class="brief-layout"><section class="card">${
       review
-        ? `<div class="section-title"><h2>Ready for your review</h2>${badge("Not submitted")}</div><dl class="review">${fields.map(([key, label]) => `<dt>${label}</dt><dd>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key]) || "Not provided"}${key === "budget" ? " " + e(s.brief.currency) : ""}</dd>`).join("")}</dl><div class="notice">${s.service.capabilities.createRun ? "The backend will validate this brief before starting research." : "STUBBED — submission requires the Milestone 2 backend. This brief has not been researched."}</div><div class="actions"><button data-action="edit" class="secondary">← Edit brief</button><button data-action="submit" ${!s.service.capabilities.createRun || s.busy ? "disabled" : ""}>${s.busy ? "Submitting…" : "Submit and start analysis"}</button></div>`
-        : `<form id="brief-form" novalidate><div id="validation-summary" role="alert">${Object.keys(s.errors).length ? '<p class="field-error">Please correct the highlighted fields.</p>' : ""}</div><div class="form-grid">${fields.map(([key, label, help, type]) => `<div class="field ${type === "textarea" ? "full" : ""}"><label for="${key}">${label} <span>${key === "sources" ? "Optional" : "Required"}</span></label>${type === "textarea" ? `<textarea id="${key}" name="${key}" rows="${key === "idea" || key === "problem" ? 3 : 2}" maxlength="4000"` : `<input id="${key}" name="${key}" type="${type}" ${type === "number" ? `min="${key === "hours" ? 1 : 0}" ${key === "hours" ? 'max="168"' : ""} step="any"` : 'maxlength="4000"'}`} aria-describedby="${key}-help ${key}-error" ${s.errors[key] ? 'aria-invalid="true"' : ""} ${key !== "sources" ? "required" : ""}${type === "textarea" ? `>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key] || "")}</textarea>` : ` value="${e(s.brief[key] ?? "")}">`}<small id="${key}-help">${help}</small><span id="${key}-error" class="field-error">${e(s.errors[key] || "")}</span></div>`).join("")}<div class="field"><label for="currency">Budget currency</label><select id="currency" name="currency">${["EGP", "USD", "EUR"].map((c) => `<option ${s.brief.currency === c ? "selected" : ""}>${c}</option>`).join("")}</select></div></div><div class="actions"><span class="muted">Kept in this tab only. Reloading clears it.</span><button type="submit">Review brief →</button></div></form>`
+        ? `<div class="section-title"><h2>Ready for your review</h2>${badge(s.submittedRunId ? "Submitted to backend" : "Not submitted")}</div><dl class="review">${fields.map(([key, label]) => `<dt>${label}</dt><dd>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key]) || "Not provided"}${key === "budget" ? " " + e(s.brief.currency) : ""}</dd>`).join("")}</dl><div class="notice">${s.service.capabilities.createRun ? "The backend will validate this brief before starting research." : "STUBBED — submission requires the Milestone 2 backend. This brief has not been researched."}</div><div class="actions"><button data-action="${s.submittedRunId || s.submitLocked ? "new-brief" : "edit"}" class="secondary" ${s.busy ? "disabled" : ""}>${s.submittedRunId || s.submitLocked ? "Prepare another brief" : "← Edit brief"}</button><button data-action="submit" ${!s.service.capabilities.createRun || s.demo || s.busy || s.submitLocked || s.submittedRunId ? "disabled" : ""}>${s.busy ? "Submitting…" : "Submit and start analysis"}</button></div>`
+        : `<form id="brief-form" novalidate><div id="validation-summary" role="alert">${Object.keys(s.errors).length ? '<p class="field-error">Please correct the highlighted fields.</p>' : ""}</div><div class="form-grid">${fields.map(([key, label, help, type]) => `<div class="field ${type === "textarea" ? "full" : ""}"><label for="${key}">${label} <span>${key === "sources" ? "Optional" : "Required"}</span></label>${type === "textarea" ? `<textarea id="${key}" name="${key}" rows="${key === "idea" || key === "problem" ? 3 : 2}" maxlength="4000"` : `<input id="${key}" name="${key}" type="${type}" ${type === "number" ? `min="${key === "hours" ? 1 : 0}" ${key === "hours" ? 'max="168"' : ""} step="any"` : 'maxlength="4000"'}`} aria-describedby="${key}-help ${key}-error" ${s.errors[key] ? 'aria-invalid="true"' : ""} ${key !== "sources" ? "required" : ""}${type === "textarea" ? `>${e(key === "sources" ? s.brief.sources.join("\n") : s.brief[key] || "")}</textarea>` : ` value="${e(s.brief[key] ?? "")}">`}<small id="${key}-help">${help}</small><span id="${key}-error" class="field-error">${e(s.errors[key] || "")}</span></div>`).join("")}<div class="field"><label for="currency">Budget currency</label><select id="currency" name="currency" aria-describedby="currency-error" ${s.errors.currency ? 'aria-invalid="true"' : ""}>${["EGP", "USD", "EUR"].map((c) => `<option ${s.brief.currency === c ? "selected" : ""}>${c}</option>`).join("")}</select><span id="currency-error" class="field-error">${e(s.errors.currency || "")}</span></div></div><div class="actions"><span class="muted">Kept in this tab only. Reloading clears it.</span><button type="submit">Review brief →</button></div></form>`
     }</section><aside><article class="card dark"><span class="eyebrow">A STRONGER START</span><h2>A useful brief is specific, not perfect.</h2><p>Name a customer you can reach. Describe a problem you can observe. Include the constraints that matter.</p><hr><p>We may recommend gathering evidence, changing direction, or stopping under current conditions.</p></article><article class="card"><h3>Your control comes first</h3><p>Review before submission. Backend approval is required for gated actions.</p><p>Never include passwords, payment credentials or private customer records.</p></article></aside></div>`
   );
 }
@@ -216,11 +219,25 @@ export function workflow(s) {
       "Four roles. One transparent process.",
       "Statuses reflect backend records. No animated or simulated execution.",
     ) +
-    `<div class="workflow">${agents.map((a, i) => `<article class="card agent"><div class="agent-number">0${i + 1}</div><div><h2>${e(a.agent)}</h2><p>${e(a.task)}</p>${link(["evidence", "challenger", "artifacts", "decision"][i], "View output →", "text-link")}</div>${badge(a.status)}</article>`).join("")}</div><div class="notice">The Judge explains deterministic gate results. It cannot override them. ${s.service.capabilities.workflow ? "Status refreshes every 5 seconds while this view is open." : "Live workflow updates are STUBBED."}</div>`
+    `<div class="workflow">${agents.map((a, i) => `<article class="card agent"><div class="agent-number">0${i + 1}</div><div><h2>${e(a.agent)}</h2><p>${e(a.task)}</p>${link({ Investigator: "evidence", Challenger: "challenger", Builder: "artifacts", Judge: "decision" }[a.agent], a.status === "Completed" ? "View output →" : "Open output view →", "text-link")}</div>${badge(a.status)}</article>`).join("")}</div><div class="notice">The Judge explains deterministic gate results. It cannot override them. ${s.service.capabilities.workflow ? "Status refreshes every 5 seconds while this view is open." : "Live workflow updates are STUBBED."}</div>`
   );
 }
 export function evidence(s) {
   const findings = filterFindings(s.data.findings, s.standing, s.claimType);
+  const referenceIndex = findings.findIndex((f) => f.id === s.focusFinding);
+  const page =
+    referenceIndex >= 0
+      ? Math.floor(referenceIndex / 50)
+      : Math.max(
+          0,
+          Math.min(s.evidencePage || 0, Math.ceil(findings.length / 50) - 1),
+        );
+  const visible = findings.slice(page * 50, (page + 1) * 50);
+  const pager =
+    findings.length > 50
+      ? `<div class="actions" aria-label="Evidence pages"><span>Showing ${page * 50 + 1}–${Math.min((page + 1) * 50, findings.length)} of ${findings.length}</span><button data-page="-1" ${page === 0 ? "disabled" : ""}>Previous findings</button><button data-page="1" ${(page + 1) * 50 >= findings.length ? "disabled" : ""}>Next findings</button></div>`
+      : "";
+  s.evidencePage = page;
   return (
     heading(
       "03 / INSPECT THE SOURCES",
@@ -228,8 +245,11 @@ export function evidence(s) {
       "Separate what is established from what needs review — and what remains an assumption.",
     ) +
     `<div class="legend">${STANDINGS.map((b) => badge(b)).join("")}<span>Standing and claim–source relationship are separate assessments.</span></div><div class="filters"><label>Evidence standing<select id="standing"><option value="">All standings</option>${STANDINGS.map((v) => `<option ${s.standing === v ? "selected" : ""}>${v}</option>`).join("")}</select></label><label>Claim type<select id="claim-type"><option value="">All claim types</option>${[...new Set(s.data.findings.map((f) => f.type))].map((v) => `<option ${s.claimType === v ? "selected" : ""}>${e(v)}</option>`).join("")}</select></label><span role="status">${findings.length} findings</span></div>` +
+    (s.focusFinding && referenceIndex < 0
+      ? `<p class="notice" role="status">Referenced finding ${e(s.focusFinding)} is unavailable in this run.</p>`
+      : "") +
     (findings.length
-      ? findings
+      ? visible
           .map(
             (f) =>
               `<details class="finding card" id="finding-${e(f.id)}" ${s.focusFinding === f.id ? "open" : ""}><summary><span class="finding-id">${e(f.id)}</span><span class="finding-title">${e(f.claim)}<small>${e(f.type)} · ${e(f.sourceName)}</small></span>${badge(f.standing)}</summary><div class="finding-body"><div class="grid-two"><div><h3>Supporting quotation</h3><blockquote>${e(f.quote || "No supporting quotation provided.")}</blockquote>${source(f.url, f.sourceName)}</div><div><h3>Assessment</h3>${badge(f.relationship)}<p>${e(f.assessment)}</p></div></div><div class="grid-two"><div><h3>Limitations</h3><p>${e(f.limitations)}</p></div><div><h3>Associated assumption</h3><p>${e(f.assumption)}</p></div></div></div></details>`,
@@ -242,7 +262,8 @@ export function evidence(s) {
           s.data.findings.length
             ? "Choose a different standing or claim type."
             : "Findings will appear here after actual Investigator execution.",
-        ))
+        )) +
+    pager
   );
 }
 export function challenger(s) {
@@ -256,7 +277,7 @@ export function challenger(s) {
       ? s.data.challenges
           .map(
             (c) =>
-              `<article class="card challenge"><div class="section-title"><span class="eyebrow">${e(c.id)} / ${e(c.basis)}</span>${c.severity ? badge(c.severity) : ""}</div><h2>${e(c.claim)}</h2><p>${e(c.risk)}</p><div class="grid-two"><div><h3>Evidence references</h3>${refs(c.findings)}<h3>Missing evidence</h3>${list(c.missing)}</div><div class="inset"><h3>Recommended experiment</h3><p>${e(c.experiment)}</p></div></div></article>`,
+              `<article class="card challenge"><div class="section-title"><span class="eyebrow">${e(c.id)} / ${e(c.basis)}</span>${c.severity ? badge(c.severity) : ""}</div><h2>${e(c.claim)}</h2><p>${e(c.risk)}</p><div class="grid-two"><div><h3>Evidence references</h3>${refs(c.findings, s.data.findings)}<h3>Missing evidence</h3>${list(c.missing)}</div><div class="inset"><h3>Recommended experiment</h3><p>${e(c.experiment)}</p></div></div></article>`,
           )
           .join("")
       : empty(
@@ -275,7 +296,7 @@ export function decision(s) {
     ) +
     `<div class="outcomes">${OUTCOMES.map((o, i) => `<div>${badge(o)}<p>${["Proceed to further validation.", "Gather evidence and test again.", "Investigate a justified alternative.", "Do not proceed under current conditions."][i]}</p></div>`).join("")}</div>` +
     (d
-      ? `<section class="card decision"><span class="eyebrow">${s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span><h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}</div></section>`
+      ? `<section class="card decision"><span class="eyebrow">${s.demo ? "MOCKED GATE RESULT" : "BACKEND GATE RESULT"}</span><h2>${badge(d.outcome)}</h2><p class="lead">${e(d.explanation)}</p><h3>Precise rule triggered</h3><code>${e(d.rule)}</code><div class="grid-two"><div><h3>Supporting evidence</h3>${refs(d.findings, s.data.findings)}<h3>Missing information</h3>${list(d.missing)}</div><div><h3>Relevant risks</h3>${list(d.risks)}</div></div><div class="inset"><h3>Recommended next step</h3><p>${e(d.next)}</p><strong>Founder action</strong><p>${e(d.action)}</p></div><div class="actions">${link("counterfactual", "What could change this recommendation? →")}</div></section>`
       : empty(
           "No gate decision available.",
           "A recommendation appears only after the backend evaluates the evidence.",
@@ -314,6 +335,13 @@ export function artifacts(s) {
         ))
   );
 }
+function approvalReason(s, a) {
+  if (!s.service.capabilities.approvals || s.demo)
+    return "STUBBED — approval backend is disconnected. These controls cannot grant approval.";
+  if (s.approvalLocks?.has(a.id))
+    return "Confirmation is uncertain. Refresh the request before retrying.";
+  return approvalBlock(a, s.data.artifacts, s.runId);
+}
 export function approvals(s) {
   return (
     heading(
@@ -325,7 +353,7 @@ export function approvals(s) {
       ? s.data.approvals
           .map(
             (a) =>
-              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl><div class="notice">${s.service.capabilities.approvals ? "Review the exact scope before responding." : "STUBBED — approval backend is disconnected. These controls cannot grant approval."}</div><div class="actions"><button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${!s.service.capabilities.approvals || s.busy || a.status !== "Pending" ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${!s.service.capabilities.approvals || s.busy || a.status !== "Pending" ? "disabled" : ""}>Approve this action</button></div></article>`,
+              `<article class="card"><div class="section-title"><h2>${e(a.action)}</h2>${badge(a.status)}</div><p>${e(a.description)}</p><dl class="review"><dt>Request</dt><dd>${e(a.id)}</dd><dt>Venture run</dt><dd>${e(a.runId)}</dd><dt>Artifact identity</dt><dd>${e(a.artifactId)}</dd><dt>Version / fingerprint</dt><dd><code>${e(a.fingerprint)}</code></dd></dl><div class="notice">${e(approvalReason(s, a) || "Review the exact scope before responding.")}</div><div class="actions">${s.service.capabilities.approvals && !s.demo ? `<button data-action="refresh-approvals" class="secondary" ${s.busy ? "disabled" : ""}>Refresh requests</button>` : ""}<button class="secondary" data-approval="${e(a.id)}" data-choice="reject" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Reject</button><button data-approval="${e(a.id)}" data-choice="approve" ${approvalReason(s, a) || s.busy ? "disabled" : ""}>Approve this action</button></div></article>`,
           )
           .join("")
       : empty(
