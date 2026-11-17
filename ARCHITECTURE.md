@@ -41,7 +41,7 @@ founder's machine except inside a decision the founder submits.
 | Phase | Objective | Agents | Founder approval | Status |
 |---|---|---|---|---|
 | 1 Discover | Is the stated problem real for these customers? | Investigator, Challenger, Judge | Public retrieval only; no publishing or outreach | **Working** in the web workspace and CLI |
-| 2 Validate | Design an experiment that could disprove the assumption, then judge its results | Builder (kit), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (plan, kit, founder-reported results and validation gate); Lean Canvas and landing-page demand test **STUBBED** |
+| 2 Validate | Design an experiment that could disprove the assumption, then judge its results | Builder (kit), Judge (rules) | Approve exact kit and thresholds; founder key to record results | **Working** (Lean Canvas, plan, kit, founder-reported results and validation gate); landing-page demand test **STUBBED** |
 | 3 Build | Local landing-page prototype for the concept | Builder | Approve exact page fingerprint | **Working** after a GO decision; local files only |
 | 4 Commercial Setup | Pricing hypotheses, positioning, costs | (future) | Required for any commitment | **STUBBED** |
 | 5 Launch | Channel experiment, publishing | (future) | Separate approval per send or publish | **STUBBED** |
@@ -87,9 +87,14 @@ questions or interpreting polite interest as demand.
 - **Method**: the Builder writes a hypothesis, a non-leading past-behaviour interview
   guide, an ethical experiment, success and failure criteria labelled PROPOSED
   ASSUMPTION, and next steps. The model may only choose which supplied assumption to
-  test; it writes no factual prose. Nothing is sent to anyone.
-- **Outputs**: `outputs/builder/<run>/<action>/phase2_step1_validation-kit.json` / `.md`,
-  written only after approval.
+  test; it writes no factual prose. Nothing is sent to anyone. A **Lean Canvas**
+  (`lean_canvas.py`, no model) fills the nine boxes and labels each one EVIDENCE (an
+  ESTABLISHED finding, with its URLs), FOUNDER-STATED, PROPOSED (the kit's pass mark) or
+  ASSUMPTION, with what would test it; unknown boxes (revenue, advantage, value
+  proposition) say they are unknown instead of being filled in.
+- **Outputs**: `outputs/builder/<run>/<action>/phase2_step1_validation-kit.json` / `.md`
+  and `phase2_step1_lean-canvas.json` / `.md`, in the same fingerprinted bundle, written
+  only after approval.
 - **Gate**: founder approval of the exact kit, which fixes the success threshold and
   sample size before any result exists. Then the **validation gate** (`validation.py`,
   `POST /api/approvals/<id>/results`): the founder records cumulative counts against
@@ -104,9 +109,8 @@ questions or interpreting polite interest as demand.
   them), and each recording appends a founder entry (`approved_by: founder`) and a gate
   entry to `decision_log.json`. The phase 1 decision is never rewritten.
 
-**Remaining Validate design (STUBBED):** a versioned Lean Canvas would link problem,
-customer, value proposition, solution, channels, revenue, costs, key metrics and
-advantage to finding IDs or explicit assumptions. The Builder would propose a
+**Remaining Validate design (STUBBED):** updating the Lean Canvas from recorded
+validation results (a new version per experiment). The Builder would propose a
 landing-page demand experiment with a fixed audience, duration, denominator,
 conversion definition and pass/fail criteria. Founder approval binds the exact
 page, destinations and thresholds before launch. Traffic, sign-ups and interview

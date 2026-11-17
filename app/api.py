@@ -49,6 +49,8 @@ MAX_ARTIFACT_BYTES = 500_000
 FILE_TITLES = {
     "phase2_step1_validation-kit.md": ("Validation experiment kit and interview guide", "Experiment kit", "text"),
     "phase2_step1_validation-kit.json": ("Validation experiment kit (structured)", "Experiment kit data", "text"),
+    "phase2_step1_lean-canvas.md": ("Lean Canvas: what is known and what is assumed", "Lean Canvas", "text"),
+    "phase2_step1_lean-canvas.json": ("Lean Canvas (structured)", "Lean Canvas data", "text"),
     "phase3_step1_landing-spec.json": ("Landing-page specification", "Landing-page data", "text"),
     "phase3_step1_landing-page.html": ("Local landing-page prototype", "Landing page", "html"),
 }

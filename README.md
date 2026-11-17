@@ -90,7 +90,7 @@ opt-in (`VENTURELAB_LIVE_TESTS=1`); UI tests are in `tests/ui` (`npm ci`, `npm t
 | Challenger: founder assumptions with stable IDs, code-checked citations and stances, risks, experiments | **Working** |
 | Gate (GO / REPEAT / PIVOT / STOP) and Counterfactual Challenge | **Working**, deterministic Python, no model; GO needs 2 independent supporting sources (established findings, or different commenters whose own first-person words, not quoted material, fully support the problem and pass a second check) |
 | Untrusted retrieved text: comments containing instructions to an AI are never sent to the model | **Working** |
-| Builder: experiment kit and interview guide; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
+| Builder: experiment kit, interview guide and a Lean Canvas whose every box is labelled EVIDENCE, FOUNDER-STATED, PROPOSED or ASSUMPTION; local landing page only after GO; STOP blocks the Builder | **Working**, local files only |
 | Founder approval bound to action, run, fingerprint and expiry, enforced in the backend | **Working** (single-founder local key, not multi-user accounts) |
 | Audit log `decision_log.json` (pipeline actions plus mirrored approval-store events) | **Working** |
 | Validate-phase results: the founder records observed counts against the threshold approved in the kit; a deterministic validation gate returns GO / REPEAT / STOP. Results are labelled FOUNDER-REPORTED and are not verified by VentureLab | **Working** (no real experiment results have been recorded) |
