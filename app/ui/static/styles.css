@@ -1106,3 +1106,189 @@ blockquote {
   padding-top: 12px;
   padding-bottom: 12px;
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * Visual refresh (2026-11-18). Colour, depth, shape and type only: no layout properties are
+ * changed here, so the responsive rules above keep working. Contrast stays at WCAG AA.
+ * ------------------------------------------------------------------------------------------- */
+:root {
+  --ink: #0f2233;
+  --muted: #566778;
+  --line: #e2e8ef;
+  --paper: #f4f6fa;
+  --teal: #0d6e63;
+  --indigo: #3b3fb6;
+  --nav: #0c1d2b;
+  --surface: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(15, 34, 51, 0.06);
+  --shadow-md: 0 1px 2px rgba(15, 34, 51, 0.06), 0 2px 6px -2px rgba(15, 34, 51, 0.08);
+  --radius: 14px;
+  background:
+    radial-gradient(1200px 500px at 85% -10%, rgba(59, 63, 182, 0.07), transparent 60%),
+    radial-gradient(900px 420px at 10% 0%, rgba(13, 110, 99, 0.06), transparent 60%),
+    var(--paper);
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+h1 {
+  font-weight: 750;
+  letter-spacing: -1.4px;
+}
+h2,
+h3 {
+  letter-spacing: -0.3px;
+}
+.eyebrow {
+  color: var(--indigo);
+  letter-spacing: 1.9px;
+}
+
+/* Buttons */
+button,
+.button {
+  border-radius: 10px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 2px rgba(15, 34, 51, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+button:hover:not(:disabled),
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -6px rgba(13, 110, 99, 0.55);
+}
+button:disabled {
+  box-shadow: none;
+}
+.secondary,
+.quiet {
+  box-shadow: var(--shadow-sm);
+}
+.secondary:hover:not(:disabled),
+.quiet:hover:not(:disabled) {
+  box-shadow: 0 6px 16px -8px rgba(15, 34, 51, 0.3);
+}
+:where(button, .button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid rgba(59, 63, 182, 0.55);
+  outline-offset: 2px;
+}
+
+/* Sidebar */
+.sidebar {
+  background: linear-gradient(180deg, #0c1d2b 0%, #0f2638 55%, #11293b 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+.brand-mark {
+  background: linear-gradient(135deg, #8fe3c9, #9aa6ff);
+  color: #0c1d2b;
+  border-radius: 11px;
+  box-shadow: 0 6px 18px -6px rgba(143, 227, 201, 0.6);
+}
+nav a {
+  border-radius: 9px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1f7fa;
+  text-decoration: none;
+}
+nav a[aria-current] {
+  background: linear-gradient(90deg, rgba(143, 227, 201, 0.18), rgba(154, 166, 255, 0.1));
+  color: #ffffff;
+  box-shadow: inset 3px 0 #8fe3c9;
+}
+
+/* Top bar */
+.topbar {
+  background: #ffffff;
+  border-bottom-color: var(--line);
+}
+
+/* Surfaces */
+.card,
+.empty,
+.phase-strip,
+.table-wrap {
+  border-color: var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.card {
+  background: var(--surface);
+}
+.notice {
+  border-radius: 10px;
+  background: #eef2f8;
+  border-color: #dde4ef;
+  color: #3f5363;
+}
+.hero {
+  background:
+    radial-gradient(520px 260px at 92% 8%, rgba(154, 166, 255, 0.28), transparent 65%),
+    radial-gradient(420px 240px at 0% 100%, rgba(143, 227, 201, 0.2), transparent 70%),
+    linear-gradient(135deg, #0e2a3a 0%, #114044 55%, #1d2f6b 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 24px 48px -24px rgba(14, 42, 58, 0.55);
+}
+.hero-diagram span {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+.dark {
+  background: linear-gradient(135deg, #0e2a3a, #1d2f6b);
+}
+.light {
+  background: #e3f5ef;
+  color: #0f3d36;
+}
+.phase-strip a {
+  border-right-color: var(--line);
+  transition: background 0.15s ease;
+}
+.phase-strip a:hover {
+  background: #f6f8fd;
+  text-decoration: none;
+}
+
+/* Badges: pills */
+.badge {
+  border-radius: 999px;
+  padding: 4px 10px;
+  letter-spacing: 0.4px;
+  box-shadow: inset 0 0 0 1px rgba(15, 34, 51, 0.06);
+}
+.green {
+  background: #dff3e9;
+  color: #1b5a3d;
+}
+.amber {
+  background: #fff0cc;
+  color: #6f4a00;
+}
+.red {
+  background: #fde3e1;
+  color: #8f2f29;
+}
+
+/* Tables and quotations */
+th {
+  background: #f3f6fb;
+}
+blockquote {
+  border-left-color: var(--indigo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .button,
+  nav a,
+  .phase-strip a {
+    transition: none;
+  }
+  button:hover:not(:disabled),
+  .button:hover {
+    transform: none;
+  }
+}

@@ -148,7 +148,9 @@ def score_opportunities(brief: dict, gate: dict, investigation: dict | None, cha
         options.append({"option": text, "origin": "alternative problem from an established finding",
                         "evidence_ids": alt.get("findings", alt.get("ids", [])), "fit": 1, "risk_count": len(risks)})
     for text in (advice or {}).get("current_alternatives", []):
-        cited = [f["id"] for f in findings.values() if text.casefold() in (f.get("claim") or "").casefold()]
+        # The model's wording is not evidence: a substring match would let "bug" claim any finding
+        # that mentions bugs. These rows stay ASSUMPTION until interviews check them.
+        cited: list[str] = []
         options.append({"option": f"Current alternative: {text}",
                         "origin": f"what customers use today, {advice.get('label') or 'ASSUMPTION'}",
                         "evidence_ids": cited, "fit": 0, "risk_count": 0,

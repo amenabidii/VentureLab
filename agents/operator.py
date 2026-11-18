@@ -63,10 +63,14 @@ def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, valida
     elif v == "STOP":
         rec, rule = "PIVOT OR STOP", (f"Founder-reported validation failed the pre-approved threshold "
                                       f"({validation.get('rule')}); do not lower the threshold.")
-    elif v == "GO":
+    elif v == "GO" and decision == "GO":
         rec, rule = "PERSEVERE", (f"Founder-reported validation met the pre-approved threshold "
                                   f"({validation.get('successes')} of {validation.get('participants')} participants; "
                                   f"{validation.get('rule')}). Continue to Build; this is not proof of a market.")
+    elif v == "GO":
+        rec, rule = "REPEAT", (f"Founder-reported validation met its threshold, but the Discover gate decided "
+                               f"{decision}; resolve that first (new research or a new run) before treating this "
+                               "as a reason to launch.")
     elif v == "REPEAT":
         rec, rule = "REPEAT", "The founder's validation experiment is still incomplete; continue it."
     elif failed:
@@ -74,7 +78,10 @@ def persevere_or_pivot(discover: dict, brief: dict, metrics: dict | None, valida
     elif decision == "PIVOT":
         rec, rule = "PIVOT", "Discover gate found an established alternative problem to test instead."
     elif conditions and all(c["metric"] in results for c in conditions) and decision == "GO":
-        rec, rule = "PERSEVERE", "Discover gate GO and every pre-set pass mark met by real results."
+        # Results typed into the brief are not the authenticated validation gate; they can fail a
+        # pass mark (above) but cannot justify launching.
+        rec, rule = "REPEAT", ("Pass marks met by results typed into the brief; record them through the "
+                               "validation gate (founder key, approved kit) before treating them as a reason to launch.")
     else:
         rec, rule = "REPEAT", ("Not enough real evidence: the Discover gate decided "
                                f"{decision}, and no real experiment results exist yet.")

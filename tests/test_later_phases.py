@@ -346,7 +346,11 @@ def test_only_real_results_meeting_preset_pass_marks_can_say_persevere():
     go = {"decision": "GO"}
     assert persevere_or_pivot(go, dict(BRIEF, validation_conditions=cond), None)["recommendation"] == "REPEAT"
     passed = dict(BRIEF, validation_conditions=cond, experiment_results={"interviewees_confirming": 6})
-    assert persevere_or_pivot(go, passed, None)["recommendation"] == "PERSEVERE"
+    # Results typed into the brief are not the authenticated validation gate: they can fail a pass
+    # mark, but only the validation gate (founder key, approved kit) can lead to PERSEVERE.
+    assert persevere_or_pivot(go, passed, None)["recommendation"] == "REPEAT"
+    gate = {"decision": "GO", "rule": "VALIDATION_THRESHOLD_MET", "participants": 5, "successes": 3}
+    assert persevere_or_pivot(go, passed, None, gate)["recommendation"] == "PERSEVERE"
     failed = dict(BRIEF, validation_conditions=cond, experiment_results={"interviewees_confirming": 2})
     assert persevere_or_pivot(go, failed, None)["recommendation"] == "PIVOT OR STOP"
 
@@ -445,7 +449,9 @@ def test_repeated_launch_replays_without_rewriting_or_delivering(tmp_path, monke
     assert any(e["action"] == "workflow_replay" for e in cli.log())
 
 
-@pytest.mark.parametrize("decision,expected", [("GO", "PERSEVERE"), ("STOP", "PIVOT OR STOP"), ("REPEAT", "REPEAT")])
+# With a Discover REPEAT, a passed validation still gives REPEAT: the Phase 6 gate treats the run as a
+# rehearsal and says DO NOT LAUNCH, and the memo must not contradict it.
+@pytest.mark.parametrize("decision,expected", [("GO", "REPEAT"), ("STOP", "PIVOT OR STOP"), ("REPEAT", "REPEAT")])
 def test_memo_uses_founder_reported_validation_results(decision, expected):
     gate = {"decision": decision, "rule": f"{decision}_RULE", "participants": 5, "successes": 3,
             "result_source": "FOUNDER-REPORTED"}

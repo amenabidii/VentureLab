@@ -35,9 +35,23 @@ _ACTION = re.compile(r"\b(?:i'?ll|i will|todo|to-do|action item|can you|could yo
                      re.I)
 
 
+_OTHER_MEDIA = re.compile(r"\b(?:games?|gaming|video\w*|voice|audio|podcasts?|music|courses?|streams?|"
+                          r"streaming|images?|photos?|hardware)\b", re.I)
+
+
 def supported(idea: str) -> bool:
-    """True when the founder's idea is in the one product type this MVP implements."""
-    return bool(_SCOPE_THREAD.search(idea) and _SCOPE_JOB.search(idea))
+    """True when the founder's idea is in the one product type this MVP implements.
+
+    The summarising word and the discussion word must be close together ("summarises long Slack
+    threads", "digest of long GitHub issue discussions"), and ideas about other media are excluded,
+    so "a game where players catch up on chapters told through chat" is not a thread digest.
+    """
+    if _OTHER_MEDIA.search(idea):
+        return False
+    words = re.findall(r"[\w;']+", idea)
+    jobs = [i for i, w in enumerate(words) if _SCOPE_JOB.fullmatch(w) or _SCOPE_JOB.match(w)]
+    things = [i for i, w in enumerate(words) if _SCOPE_THREAD.fullmatch(w)]
+    return any(abs(j - t) <= 6 for j in jobs for t in things)
 
 
 @dataclass

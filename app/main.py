@@ -130,7 +130,7 @@ FEATURES = [
     ("Phases 2-6 via workflow.py: Lean Canvas, MVP scope and checks, pricing and policy drafts", "Working"),
     ("Store page and launch posts (drafts); publishing", "Working drafts; publishing MOCKED"),
     ("Sale to cash: payment events, delivery, refunds, reconciliation", "MOCKED (no payments of any kind)"),
-    ("Support, metrics, persevere-or-pivot memo", "Working (real evidence only)"),
+    ("Support, metrics, persevere-or-pivot memo", "Working; rehearsal metrics MOCKED and never used as evidence"),
 ]
 
 

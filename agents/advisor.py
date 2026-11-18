@@ -22,6 +22,12 @@ from pydantic import BaseModel, Field
 from builder_models import check_content
 
 UNSOURCED_QUANTITY = re.compile(r"\d+(\.\d+)?\s*(hours?|hrs?|minutes?|mins?|%|percent|x faster|times)", re.I)
+# Marketing claims the model cannot source: superiority, proof, guarantees, social proof, urgency.
+HYPE = re.compile(r"(?:#\s?1\b|\bnumber one\b|\bbest\b|\bleading\b|\bproven\b|\bguarantee\w*|\bnever\b.{0,40}\bagain\b|"
+                  r"\bpays? for itself\b|\brisk[- ]free\b|\blimited (?:time|spots?|offer|seats?)\b|"
+                  r"\bspots?\b.{0,20}\b(?:left|running out|run out)\b|\bbefore\b.{0,30}\brun(?:s)? out\b|"
+                  r"\bact now\b|\bjoin now\b|\bhurry\b|\bdon'?t miss\b|\blast chance\b|\bonly \d+ (?:left|remaining)\b|"
+                  r"\btrusted (?:by|across)\b|\bloved by\b|\bthousands of\b|\bhalf the (?:cost|price)\b)", re.I)
 LEADING = re.compile(r"\b(would|wouldn't|will you|do you agree|love|amazing|our (app|product|tool))\b", re.I)
 PROMPT = Path(__file__).resolve().parent.parent / "prompts" / "advisor.md"
 
@@ -77,6 +83,9 @@ def sanitize(raw: Advice, known_ids: set[str], model: str) -> dict[str, Any]:
     def keep(field: str, text: str) -> str | None:
         if field in ("value_proposition", "key_metric", "pricing_rationale", "price_anchor") and                 UNSOURCED_QUANTITY.search(text):
             dropped.append(f"{field} (unsourced time or percentage claim)")
+            return None
+        if HYPE.search(text):
+            dropped.append(f"{field} (unsourced superiority, proof or urgency claim)")
             return None
         if _ok(text):
             return text.strip()

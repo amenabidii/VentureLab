@@ -57,8 +57,9 @@ privacy and refund policy (Phase 4), pending professional review.</small></p>
 def launch_posts(product: str, brief: dict, price_option: dict, advice: dict | None = None) -> str:
     price = price_option["price_eur_per_month"]
     offer = "free to try" if price == 0 else f"planned at €{price}/month (test price)"
-    tailored = bool(advice and advice.get("source") == "model" and advice.get("value_proposition"))
-    lead = advice["value_proposition"].rstrip(".") if tailored else f"Early concept: {idea_phrase(brief)}"
+    # The announcement is in the founder's voice, so it uses only the founder's own words;
+    # model suggestions appear below, labelled, for the founder to adopt or ignore.
+    lead = f"Early concept: {idea_phrase(brief)}"
     problem = brief["problem_statement"].rstrip(".")
     posts = [
         # Mom Test: recruit people to talk about the problem; do not pitch the idea.
@@ -75,6 +76,9 @@ def launch_posts(product: str, brief: dict, price_option: dict, advice: dict | N
     if advice and advice.get("source") == "model":
         where = "\n".join(f"- **{c['name']}**: {c['why']}" for c in advice["channels"])
         body += (f"\n\n## Where to post first ({advice['label']})\n\n{where or '- none proposed'}\n\n"
-                 f"Angle to lead with: {advice.get('launch_angle') or brief['problem_statement']}")
+                 f"Angle to lead with ({advice['label']}): "
+                 f"{advice.get('launch_angle') or brief['problem_statement']}")
+        if advice.get("value_proposition"):
+            body += f"\n\nSuggested value proposition ({advice['label']}): {advice['value_proposition']}"
     return ("# Phase 5, step 1: Launch posts (drafts)\n\nWritten in the founder's voice for the founder to "
             "edit and post themselves. VentureLab never posts or messages anyone.\n\n" + body + "\n")
