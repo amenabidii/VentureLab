@@ -128,6 +128,41 @@ published, sent or paid. Approvals need the founder key in <code>.venturelab/app
     return HTMLResponse(body, headers=FORM_HEADERS)
 
 
+PHASE_NAMES = {2: "Validate", 3: "Build", 4: "Commercial setup", 5: "Launch", 6: "Operate & learn"}
+
+
+@router.get("/api/runs/{run_id}/journey")
+def run_journey(run_id: str, svc: Services = Depends(services)) -> dict[str, Any]:
+    """Phases 2-6 as recorded on disk, for the workspace. Read-only: nothing is generated or approved."""
+    if not RUN_ID.match(run_id):
+        raise HTTPException(404, "Unknown run")
+    if not (svc.runs_root / run_id / "phase1_gate_decision.json").is_file():
+        return {"available": False, "reason": "The Discover analysis has not produced a decision yet.",
+                "phases": [], "pending": [], "runner": None}
+    ctx = _ctx(svc, run_id)
+    blocked = ("Discover decided STOP: phases 2–6 are blocked." if ctx.decision == "STOP" else
+               "This decision was made by superseded gate rules: run a new analysis to continue."
+               if ctx.superseded else None)
+    files = sorted(p.name for p in ctx.out.iterdir() if NAME.match(p.name)) if ctx.out.exists() else []
+    phases = []
+    for n, title in PHASE_NAMES.items():
+        mine = [f for f in files if f.startswith(f"phase{n}_")]
+        gates = []
+        for name in mine:
+            if name.startswith(f"phase{n}_gate_") and name.endswith(".json"):
+                g = json.loads((ctx.out / name).read_text(encoding="utf-8"))
+                gates.append({"name": name, "outcome": g.get("outcome"), "decision": g.get("decision"),
+                              "launch": g.get("launch_recommendation"), "rehearsal": bool(g.get("rehearsal"))})
+        phases.append({"phase": n, "title": title,
+                       "files": [{"name": f, "url": f"/phases/run/{run_id}/view/{f}"} for f in mine],
+                       "gates": gates})
+    return {"available": True, "discover": ctx.decision, "superseded": ctx.superseded, "blocked": blocked,
+            "rehearsal": ctx.rehearsal, "validated": ctx.validated, "phases": phases,
+            "pending": [{"action": p["action"], "what": p["what"], "file": p["file"],
+                         "fingerprint": p["sha"]} for p in pending(ctx)],
+            "runner": f"/phases/run/{run_id}"}
+
+
 @router.get("/phases/run/{run_id}", response_class=HTMLResponse, include_in_schema=False)
 def run_page(run_id: str, svc: Services = Depends(services)) -> HTMLResponse:
     return _page(_ctx(svc, run_id))

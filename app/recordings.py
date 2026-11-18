@@ -84,7 +84,8 @@ def _record(run_id: str) -> dict[str, Any]:
                               "description": "Committed output from a prior execution. Not newly generated or approved.",
                               "format": "html" if name.endswith(".html") else "text", "content": data.decode("utf-8"),
                               "fingerprint": entry["files"][name], "approval": "Historical record only; no active permission"})
-        return {"run": summary, "agents": agents, "findings": view.findings(outputs),
+        return {"run": summary, "brief": view.founder_brief(brief["brief"]), "agents": agents,
+                "findings": view.findings(outputs),
                 "challenges": view.challenges(outputs), "decision": view.decision(outputs, note, builder_allowed=False),
                 "counterfactual": view.counterfactual(outputs), "audit": events,
                 "artifacts": artifacts, "approvals": [], "files": entry["files"],
@@ -100,7 +101,7 @@ def recordings():
         try:
             rows.append(_record(run_id)["run"])
         except HTTPException:
-            rows.append({"id": run_id, "title": "Recording unavailable â€” integrity check failed", "status": "Unavailable",
+            rows.append({"id": run_id, "title": "Recording unavailable — integrity check failed", "status": "Unavailable",
                          "phase": "Historical execution", "recordedAt": None, "readOnly": True})
     return sorted(rows, key=lambda row: row["recordedAt"] or "", reverse=True)
 

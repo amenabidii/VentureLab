@@ -2,7 +2,7 @@ import { WorkspaceService, getModelStatus } from "./service.js";
 import { validateBrief } from "./contracts.js";
 import { normalize, approvalBlock, BriefValidationError } from "./normalize.js";
 import { inertPreview } from "./preview.js";
-import { pages, renderers, loading, errorView, escape } from "./views.js";
+import { pages, ALIASES, TITLES, renderers, loading, errorView, escape } from "./views.js";
 const blankData = () => ({
   agents: [],
   findings: [],
@@ -13,6 +13,8 @@ const blankData = () => ({
   approvals: [],
   audit: [],
   validation: [],
+  brief: null,
+  journey: null,
 });
 const state = {
   demo: false,
@@ -40,52 +42,60 @@ const state = {
   founderKey: "",
   quick: false,
   runDetail: null,
+  section: "",
 };
 const main = document.querySelector("#main");
 let epoch = 0,
   poll,
   previewTrigger;
 let activeReads = 0;
+const PAGES = ["projects", "brief", "analysis", "build", "details"];
+/** Resolves the URL to a page; older section names open the page that now holds them. */
 function route() {
-  const [page, id] = location.hash.slice(1).split("/");
+  const [name, id] = location.hash.slice(1).split("/");
   try {
-    state.focusFinding = decodeURIComponent(id || "");
+    state.focusFinding = name === "evidence" ? decodeURIComponent(id || "") : "";
   } catch {
     state.focusFinding = "";
   }
-  return Object.hasOwn(renderers, page) ? page : "dashboard";
+  if (Object.hasOwn(ALIASES, name)) {
+    state.section = ALIASES[name][1];
+    return ALIASES[name][0];
+  }
+  state.section = "";
+  return PAGES.includes(name) ? name : "projects";
 }
-const sections = {
-  workflow: ["agents"],
-  evidence: ["findings"],
-  challenger: ["challenges", "findings"],
-  decision: ["decision", "findings"],
-  counterfactual: ["counterfactual"],
-  artifacts: ["artifacts"],
-  approvals: ["approvals", "artifacts", "validation"],
-  history: ["audit"],
-};
+/** Applies chart values recorded in data attributes (the page policy forbids inline styles). */
+function applyMeasures() {
+  for (const el of main.querySelectorAll("[data-flex]"))
+    el.style.flexGrow = el.dataset.flex;
+  for (const el of main.querySelectorAll("[data-width]"))
+    el.style.width = el.dataset.width + "%";
+  for (const el of main.querySelectorAll("[data-left]"))
+    el.style.left = el.dataset.left + "%";
+}
 function render(focus = false) {
   const page = route();
+  const waiting = state.data.approvals.filter((a) => a.status === "Pending").length;
   document.querySelector("#nav").innerHTML = pages
     .map(
       ([id, label, icon]) =>
-        `<a href="#${id}" ${page === id ? 'aria-current="page"' : ""}><span aria-hidden="true">${icon}</span>${label}</a>`,
+        `<a href="#${id}" ${page === id ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${icon}</span><span>${label}</span>${id === "build" && waiting ? `<span class="nav-count" aria-label="${waiting} waiting for your decision">${waiting}</span>` : ""}</a>`,
     )
     .join("");
-  document.querySelector("#breadcrumb").textContent = pages.find(
-    (p) => p[0] === page,
-  )[1];
-  document.title = `${pages.find((p) => p[0] === page)[1]} · VentureLab`;
-  const independent = ["brief", "roadmap"].includes(page);
+  const project = state.runs.find((r) => r.id === state.runId);
+  document.querySelector("#breadcrumb").textContent =
+    TITLES[page] + (project && !["projects", "brief"].includes(page) ? ` · ${project.title}` : "");
+  document.title = `${TITLES[page]} · VentureLab`;
+  const newIdea = document.querySelector(".new-idea");
+  if (page === "brief") newIdea.setAttribute("aria-current", "page");
+  else newIdea.removeAttribute("aria-current");
+  const independent = page === "brief";
   if (!independent && state.loading) main.innerHTML = loading();
-  else if (
-    !independent &&
-    (state.loadError || sections[page]?.some((key) => state.sectionErrors[key]))
-  )
-    main.innerHTML = errorView();
+  else if (!independent && state.loadError) main.innerHTML = errorView();
   else main.innerHTML = renderers[page](state);
-  if (page === "dashboard" && Object.keys(state.sectionErrors).length)
+  applyMeasures();
+  if (page === "projects" && Object.keys(state.sectionErrors).length)
     main.insertAdjacentHTML(
       "afterbegin",
       '<p class="notice error" role="alert">Some outputs could not be read. Open the relevant view to retry; missing data is not a gate result.</p>',
@@ -100,8 +110,16 @@ function render(focus = false) {
   document.querySelector("#mode-toggle").disabled = state.busy;
   document.querySelector("#recordings-toggle").disabled = state.busy;
   if (focus) {
-    main.focus();
-    window.scrollTo(0, 0);
+    const target =
+      (state.focusFinding && document.getElementById(`finding-${state.focusFinding}`)) ||
+      (state.section && document.getElementById(`sec-${state.section}`));
+    if (target) {
+      target.scrollIntoView({ block: "start" });
+      (target.matches("details") ? target.querySelector("summary") : target).focus({ preventScroll: true });
+    } else {
+      main.focus();
+      window.scrollTo(0, 0);
+    }
   }
 }
 function schedulePoll() {
@@ -111,7 +129,7 @@ function schedulePoll() {
   const active = ["Queued", "Running"].includes(state.runDetail?.status);
   if (
     state.service.capabilities.workflow &&
-    (route() === "workflow" || active) &&
+    (route() === "analysis" || active) &&
     activeReads === 0 &&
     !state.busy &&
     !document.hidden
@@ -146,6 +164,8 @@ async function load(focus = false, background = false) {
         approvals: "getApprovals",
         audit: "getAudit",
         validation: "getValidation",
+        brief: "getBrief",
+        journey: "getJourney",
       };
       await Promise.all(
         Object.entries(methods).map(async ([key, method]) => {
@@ -173,7 +193,7 @@ async function load(focus = false, background = false) {
     });
     if (!errors.approvals && !errors.artifacts) state.approvalLocks.clear();
     // A slow read must not destroy the caret or reset a brief being edited.
-    if (!["brief", "roadmap"].includes(route())) render(focus);
+    if (route() !== "brief") render(focus);
     schedulePoll();
     return true;
   } catch {
@@ -182,7 +202,7 @@ async function load(focus = false, background = false) {
     state.loadError = true;
     state.data = blankData();
     state.runs = [];
-    if (!["brief", "roadmap"].includes(route())) render();
+    if (route() !== "brief") render();
     schedulePoll();
     return false;
   } finally {
@@ -250,7 +270,7 @@ main.addEventListener("click", async (event) => {
     state.runId = button.dataset.run;
     state.data = blankData();
     state.message = "";
-    location.hash = "workflow";
+    location.hash = "analysis";
     await load();
   }
   if (
@@ -310,7 +330,7 @@ main.addEventListener("click", async (event) => {
       ]);
       state.submittedRunId = run.id;
       state.runId = run.id;
-      location.hash = "workflow";
+      location.hash = "analysis";
       await load();
     } catch (error) {
       if (error instanceof BriefValidationError) {
@@ -468,6 +488,16 @@ main.addEventListener("click", async (event) => {
     const approvalReason = document.querySelector(
       `#reason-${CSS.escape(request.id)}`,
     )?.value;
+    if (button.dataset.choice === "approve") {
+      confirmApproval(request, approvalKey, approvalReason, button);
+      return;
+    }
+    await decideRequest(request, "reject", approvalKey, approvalReason);
+  }
+});
+/** Sends a founder decision and shows only what the backend confirms. */
+async function decideRequest(request, choice, approvalKey, approvalReason) {
+  {
     state.busy = true;
     state.message = "";
     state.approvalLocks.add(request.id);
@@ -476,7 +506,7 @@ main.addEventListener("click", async (event) => {
       const [result] = normalize("approvals", [
         await state.service.decideApproval(
           { ...request },
-          button.dataset.choice,
+          choice,
           {
             key: approvalKey,
             reason: approvalReason,
@@ -488,7 +518,7 @@ main.addEventListener("click", async (event) => {
           (key) => result[key] !== request[key],
         ) ||
         result.status !==
-          (button.dataset.choice === "approve" ? "Approved" : "Rejected")
+          (choice === "approve" ? "Approved" : "Rejected")
       )
         throw new Error("Mismatched confirmation");
       await load(); // Render only authoritative refreshed records, never an optimistic local status.
@@ -500,6 +530,30 @@ main.addEventListener("click", async (event) => {
       schedulePoll();
     }
   }
+}
+const dialog = document.querySelector("#confirm-dialog");
+let pendingApproval = null;
+/** Explains the consequences before an approval is sent; nothing is sent until confirmed. */
+function confirmApproval(request, approvalKey, approvalReason, trigger) {
+  if (dialog.open) return;
+  const files = state.data.artifacts.filter((a) => a.id.startsWith(request.id + ":"));
+  pendingApproval = { request, approvalKey, approvalReason, trigger };
+  dialog.querySelector("#confirm-body").innerHTML =
+    `<p>You are approving this exact request. After approval:</p><ul><li>Nothing is written yet. You then choose “Write the approved files locally”.</li><li>Nothing is published, sent or paid.</li><li>The approval covers only these files, unchanged, until ${escape(request.expiresAt || "the request expires")}.</li></ul>` +
+    (files.length
+      ? `<p><strong>Files it covers</strong></p><ul>${files.map((f) => `<li>${escape(f.title)}</li>`).join("")}</ul>`
+      : "") +
+    `<p class="fine">Fingerprint <code>${escape(request.fingerprint)}</code></p>`;
+  dialog.showModal();
+  dialog.querySelector("[data-confirm]").focus();
+}
+dialog.addEventListener("close", async () => {
+  const pending = pendingApproval;
+  pendingApproval = null;
+  if (!pending) return;
+  if (dialog.returnValue === "confirm")
+    await decideRequest(pending.request, "approve", pending.approvalKey, pending.approvalReason);
+  else pending.trigger?.isConnected && pending.trigger.focus();
 });
 async function switchMode(mode) {
   if (state.busy) return;
@@ -534,7 +588,8 @@ async function switchMode(mode) {
     ? "RECORDED EXECUTIONS · Read-only prior runs, not current research. Historical decisions may be superseded; no approval authority is restored."
     : state.demo
       ? "MOCKED · Synthetic UI preview. No research, execution, generated artifacts or approvals are real."
-      : "Live workspace · connected to the local backend. Phases 2–6 run from the Phases 1–6 page (sale to cash MOCKED; MVP production code STUBBED).";
+      : "";
+  banner.hidden = !state.recorded && !state.demo;
   await load();
 }
 document

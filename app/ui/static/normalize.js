@@ -86,7 +86,71 @@ function outcome(r) {
     nextStep: text(r.next_step),
   };
 }
+function number(value) {
+  if (value == null) return null;
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0)
+    throw new ContractError("Invalid number.");
+  return value;
+}
+const JOURNEY_OUTCOMES = ["GO", "REPEAT", "PIVOT", "STOP", null];
 const schemas = {
+  brief: (r) => ({
+    idea: required(r.idea),
+    problem: required(r.problem),
+    customer: required(r.customer),
+    market: text(r.market),
+    skills: strings(r.skills),
+    hours: number(r.hours),
+    budget: number(r.budget),
+    currency: text(r.currency, ""),
+    constraints: strings(r.constraints),
+    sources: strings(r.sources),
+  }),
+  journey: (r) => ({
+    available: r.available === true,
+    reason: text(r.reason, ""),
+    discover: r.discover == null ? null : choice(r.discover, OUTCOMES),
+    superseded: r.superseded === true,
+    blocked: nullableText(r.blocked),
+    rehearsal: r.rehearsal === true,
+    validated: r.validated === true,
+    runner:
+      r.runner == null
+        ? null
+        : /^\/phases\/run\/run-[0-9a-f]{16}$/.test(r.runner)
+          ? r.runner
+          : (() => {
+              throw new ContractError("Invalid runner link.");
+            })(),
+    phases: array(r.phases, (p) => {
+      p = record(p);
+      return {
+        phase: choice(p.phase, [2, 3, 4, 5, 6]),
+        title: required(p.title),
+        files: array(p.files, (f) => ({
+          name: required(record(f).name),
+          url: /^\/phases\/run\/run-[0-9a-f]{16}\/view\/[A-Za-z0-9._-]+$/.test(f.url)
+            ? f.url
+            : (() => {
+                throw new ContractError("Invalid phase file link.");
+              })(),
+        })),
+        gates: array(p.gates, (g) => ({
+          name: required(record(g).name),
+          outcome: choice(g.outcome ?? null, JOURNEY_OUTCOMES),
+          decision: text(g.decision, ""),
+          launch: text(g.launch, ""),
+          rehearsal: g.rehearsal === true,
+        })),
+      };
+    }),
+    pending: array(r.pending, (x) => ({
+      action: required(record(x).action),
+      what: required(x.what),
+      file: nullableText(x.file),
+      fingerprint: text(x.fingerprint, ""),
+    })),
+  }),
   validation: (r) => {
     const plan = record(r.plan);
     const p = {
@@ -270,7 +334,7 @@ export function normalize(kind, value) {
   if (JSON.stringify(value)?.length > 8000000)
     throw new ContractError("Response exceeds the 8 MB presentation limit.");
   const convert = (r) => schemas[kind](record(r));
-  if (kind === "decision" || kind === "counterfactual")
+  if (["decision", "counterfactual", "brief", "journey"].includes(kind))
     return value == null ? null : convert(value);
   const rows = array(value, convert);
   const identities = rows.map((r) => r.id ?? r.agent);

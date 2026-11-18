@@ -34,6 +34,8 @@ async function mockService(page, data = clone(), options = {}) {
  async listArtifacts(){return structuredClone(data.artifacts);}
  async getApprovals(){return structuredClone(data.approvals);}
  async getAudit(){return structuredClone(data.audit);}
+ async getBrief(){return structuredClone(data.brief ?? null);}
+ async getJourney(){return null;}
  async getValidation(){return structuredClone(options.kits||[]);}
  async recordResult(request,body){__qa.calls.push({request,result:body});const kit=options.kits.find(k=>k.id===request.id);const outcome={decision:body.successes>=kit.plan.threshold?'GO':(body.successes+kit.plan.sampleSize-body.participants<kit.plan.threshold?'STOP':'REPEAT'),rule:'MOCKED_RULE',meaning:'MOCKED test transport',next_step:'MOCKED'};kit.observations.push({recorded_at:'2026-11-17T17:00:00Z',participants:body.participants,successes:body.successes,notes:body.notes,result_source:'FOUNDER-REPORTED (MOCKED test transport)',outcome});kit.latest=outcome;kit.final=outcome.decision!=='REPEAT';return {outcome};}
  async createRun(brief){__qa.calls.push({brief});await new Promise(r=>setTimeout(r,200));if(options.validation)throw new BriefValidationError({market:'MOCKED backend: specify a reachable market.'});if(__qa.fail)throw new Error('MOCKED network failure');return options.badRun?{}:options.unlistedRun?{...data.runs[0],id:'new-unlisted'}:data.runs[0];}
@@ -45,12 +47,15 @@ async function mockService(page, data = clone(), options = {}) {
   );
   await page.goto("/workspace");
 }
+// Older section names are URL aliases for the page that now holds them.
+const PAGE_OF = {dashboard: "projects", workflow: "analysis", evidence: "analysis", challenger: "analysis",
+  decision: "analysis", counterfactual: "analysis", artifacts: "build", approvals: "build", history: "details",
+  roadmap: "build"};
 const go = async (page, route) => {
   await page.evaluate((route) => (location.hash = route), route);
-  await expect(page.locator("nav a[aria-current]")).toHaveAttribute(
-    "href",
-    "#" + route.split("/")[0],
-  );
+  const name = route.split("/")[0];
+  if (name === "brief") await expect(page.locator(".new-idea")).toHaveAttribute("aria-current", "page");
+  else await expect(page.locator("nav a[aria-current]")).toHaveAttribute("href", "#" + (PAGE_OF[name] || name));
 };
 const pending = () => {
   const data = clone();
@@ -63,9 +68,7 @@ test("unknown and prototype hash names do not crash; skip link preserves current
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/workspace#constructor");
-  await expect(page.locator("h1")).toHaveText(
-    "Good ideas deserve hard questions.",
-  );
+  await expect(page.locator("h1")).toHaveText("Your projects");
   for (const value of ["__proto__", "toString", "evidence/%E0%A4%A"]) {
     await page.evaluate((v) => (location.hash = v), value);
     await expect(page.locator("h1")).toBeVisible();
@@ -82,7 +85,7 @@ test("slow mode changes never reveal demo records in live mode through navigatio
 }) => {
   await mockService(page, clone(), { delay: 700, emptyLive: true });
   await expect(
-    page.getByText("No venture runs are available.", { exact: false }),
+    page.getByText("No venture runs yet.", { exact: false }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Explore demo" }).click();
   await expect(
@@ -94,11 +97,11 @@ test("slow mode changes never reveal demo records in live mode through navigatio
     "Teams would adopt a separate tool.",
   );
   await expect(
-    page.locator("h2").filter({ hasText: "No evidence collected yet." }),
+    page.locator("h2").filter({ hasText: "Choose a project first." }), // live mode has no run to show
   ).toBeVisible();
   await page.getByRole("button", { name: "Explore demo" }).click();
   await page.getByRole("button", { name: "Exit demo" }).click();
-  await expect(page.locator("#mode-banner")).toContainText("Live workspace");
+  await expect(page.locator("#mode-banner")).toBeHidden(); // live mode needs no banner
   await expect(page.locator("main")).not.toContainText("MOCKED GATE RESULT");
 });
 test("a failed section stays an error across navigation while other outputs remain readable", async ({
@@ -128,17 +131,19 @@ test("all outcomes, sparse records, missing references and unordered agents", as
     await page.unrouteAll();
     await mockService(page, data);
     await go(page, "decision");
-    await expect(page.locator(".decision h2")).toHaveText(outcome);
-    await expect(page.locator(".decision code")).toHaveText(
-      "MOCKED_RULE_" + outcome,
-    );
+    await expect(page.locator(".verdict")).toHaveAttribute("data-outcome", outcome);
+    await expect(page.locator(".verdict h2")).toHaveText(
+      { GO: "Ready for the next validation step", REPEAT: "More evidence needed",
+        PIVOT: "Consider changing direction", STOP: "Do not proceed under current conditions" }[outcome]);
+    await expect(page.locator(".verdict dl.kv")).toContainText("MOCKED_RULE_" + outcome);
     await go(page, "workflow");
     await expect(
-      page.locator(".agent").first().getByRole("link"),
+      page.locator(".step").filter({ hasText: "Decide" }).locator("a"), // inside a collapsed panel
     ).toHaveAttribute("href", "#decision");
     await go(page, "history");
     await expect(page.locator("tbody")).toContainText("Not reported");
     await go(page, "challenger");
+    await page.locator(".concern summary").first().click();
     await expect(
       page.getByText("missing · Reference unavailable"),
     ).toBeVisible();
@@ -186,6 +191,8 @@ test("approval confirmation is backend-bound, duplicate clicks are guarded and f
     b.click();
     b.click();
   });
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("button", { name: "Confirm approval" }).click();
   await expect(page.locator("[role=alert]")).toContainText("did not confirm");
   await expect(approve).toBeDisabled();
   expect(await page.evaluate(() => __qa.calls.length)).toBe(1);
@@ -193,7 +200,8 @@ test("approval confirmation is backend-bound, duplicate clicks are guarded and f
   await page.getByRole("button", { name: "Refresh requests" }).click();
   await expect(approve).toBeEnabled();
   await approve.click();
-  await expect(page.getByText("Approved", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Confirm approval" }).click();
+  await expect(page.getByText("Approved — not written yet", { exact: true })).toBeVisible();
   await expect(approve).toBeDisabled();
   const calls = await page.evaluate(() => __qa.calls);
   expect(calls[1].request.fingerprint).toBe("fixture-v1-not-a-real-hash");
@@ -209,8 +217,9 @@ test("mismatched approval acknowledgment never displays success", async ({
   });
   await go(page, "approvals");
   await page.getByRole("button", { name: "Approve this action" }).click();
+  await page.getByRole("button", { name: "Confirm approval" }).click();
   await expect(page.locator("[role=alert]")).toContainText("did not confirm");
-  await expect(page.getByText("Approved", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Approved — not written yet", { exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => __qa.response.fingerprint)).toBe("changed");
   await expect(page.getByRole("button", {name: "Write the approved files locally"})).toHaveCount(0);
 });
@@ -278,7 +287,7 @@ test("successful run creation cannot be resubmitted by revisiting review", async
   await page.getByRole("button", { name: "Submit and start analysis" }).click();
   await expect(page.locator("nav a[aria-current]")).toHaveAttribute(
     "href",
-    "#workflow",
+    "#analysis",
   );
   await go(page, "brief");
   await expect(
@@ -335,15 +344,15 @@ test("long quotations and artifacts fit a narrow viewport; 5000 findings stay pa
   await page.setViewportSize({ width: 390, height: 844 });
   await mockService(page, data);
   await go(page, "evidence");
-  await expect(page.locator("details")).toHaveCount(50);
-  await page.locator("summary").first().click();
+  await expect(page.locator("details.finding")).toHaveCount(50);
+  await page.locator(".finding summary").first().click();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
   await page.getByRole("button", { name: "Next findings" }).click();
-  await expect(page.locator("details").first()).toHaveAttribute(
+  await expect(page.locator("details.finding").first()).toHaveAttribute(
     "id",
     "finding-F-50",
   );
@@ -425,12 +434,12 @@ test("measure local navigation, large-list filtering and retained heap", async (
   await go(page, "evidence");
   const start = performance.now();
   await page.locator("#standing").selectOption("NEEDS_REVIEW");
-  await expect(page.locator("details")).toHaveCount(50);
+  await expect(page.locator("details.finding")).toHaveCount(50);
   metrics.filterMs = performance.now() - start;
   samples.sort((a, b) => a - b);
   metrics.navigationMedianMs = samples[10];
   metrics.navigationP95Ms = samples[18];
-  metrics.renderedFindings = await page.locator("details").count();
+  metrics.renderedFindings = await page.locator("details.finding").count();
   await go(page, "dashboard");
   await cdp.send("HeapProfiler.collectGarbage");
   metrics.heapAfter = await heap();
@@ -539,7 +548,7 @@ test("slow status reads do not overlap or multiply on repeated workflow navigati
   await page.clock.fastForward(5000);
   expect(await page.evaluate(() => __qa.reads)).toBe(1);
   await page.clock.fastForward(1100);
-  await expect(page.locator(".agent")).toHaveCount(4);
+  await expect(page.locator(".step")).toHaveCount(4);
   await go(page, "dashboard");
   await go(page, "workflow");
   await page.clock.fastForward(5000);
@@ -601,6 +610,7 @@ test("approval preserves the founder's typed reason", async ({ page }) => {
   await go(page, "approvals");
   await page.locator('[id^="reason-"]').first().fill("Reviewed the interview scope; no outreach is authorized.");
   await page.getByRole("button", {name: "Approve this action"}).click();
+  await page.getByRole("button", { name: "Confirm approval" }).click();
   await expect.poll(async () => page.evaluate(() => __qa.calls.length)).toBe(1);
   expect(await page.evaluate(() => __qa.calls[0].options.reason)).toBe("Reviewed the interview scope; no outreach is authorized.");
 });
@@ -615,6 +625,7 @@ test("genuine recordings load without a model, remain read-only and fit mobile",
   await page.locator("#recordings-toggle").click();
   await expect(page.locator("#recordings-toggle")).toHaveText("Return to live");
   await go(page, "decision");
+  await page.locator(".verdict details.tech > summary").click();
   await expect(page.locator(".gate-trace summary")).toBeVisible();
   await page.locator(".gate-trace summary").click();
   await expect(page.getByRole("table", {name: "Recorded deterministic gate trace"})).toBeVisible();

@@ -71,6 +71,16 @@ def findings(outputs: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
+def founder_brief(brief: dict[str, Any]) -> dict[str, Any]:
+    """The founder's own brief, unchanged, under the workspace's field names."""
+    return {"idea": brief["idea"], "problem": brief["problem_statement"], "customer": brief["target_customer"],
+            "market": brief["market"], "skills": list(brief.get("founder_skills", [])),
+            "hours": brief.get("hours_per_week"), "budget": brief.get("budget_eur"),
+            "currency": brief.get("budget_currency", "EUR"),
+            "constraints": list(brief.get("values_and_constraints", [])),
+            "sources": [str(u) for u in brief.get("source_urls", [])]}
+
+
 def challenges(outputs: dict[str, Any]) -> list[dict[str, Any]]:
     chal = outputs.get("challenge")
     if not chal:

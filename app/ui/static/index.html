@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <title>VentureLab — Founder workspace</title>
     <link rel="stylesheet" href="/workspace/assets/styles.css" />
     <script type="module" src="/workspace/assets/app.js"></script>
@@ -11,44 +11,47 @@
   <body>
     <a class="skip" href="#main">Skip to workspace</a>
     <aside class="sidebar">
-      <a class="brand" href="#dashboard"
-        ><span class="brand-mark">V</span> VentureLab<span class="beta"
-          >LAB</span
-        ></a
+      <a class="brand" href="#projects"
+        ><span class="brand-mark" aria-hidden="true">V</span
+        ><span>VentureLab</span></a
       >
-      <div class="workspace-label">FOUNDER WORKSPACE</div>
+      <a class="new-idea" href="#brief"
+        ><span aria-hidden="true">＋</span> New idea</a
+      >
       <nav id="nav" aria-label="Main navigation"></nav>
       <div class="sidebar-footer">
-        <span class="status-dot"></span> Local-first. Evidence-led.
-        <p>Founder control at every gate.</p>
-        <a href="/diagnostics">System diagnostics ↗</a>
+        <p>Your AI co-founder that challenges ideas with evidence.</p>
+        <p>Nothing is published, sent or paid without your approval.</p>
       </div>
     </aside>
     <div class="shell">
       <header class="topbar">
-        <span
-          >Workspace <span class="slash">/</span>
-          <span id="breadcrumb">Overview</span></span
-        >
+        <span id="breadcrumb" class="crumb">Projects</span>
         <div class="top-actions">
           <span id="model-status" role="status">Checking model…</span
           ><button id="recordings-toggle" class="quiet">
             Recorded executions</button
-          ><a class="quiet" href="/phases">Phases 1–6</a
           ><button id="mode-toggle" class="quiet">Explore demo</button>
         </div>
       </header>
-      <div id="mode-banner" class="notice" role="status">
-        Live workspace · connected to the local backend. Phases 2–6 run through
-        the Phases 1–6 page (sale to cash MOCKED; MVP production code STUBBED).
-      </div>
+      <div id="mode-banner" class="notice banner" role="status" hidden></div>
       <main id="main" tabindex="-1"></main>
       <footer class="footer">
-        Challenge the idea. Verify the evidence. Build with confidence.<span
-          >VentureLab / Milestone 04</span
-        >
+        <span>Challenge the idea. Verify the evidence. Build with confidence.</span
+        ><span>Publishing and sale to cash are MOCKED; general MVP code generation is STUBBED.</span
+        ><span><a href="/diagnostics">System diagnostics</a> · <a href="/phases">All phase outputs</a></span>
       </footer>
     </div>
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+      <form method="dialog">
+        <h2 id="confirm-title">Approve this request?</h2>
+        <div id="confirm-body"></div>
+        <div class="actions">
+          <button value="cancel" class="secondary">Cancel</button>
+          <button value="confirm" data-confirm>Confirm approval</button>
+        </div>
+      </form>
+    </dialog>
     <noscript
       ><p>
         This workspace requires JavaScript. System health remains available at

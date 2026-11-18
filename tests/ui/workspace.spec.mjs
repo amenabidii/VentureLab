@@ -9,20 +9,9 @@ test("empty live workspace, navigation, and demo isolation", async ({
   page,
 }) => {
   await expect(
-    page.getByText("No venture runs are available.", { exact: false }),
+    page.getByText("No venture runs yet.", { exact: false }),
   ).toBeVisible();
-  const labels = [
-    "Founder brief",
-    "Agent workflow",
-    "Evidence explorer",
-    "Challenger analysis",
-    "Decision dashboard",
-    "Counterfactual challenge",
-    "Builder artifacts",
-    "Founder approval",
-    "Decision history",
-    "Six-phase roadmap",
-  ];
+  const labels = ["Projects", "Analysis", "Build & validate", "History & details"];
   for (const label of labels) {
     await page
       .getByRole("navigation")
@@ -38,19 +27,16 @@ test("empty live workspace, navigation, and demo isolation", async ({
   await page.getByRole("button", { name: "Exit demo" }).click();
   await page
     .getByRole("navigation")
-    .getByRole("link", { name: "Overview", exact: true })
+    .getByRole("link", { name: "Projects", exact: true })
     .click();
   await expect(
-    page.getByText("No venture runs are available.", { exact: false }),
+    page.getByText("No venture runs yet.", { exact: false }),
   ).toBeVisible();
 });
 test("founder brief validation, review, persistence across navigation, disabled submit", async ({
   page,
 }) => {
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Founder brief", exact: true })
-    .click();
+  await page.locator(".sidebar .new-idea").click();
   await page.getByRole("button", { name: "Review brief" }).click();
   await expect(page.locator("#idea")).toHaveAttribute("aria-invalid", "true");
   for (const [key, value] of Object.entries({
@@ -76,12 +62,9 @@ test("founder brief validation, review, persistence across navigation, disabled 
   ).toBeEnabled();
   await page
     .getByRole("navigation")
-    .getByRole("link", { name: "Overview", exact: true })
+    .getByRole("link", { name: "Projects", exact: true })
     .click();
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Founder brief", exact: true })
-    .click();
+  await page.locator(".sidebar .new-idea").click();
   await expect(
     page.getByText("A digital checklist for design handoffs"),
   ).toBeVisible();
@@ -113,18 +96,14 @@ test("evidence filters, source inspection, references, decision and counterfactu
     "rel",
     "noopener noreferrer",
   );
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Challenger analysis", exact: true })
-    .click();
-  await page.getByRole("link", { name: "F-03", exact: true }).click();
+  await page.evaluate(() => (location.hash = "challenger"));
+  await page.locator(".concern summary").first().click();
+  await page.getByRole("link", { name: "Evidence F-03", exact: true }).click();
   await expect(page.locator("#finding-F-03")).toHaveAttribute("open", "");
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Decision dashboard", exact: true })
-    .click();
+  await page.evaluate(() => (location.hash = "decision"));
+  await page.locator(".verdict details.tech > summary").click();
   await expect(
-    page.getByText("MOCKED_DEMAND_EVIDENCE_MISSING", { exact: true }),
+    page.locator(".verdict").getByText("MOCKED_DEMAND_EVIDENCE_MISSING", { exact: true }),
   ).toBeVisible();
   await page
     .getByRole("link", { name: "What could change this recommendation?" })
@@ -139,29 +118,20 @@ test("artifacts are sandboxed, approvals disabled, audit labeled", async ({
   page,
 }) => {
   await page.getByRole("button", { name: "Explore demo" }).click();
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Builder artifacts", exact: true })
-    .click();
+  await page.evaluate(() => (location.hash = "artifacts"));
   await page.getByRole("button", { name: "Read-only preview" }).nth(1).click();
   await expect(page.locator("iframe")).toHaveAttribute("sandbox", "");
   await expect(page.frameLocator("iframe").getByRole("heading")).toHaveText(
     "A clearer handoff starts with a checklist.",
   );
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Founder approval", exact: true })
-    .click();
+  await page.evaluate(() => (location.hash = "approvals"));
   await expect(
     page.getByRole("button", { name: "Approve this action" }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Reject", exact: true }),
   ).toBeDisabled();
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Decision history", exact: true })
-    .click();
+  await page.evaluate(() => (location.hash = "history"));
   await expect(page.locator("caption")).toContainText("MOCKED");
   await page.locator("#audit-agent").selectOption("Judge");
   await expect(page.locator("tbody tr")).toHaveCount(1);
@@ -190,16 +160,10 @@ test("malicious content remains inert in rendered text and artifact previews", a
     await d.dismiss();
   });
   await page.getByRole("button", { name: "Explore demo" }).click();
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Evidence explorer", exact: true })
-    .click();
+  await page.evaluate(() => (location.hash = "evidence"));
   await expect(page.locator("main img")).toHaveCount(0);
-  await expect(page.getByText("<img src=x onerror=alert(1)>")).toBeVisible();
-  await page
-    .getByRole("navigation")
-    .getByRole("link", { name: "Builder artifacts", exact: true })
-    .click();
+  await expect(page.locator(".finding-title").getByText("<img src=x onerror=alert(1)>")).toBeVisible();
+  await page.evaluate(() => (location.hash = "artifacts"));
   await page.getByRole("button", { name: "Read-only preview" }).nth(1).click();
   const frame = page.frameLocator("iframe");
   await expect(frame.locator("script")).toHaveCount(0);
@@ -250,7 +214,7 @@ test("loading and failed adapter calls are truthful and retryable", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "Try again" }).click();
   await expect(
-    page.getByText("No venture runs are available.", { exact: false }),
+    page.getByText("No venture runs yet.", { exact: false }),
   ).toBeVisible();
 });
 

@@ -1,5 +1,17 @@
 /** MOCKED: synthetic UI examples only. Never pipeline output or audit history. */
 export const demo = {
+  brief: {
+    idea: "MOCKED example: a shared handoff checklist for small design teams.",
+    problem: "MOCKED example: designers lose details when a project changes hands.",
+    customer: "MOCKED example: design studios with two to ten people",
+    market: "MOCKED example: online",
+    skills: ["MOCKED example: product design"],
+    hours: 8,
+    budget: 0,
+    currency: "EUR",
+    constraints: ["MOCKED example: no customer data leaves the studio"],
+    sources: [],
+  },
   runs: [
     {
       id: "fixture-01",

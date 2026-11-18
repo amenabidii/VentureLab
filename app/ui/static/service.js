@@ -83,6 +83,13 @@ export class WorkspaceService {
   async getValidation(id) {
     return this.read(id, "validation");
   }
+  async getBrief(id) {
+    return this.read(id, "brief", null);
+  }
+  /** Phases 2–6 state, read from files the backend wrote. Live runs only. */
+  async getJourney(id) {
+    return this.live ? api(run(id, "journey")) : null;
+  }
   async read(id, key, empty = []) {
     if (this.mode === "recorded") {
       if (!this.recordings.has(id))
@@ -106,6 +113,7 @@ export class WorkspaceService {
         approvals: "approvals",
         audit: "audit",
         validation: "validation",
+        brief: "brief",
       }[key];
       return api(run(id, path));
     }

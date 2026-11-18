@@ -198,6 +198,12 @@ def _builder_blocked(svc: Services, run: dict[str, Any], outputs: dict[str, Any]
         return str(exc)
 
 
+@router.get("/runs/{run_id}/brief")
+def run_brief(run_id: str, svc: Services = Depends(services)):
+    run = _run(svc, run_id)
+    return view.founder_brief(FounderBrief.model_validate_json(run["brief"]).model_dump(mode="json"))
+
+
 @router.get("/runs/{run_id}/agents")
 def run_agents(run_id: str, svc: Services = Depends(services)):
     run = _run(svc, run_id)
